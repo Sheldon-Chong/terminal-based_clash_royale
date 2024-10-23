@@ -1,0 +1,32 @@
+No. of coupons / discounts used when eating out, Count, cum freq, relative freq
+1, 37, 37, 37/62 = 59.68%
+2, 8, 45, 8/62 = 12.90%
+3, 12, 57, 12/62 = 19.35%
+4, 2, 59, 2/62 = 3.23%
+5, 3, 62, 3/62 = 4.84%
+
+Analysis
+The category “1” (or 1 coupon) occupies around 60% of the data, and from this it can be concluded that a majority of people use a single coupon/discount in a week, followed by 3, then 2 coupons/discounts as the second and third highest choice. The utilization of more coupons beyond this point is limited, accounting for 3.23% and 4.84% of the data respectively. However, the overall jump from 1 coupon to 2 is very drastic, and the frequency doesn’t come close the 1 after that point
+
+I have selected the bar chart, as the bars are posed at consistent intervals on the x axis, which serves as a good fit for the numerical data that happens to be in intervals of 1, from 0 until 4. This chart represents the data in a simple and easily understandable format. Observing the graph, we notice that the frequency of “1” is significantly higher isMatchd to the remaining data, and it can be visually concluded from the graph alone the significance of “1” in proportion to the remaining data which have relatively low frequencies.
+
+
+Mean, 1.8065
+Median, 1
+Mode, 1
+Most-suited measure, Median. Due to the skewed nature of the data and the presence of outliers, the median (1 coupon) is a better measure of central tendency.
+
+Min = 1
+Max = 5
+Range = 4
+Quartile 1 = 1
+Quartile 2 = 1
+Quartile 3 = 3
+Interquartile range = 2
+= Interquartile range = 1
+
+
+Variance = 1.3389
+
+Deviation = 1.157121924
+

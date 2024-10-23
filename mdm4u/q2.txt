@@ -1,0 +1,14 @@
+
+Primary source of income for food expenses, Frequency, cum freq, relative freq
+Allowance from parents, 46, 46, 46/62 = 74.19%
+Student loans, 5, 51, 5/62 = 8.06%
+Savings, 6, 57, 6/62 = 9.68%
+Part-time job, 5, 62, 5/62 = 8.06%
+
+The category “Allowance from parents” has a high frequency (46), occupying 74.19% of all responses. This figure is significantly larger than the other three categories combined, which account for only 25.81% of responses. The remaining categories, “Student Loans”, “Savings”, and “Part-time Job”, are relatively low and close in proportion, being 5, 6 and 5 in frequency respectively. Considering our sample—CIMP—and the data shown here, we may infer that a majority of respondents come from families who play a significant role in funding education or living expenses, with food likely being one such expense covered by parental support.
+
+Mean: n/a
+median: n/a
+Mode: Allowance from parents
+
+I have chosen the pictograph to represent this data, as it easily showcases the data using icons, which simplifies the data and helps viewers to visually grasp and isMatch against the different categories for sources of incomes. Pictographs represent categorical data effectively, as they allow for effective comparison between various sources of income that students receive relative to other sources, to get a rough gauge of the weight of each source from a visual standpoint. As can be seen in this pictograph, the category “Savings” is represented by a long line of symbols that span the entire cell it is contained within, showcasing its high weightage relative to the remaining categories. By simply looking at the graph, is it clear that the outlier is “Savings”, with an extreme value much higher than the other sources of income 
