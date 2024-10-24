@@ -71,6 +71,6 @@ public class Tile {
     }
 
     public String getRepr(){
-        return "%c%d".formatted(((Troop)object).getNameInitial(), ((Troop)object).getHP());
+        return "%c%d".formatted(((Troop)object).getNameInitial(), ((Troop)object).GetHP());
     }
 }

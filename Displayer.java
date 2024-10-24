@@ -119,11 +119,11 @@ public class Displayer {
             if (grid[y][x].getObject() instanceof Troop) {
                 Troop troop = (Troop)grid[y][x].getObject();
 
-                health = (char)(troop.getHP() + '0');
+                health = (char)(troop.GetHP() + '0');
                 icon = troop.getNameInitial();
-                if (troop.GetPlayer().GetRegion() == GameSystem.PLAYER1_REGION)
+                if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER1_REGION)
                     prefix = '1';
-                else if (troop.GetPlayer().GetRegion() == GameSystem.PLAYER2_REGION)
+                else if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2)
                     prefix = '2';
                     
                 if (troop.GetAction() == Troop.ACTION_MOVE)

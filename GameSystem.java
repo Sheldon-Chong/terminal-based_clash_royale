@@ -45,11 +45,33 @@ class GameSystem {
         this.initWorld();
     }
 
+    public void destroyTroop(Troop troop) {
+        for (int i = 0; i < troops.length; i++) {
+            if (troops[i] == troop) {
+                System.out.println(troops[i] + " diead");
+                
+                Troop []newTroops = new Troop[troops.length - 1];
+                int index = 0;
+
+                for (int j = 0; j < troops.length; j++) {
+                    if (troops[j] != troop) {
+                        newTroops[index] = troops[j];
+                        index++;
+                    }
+                }
+
+                troops = newTroops;
+
+                break;
+            }
+        }
+    }
+
     private void initWorld() {
         this.player1 = new Player(PLAYER1_REGION);
         this.player2 = new Player(PLAYER2_REGION);
 
-        this.troops = new Troop[200];
+        this.troops = new Troop[20];
 
         FileHandler fHandler = new FileHandler();
         char [][] grid = fHandler.readFile(FILENAME);
@@ -59,12 +81,13 @@ class GameSystem {
         for (int i = 0; i < troops.length; i++) {
             Player currPlayer = player1;
             
+            if (i > (troops.length / 2))
                 currPlayer = player2;
 
             Pos startPos;
             
             while (true) {
-                if (currPlayer.GetRegion() == PLAYER1_REGION)
+                if (currPlayer.GetPlayerNum() == PLAYER1_REGION)
                     startPos = new Pos((int) (Math.random() * (worldStatic[0].length / 2)), (int) (Math.random() * worldStatic.length));
                 else
                     startPos = new Pos((int) ((Math.random() * (worldStatic[0].length / 2) ) + (worldStatic[0].length / 2)), (int) (Math.random() * worldStatic.length));
@@ -122,7 +145,6 @@ class GameSystem {
     private void setTileType(Tile currentTile) {
         // NOTE: migrate this function to the tile class
         Tileset tileset = (Tileset) currentTile.getObject();
-        
         
         switch (tileset.getType()) {
             case Tileset.CORNER_TOP_LEFT:
@@ -224,7 +246,7 @@ class GameSystem {
     public int getObjRegion(Obj object) {
         Pos pos = object.getPos();
 
-        if (pos.x > 0 && pos.x < 13)
+        if (pos.x > 0 && pos.x < 14)
             return PLAYER1_REGION;
         else
             return PLAYER2_REGION;
@@ -233,6 +255,9 @@ class GameSystem {
 
     public void UpdateWorldBuffer() { 
         for (int i = 0; i < troops.length; i++) {
+            if (troops[i] == null)
+                continue;
+
             Troop currentTroop = troops[i];
             Pos tempPos = currentTroop.getPos().copy();
             currentTroop.move();

@@ -1,11 +1,11 @@
 class Player {
     private int region;
     
-    public int GetRegion() {
+    public int GetPlayerNum() {
         return this.region;
     }
 
-    public void SetRegion(int region) {
+    public void SetPlayerNum(int region) {
         this.region = region;
     }
 
@@ -14,6 +14,6 @@ class Player {
     }
 
     public Player(int region) {
-        this.SetRegion(region);
+        this.SetPlayerNum(region);
     }
 }

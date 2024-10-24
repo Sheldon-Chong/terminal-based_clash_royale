@@ -10,6 +10,10 @@ public abstract class Obj {
         return pos;
     }
 
+    public double calcDistance (Obj obj) {
+        return pos.calcDistance(obj.getPos());
+    }
+
     public void setPos (Pos pos) {
         this.pos = pos;
     }
