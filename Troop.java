@@ -33,8 +33,8 @@ class Troop extends Obj {
     public void IncreaseHP(int hp) { this.hp += hp; }
     public void DecreaseHP(int hp) { this.hp -= hp; }
 
-    public void   SetPlayer(Player player) { this.player = player; }
     public Player GetPlayer() { return this.player; }
+    public void   SetPlayer(Player player) { this.player = player; }
 
     public Pos  GetDest() { return this.Dest; }
     public void SetDest(Pos dest) { this.Dest = dest; }
@@ -92,8 +92,7 @@ class Troop extends Obj {
 
         int accessPointsLen =0;
         
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             if ( neighbours[i] != null 
                 && neighbours[i].getObject() instanceof Floor)
                     accessPointsLen ++;
@@ -102,8 +101,7 @@ class Troop extends Obj {
         Tile[] accessPoints = new Tile[accessPointsLen];
         
         accessPointsLen = 0;
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             if ( neighbours[i] != null 
                 && neighbours[i].getObject() instanceof Floor)
                     accessPoints[accessPointsLen++] = neighbours[i];
@@ -117,19 +115,18 @@ class Troop extends Obj {
         int towersLen = 0;
         
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
-            for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++)
-            {   
+            for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
                 if (this.gameSysRef.GetTile(new Pos (x, y)) != null &&
                     this.gameSysRef.GetTile(new Pos (x, y)).getObject() instanceof TowerWall)
                     towersLen++;
             }
         }
+
         Tile[] towersWalls = new Tile[towersLen];
         int index = 0;
 
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
-            for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++)
-            {   
+            for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
                 if (this.gameSysRef.GetTile(new Pos (x, y)) != null &&
                     this.gameSysRef.GetTile(new Pos (x, y)).getObject() instanceof TowerWall)
                     towersWalls[index++] = this.gameSysRef.GetTile(new Pos (x, y));
@@ -153,6 +150,7 @@ class Troop extends Obj {
                     closestPoint = accessPoints[j].getPos();
             }
         }
+
         return closestPoint;
     }
 
@@ -172,7 +170,6 @@ class Troop extends Obj {
 
         int playerNum = this.player.GetPlayerNum(); 
         int currRegion = this.GetRegion();
-
 
         if (playerNum == GameSystem.PLAYER1_REGION && currRegion == GameSystem.PLAYER1_REGION)
             closestTowerWall = findNearestAccessPoint(p1EntryPoints);
@@ -243,6 +240,7 @@ class Troop extends Obj {
             this.attack(currentPos.Add(moveVector));
         
         moveVector = new Pos(0, 0);
+        
         if (this.getPos().y < dest.y) moveVector.y = 1;
         if (this.getPos().y > dest.y) moveVector.y = -1;
         status = travel(new Pos (0, moveVector.y));

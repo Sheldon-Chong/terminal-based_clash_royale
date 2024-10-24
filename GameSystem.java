@@ -1,17 +1,22 @@
 class GameSystem {
 
-    private Tile [][]worldStatic;
+    private Tile [][]worldGrid;
 
     public static final String FILENAME = "game_grid.txt";
 
-    public final static char TOWER = 'T';
+    public final static char TOWER_WALL = 'T';
     public final static char FLOOR = '.';
     public final static char EMPTY = ' ';
+    
+    public final static char P1_TOWER_PRINCESS = 'Q';
+    public final static char P1_TOWER_KING = 'K';
 
+    public final static char P2_TOWER_PRINCESS = 'q';
+    public final static char P2_TOWER_KING = 'k';
 
     public final static int NO_REGION = 0;
     public final static int PLAYER1_REGION = 1;
-    public final static int PLAYER2_REGION = 2;
+    public final static int PLAYER2 = 2;
 
     private Troop[] troops = new Troop[5];
     
@@ -27,17 +32,17 @@ class GameSystem {
     // GETTERS AND SETTERS
     public Troop []GetTroops() { return this.troops; }
 
-    public Tile [][]GetGrid() { return this.worldStatic; }
+    public Tile [][]GetGrid() { return this.worldGrid; }
 
-    public Tile GetTile(int row, int col) { return this.worldStatic[row][col]; }
+    public Tile GetTile(int row, int col) { return this.worldGrid[row][col]; }
     public Tile GetTile(Pos pos) {
-        if (pos.x < 0 || pos.x >= this.worldStatic[0].length || pos.y < 0 || pos.y >= this.worldStatic.length)
+        if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
             return null;
         
-        return this.worldStatic[pos.y][pos.x];
+        return this.worldGrid[pos.y][pos.x];
     }
 
-    public void SetTile(int row, int col, Tile tile) { this.worldStatic[row][col] = tile; }
+    public void SetTile(int row, int col, Tile tile) { this.worldGrid[row][col] = tile; }
 
 
     // CONSTRUCTOR
@@ -51,6 +56,7 @@ class GameSystem {
                 System.out.println(troops[i] + " diead");
                 
                 Troop []newTroops = new Troop[troops.length - 1];
+                
                 int index = 0;
 
                 for (int j = 0; j < troops.length; j++) {
@@ -67,16 +73,8 @@ class GameSystem {
         }
     }
 
-    private void initWorld() {
-        this.player1 = new Player(PLAYER1_REGION);
-        this.player2 = new Player(PLAYER2_REGION);
-
-        this.troops = new Troop[20];
-
-        FileHandler fHandler = new FileHandler();
-        char [][] grid = fHandler.readFile(FILENAME);
-        
-        this.worldStatic = this.ConvertChar2DtoTile2D(grid);
+    private void spawnTroops(int amt) {
+        this.troops = new Troop[amt];
 
         for (int i = 0; i < troops.length; i++) {
             Player currPlayer = player1;
@@ -88,46 +86,52 @@ class GameSystem {
             
             while (true) {
                 if (currPlayer.GetPlayerNum() == PLAYER1_REGION)
-                    startPos = new Pos((int) (Math.random() * (worldStatic[0].length / 2)), (int) (Math.random() * worldStatic.length));
+                    startPos = new Pos((int) (Math.random() * (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
+                
                 else
-                    startPos = new Pos((int) ((Math.random() * (worldStatic[0].length / 2) ) + (worldStatic[0].length / 2)), (int) (Math.random() * worldStatic.length));
+                    startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
 
-                if (worldStatic[startPos.y][startPos.x].getObject() instanceof Floor)
+                if (worldGrid[startPos.y][startPos.x].getObject() instanceof Floor)
                     break;
             }
 
-            this.troops[i] = SpawnTroop(startPos, (char) ('A' + i), currPlayer, 9);
+            this.troops[i] = spawnTroop(startPos, (char) ('A' + i), currPlayer, 9);
         }
+    }
 
-        for (int y = 0; y < this.worldStatic.length; y++) {
-            for (int x = 0; x < this.worldStatic[y].length; x++) {
-                setTileType(this.worldStatic[y][x]);
+    private void initWorld() {
+        this.player1 = new Player(PLAYER1_REGION);
+        this.player2 = new Player(PLAYER2);
+
+        FileHandler fHandler = new FileHandler();
+        char [][] grid = fHandler.readFile(FILENAME);
+        
+        this.worldGrid = this.ConvertChar2DtoTile2D(grid);
+
+        this.spawnTroops(20);
+
+        for (int y = 0; y < this.worldGrid.length; y++) {
+            for (int x = 0; x < this.worldGrid[y].length; x++) {
+                setTileType(this.worldGrid[y][x]);
             }
         }
 
         this.UpdateWorldBuffer();
     }
 
-    private Troop SpawnTroop(Pos startPos, char initial, Player playerRef, int hp) {
+
+    private Troop spawnTroop(Pos startPos, char initial, Player playerRef, int hp) {
         Troop troop;
         
         troop = new Troop(startPos, initial, playerRef);
-        troop.setHP(9);
+        troop.SetHP(9);
         troop.SetGameSysRef(this);
 
         return troop;
     }
 
 
-    private char access(int row, int col, char [][]grid) {
-        if (row < 0 || row >= grid.length)
-            return 0;
-
-        if (col < 0 || col >= grid[row].length)
-            return 0;
-
-        return grid[row][col];
-    }
+    
 
 
     private Tile[][] copyTiledGrid(Tile[][] grid) {
@@ -143,6 +147,9 @@ class GameSystem {
 
 
     private void setTileType(Tile currentTile) {
+        if (!(currentTile.getObject() instanceof Tileset))
+            return;
+
         // NOTE: migrate this function to the tile class
         Tileset tileset = (Tileset) currentTile.getObject();
         
@@ -249,7 +256,7 @@ class GameSystem {
         if (pos.x > 0 && pos.x < 14)
             return PLAYER1_REGION;
         else
-            return PLAYER2_REGION;
+            return PLAYER2;
     }
 
 
@@ -266,41 +273,56 @@ class GameSystem {
         }
     }
     
+
+    private char getCharTile(int row, int col, char [][]grid) {
+        if (row < 0 || row >= grid.length)
+            return 0;
+
+        if (col < 0 || col >= grid[row].length)
+            return 0;
+
+        return grid[row][col];
+    }
+
+
     public Tile[][] ConvertChar2DtoTile2D(char[][] grid) {
-        Tile [][]worldStatic = new Tile[grid.length][grid[0].length];
+        Tile [][]worldGrid = new Tile[grid.length][grid[0].length];
     
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[row].length; col++) {
-                char currentTile = access(row, col, grid);
+                char currentTile = getCharTile(row, col, grid);
 
                 Obj tileContent = new Floor();
 
-                char neighbourLeft  = access(row, col - 1, grid);
-                char neighbourRight = access(row, col + 1, grid);
-                char neighbourUp    = access(row - 1, col, grid);
-                char neighbourDown  = access(row + 1, col, grid);
+                char neighbourLeft  = getCharTile(row, col - 1, grid);
+                char neighbourRight = getCharTile(row, col + 1, grid);
+                char neighbourUp    = getCharTile(row - 1, col, grid);
+                char neighbourDown  = getCharTile(row + 1, col, grid);
 
-                if (currentTile == TOWER) {
-                    int type = getTileSideType(TOWER, neighbourLeft, neighbourRight, neighbourUp, neighbourDown);
-                    tileContent = new TowerWall(type);
-                }
-                
-                else if (currentTile == EMPTY) {
-                    int type = getTileSideType(EMPTY, neighbourLeft, neighbourRight, neighbourUp, neighbourDown);
-                    tileContent = new Empty(type);
-                }
-                
-                else if (currentTile == FLOOR) {
-                    tileContent = new Floor();
+                switch (currentTile) {
+                    case P1_TOWER_PRINCESS:
+                        tileContent = new TowerPrincess(this.player1);
+                    break; case P1_TOWER_KING:
+                        tileContent = new TowerKing(this.player1);
+                        
+                    break; case P2_TOWER_PRINCESS:
+                        tileContent = new TowerPrincess(this.player2);
+                    break; case P2_TOWER_KING:
+                        tileContent = new TowerKing(this.player2);
+
+                    break; case TOWER_WALL:
+                        tileContent = new TowerWall(getTileSideType(TOWER_WALL, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                    break; case EMPTY:
+                        tileContent = new Empty(getTileSideType(EMPTY, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                    break; case FLOOR:
+                        tileContent = new Floor();
                 }
 
-                // You can now use the isCorner, isSide, and cornerType variables as needed
-                Tile tile = new Tile(tileContent, worldStatic, new Pos(col, row));
-                worldStatic[row][col] = tile;
+                Tile tile = new Tile(tileContent, worldGrid, new Pos(col, row));
+                worldGrid[row][col] = tile;
             }
-    
         }
-        return worldStatic;
+        return worldGrid;
     }
 
 
@@ -311,12 +333,16 @@ class GameSystem {
 
                 if (currentContents instanceof TowerWall)
                     System.out.print('T');
+
                 else if (currentContents instanceof Empty)
                     System.out.print(' ');
+
                 else if (currentContents instanceof Floor)
                     System.out.print('.');
+
                 else
                     System.out.print('?');
+                    
                 System.out.print(" ");
             }
             System.out.println("");

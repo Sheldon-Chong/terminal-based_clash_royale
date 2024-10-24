@@ -85,6 +85,45 @@ public class Displayer {
        
         for (int x = 0; x < grid[y].length; x++)
         {
+            // if (y< grid.length && grid[y][x].getObject() instanceof TowerWall)
+            // {
+            //     TowerWall towerwall = (TowerWall)grid[y][x].getObject();
+            //     if (towerwall.getType() == 1) {
+            //         buffer += "   | ";
+            //         continue;
+            //     }
+
+            //     if (towerwall.getType() == 2) {
+            //         buffer += " |   ";
+            //         continue;
+            //     }
+            // }
+
+
+            if (y-1 > 0 && grid[y-1][x].getObject() instanceof TowerWall)
+            {
+                TowerWall towerwall = (TowerWall)grid[y - 1][x].getObject();
+                if (towerwall.getType() == 3) {
+                    buffer += "   |_";
+                    continue;
+                }
+
+                if (towerwall.getType() == 4) {
+                    buffer += "|_|  ";
+                    continue;
+                }
+
+                if (towerwall.getType() == 2) {
+                    buffer += "|___|";
+                    continue;
+                }
+
+                if (towerwall.getType() == 1) {
+                    buffer += "_|___";
+                    continue;
+                }
+            }
+
             char corner = '.';
 
             if (getTile(x, y - 1).left_side == '|' || getTile(x - 1, y - 1).right_side == '|')
@@ -110,12 +149,29 @@ public class Displayer {
 
         // print columns
         for (int x = 0; x < grid[y].length; x++) {
+
+            if (y-1 > 0 && grid[y-1][x].getObject() instanceof TowerWall)
+            {
+                TowerWall towerwall = (TowerWall)grid[y - 1][x].getObject();
+
+                if (towerwall.getType() == 3) {
+                    buffer += "_|___";
+                    continue;
+                }
+            }
+            
+
             char health = ' ';
-            char edge;
-            char icon = ' ';
+            char icon   = ' ';
             char prefix = ' ';
             char suffix = ' ';
+            char edge;
             
+            if (grid[y][x].getObject() instanceof Tower) {
+                health = '5';
+                icon = 'T';
+            }
+
             if (grid[y][x].getObject() instanceof Troop) {
                 Troop troop = (Troop)grid[y][x].getObject();
 
@@ -123,13 +179,17 @@ public class Displayer {
                 icon = troop.getNameInitial();
                 if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER1_REGION)
                     prefix = '1';
+
                 else if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2)
                     prefix = '2';
+                        
                     
                 if (troop.GetAction() == Troop.ACTION_MOVE)
                     suffix = '>';
+
                 if (troop.GetAction() == Troop.ACTION_ATTACK)
                     suffix = '*';
+
             }
 
             if (grid[y][x].left_side == '|' || (x > 0 && grid[y][x - 1].right_side == '|'))
