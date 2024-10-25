@@ -155,20 +155,20 @@ class GameSystem {
         
         switch (tileset.getType()) {
             case Tileset.CORNER_TOP_LEFT:
-                currentTile.right_side  = '|';
-                currentTile.bottom_side = '|';
+                currentTile.left_side  = '|';
+                currentTile.top_side = '|';
                 
             break; case Tileset.CORNER_TOP_RIGHT:
-                currentTile.left_side   = '|';
-                currentTile.bottom_side = '|';
+                currentTile.right_side   = '|';
+                currentTile.top_side = '|';
 
             break; case Tileset.CORNER_BOTTOM_LEFT:
-                currentTile.right_side  = '|';
-                currentTile.top_side    = '|';
+                currentTile.bottom_side  = '|';
+                currentTile.left_side    = '|';
 
             break; case Tileset.CORNER_BOTTOM_RIGHT:
-                currentTile.left_side   = '|';
-                currentTile.top_side    = '|';
+                currentTile.right_side   = '|';
+                currentTile.bottom_side    = '|';
 
             break; case Tileset.PIPE_H:
                 currentTile.top_side    = '|';
@@ -239,10 +239,10 @@ class GameSystem {
         
         // corners
         else {
-            if (nLeft && nUp)    return Tileset.CORNER_TOP_LEFT;
-            if (nRight && nUp)   return Tileset.CORNER_TOP_RIGHT;
-            if (nLeft && nDown)  return Tileset.CORNER_BOTTOM_LEFT;
-            if (nRight && nDown) return Tileset.CORNER_BOTTOM_RIGHT;
+            if (nRight && nDown)    return Tileset.CORNER_TOP_LEFT;
+            if (nLeft && nDown)   return Tileset.CORNER_TOP_RIGHT;
+            if (nRight && nUp)  return Tileset.CORNER_BOTTOM_LEFT;
+            if (nLeft && nUp) return Tileset.CORNER_BOTTOM_RIGHT;
         }
 
         // inside
@@ -332,7 +332,7 @@ class GameSystem {
                 Object currentContents = grid[row][col].getObject();
 
                 if (currentContents instanceof TowerWall)
-                    System.out.print('T');
+                    System.out.print(((Tileset)(currentContents)).getType());
 
                 else if (currentContents instanceof Empty)
                     System.out.print(' ');

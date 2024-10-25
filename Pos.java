@@ -29,6 +29,11 @@ public class Pos {
         return newPos;
     }
 
+    public Pos Multiply(int xVal, int yVal) {
+        Pos pos = new Pos(this.x * xVal, this.y * yVal);
+        return pos;
+    }
+
     // COMPARE OPERATIONS
     public boolean isEquals(Pos pos) {
         return (this.x == pos.x && this.y == pos.y);
