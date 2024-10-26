@@ -28,7 +28,13 @@ public class Empty extends Tileset {
         });
         this.setTexture(Tileset.SIDE_LEFT, new String [] {
             "|     ",
+            "|     ",
             "|     "
+        });
+        this.setTexture(Tileset.SIDE_RIGHT, new String [] {
+            "     |",
+            "     |",
+            "     |"
         });
     }
 }

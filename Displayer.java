@@ -55,6 +55,9 @@ public class Displayer {
 
 
     private void impose(String[] texture, Pos startingPos) {
+        if (texture == null)
+            return;
+
         for (int y = 0; y < texture.length; y++) {
             for (int x = 0; x < texture[y].length(); x++) {
                 Pos pos = new Pos(x, y).Add(startingPos);
@@ -107,16 +110,6 @@ public class Displayer {
                 add2LastItem("_____");
         }
 
-        String [] tower = {
-            ".____.    .____.",
-            "|  __|----|__  |",
-            "|_|   ____   |_|",
-            " :   | Q7 |   : ",
-            " :   |____|   : ",
-            "| |__      __| |",
-            "|____|----|____|"
-        };
-
         for (int y = 0; y < gameRef.GetGrid().length; y++) {
             for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
                 Tile tile = gameRef.GetTile(new Pos (x,y));
@@ -130,30 +123,13 @@ public class Displayer {
                         int type = ((Tileset)(tile.getObject())).getType();
     
                         TowerWall towerWall = (TowerWall)tile.getObject();
-                        if (type == Tileset.CORNER_TOP_LEFT)
-                            this.impose(towerWall.getTexture(Tileset.CORNER_TOP_LEFT), startingCorner);
-                        else if (type == Tileset.CORNER_TOP_RIGHT)
-                            this.impose(towerWall.getTexture(Tileset.CORNER_TOP_RIGHT), startingCorner);
-                        else if (type == Tileset.CORNER_BOTTOM_LEFT)
-                            this.impose(towerWall.getTexture(Tileset.CORNER_BOTTOM_LEFT), startingCorner);
-                        else if (type == Tileset.CORNER_BOTTOM_RIGHT)
-                            this.impose(towerWall.getTexture(Tileset.CORNER_BOTTOM_RIGHT), startingCorner);
+                        this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
                     }
 
                     else if (tile.getObject() instanceof Empty)
                     {
                         Empty empty = (Empty)tile.getObject();
-
-                        if (empty.getType() == Tileset.CORNER_TOP_LEFT)
-                            this.impose(empty.getTexture(Tileset.CORNER_TOP_LEFT), startingCorner);
-                        else if (empty.getType() == Tileset.CORNER_TOP_RIGHT)
-                            this.impose(empty.getTexture(Tileset.CORNER_TOP_RIGHT), startingCorner);
-                        else if (empty.getType() == Tileset.CORNER_BOTTOM_LEFT)
-                            this.impose(empty.getTexture(Tileset.CORNER_BOTTOM_LEFT), startingCorner);
-                        else if (empty.getType() == Tileset.CORNER_BOTTOM_RIGHT)
-                            this.impose(empty.getTexture(Tileset.CORNER_BOTTOM_RIGHT), startingCorner);
-                        else if (empty.getType() == Tileset.SIDE_LEFT)
-                            this.impose(empty.getTexture(Tileset.SIDE_LEFT), startingCorner);
+                        this.impose(empty.getTexture(empty.getType()), startingCorner);
                     }
                 } 
             }

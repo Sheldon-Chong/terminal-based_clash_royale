@@ -8,10 +8,10 @@ class GameSystem {
     public final static char FLOOR = '.';
     public final static char EMPTY = ' ';
     
-    public final static char P1_TOWER_PRINCESS = 'Q';
+    public final static char P1_TOWER_PRINCESS = 'P';
     public final static char P1_TOWER_KING = 'K';
 
-    public final static char P2_TOWER_PRINCESS = 'q';
+    public final static char P2_TOWER_PRINCESS = 'p';
     public final static char P2_TOWER_KING = 'k';
 
     public final static int NO_REGION = 0;
@@ -180,16 +180,24 @@ class GameSystem {
     }
 
 
-    private int getTileSideType(char subject, 
+    private boolean isInCharArr(char []arr, char c) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == c)
+                return true;
+        }
+        return false;
+    }
+
+    private int getTileSideType(char []subject, 
                                 char neighbourLeft, 
                                 char neighbourRight,
                                 char neighbourUp,
                                 char neighbourDown) {
 
-        boolean nLeft   = (neighbourLeft == subject);
-        boolean nRight  = (neighbourRight == subject);
-        boolean nUp     = (neighbourUp == subject);
-        boolean nDown   = (neighbourDown == subject);
+        boolean nLeft   = isInCharArr(subject, neighbourLeft);
+        boolean nRight  = isInCharArr(subject, neighbourRight);
+        boolean nUp     = isInCharArr(subject, neighbourUp);
+        boolean nDown   = isInCharArr(subject, neighbourDown);
         
         int wallCount = 0;
 
@@ -328,9 +336,9 @@ class GameSystem {
                         tileContent = new TowerKing(this.player2);
 
                     break; case TOWER_WALL:
-                        tileContent = new TowerWall(getTileSideType(TOWER_WALL, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new TowerWall(getTileSideType(new char[]{TOWER_WALL, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case EMPTY:
-                        tileContent = new Empty(getTileSideType(EMPTY, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new Empty(getTileSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case FLOOR:
                         tileContent = new Floor();
                 }

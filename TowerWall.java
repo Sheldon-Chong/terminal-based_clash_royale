@@ -15,14 +15,34 @@ public class TowerWall extends Tileset {
             "   |_|"
         });
         this.setTexture(Tileset.CORNER_BOTTOM_LEFT, new String [] {
-            "._    ",
+            ".     ",
             "| |__ ",
             "|____|"
         });
         this.setTexture(Tileset.CORNER_BOTTOM_RIGHT, new String [] {
-            "    _.",
+            "     .",
             " __| | ",
             "|____|"
+        });
+        this.setTexture(Tileset.SIDE_LEFT, new String [] {
+            "  ",
+            " :",
+            " : "
+        });
+        this.setTexture(Tileset.SIDE_RIGHT, new String [] {
+            "     ",
+            "    :",
+            "    :"
+        });
+        this.setTexture(Tileset.SIDE_BOTTOM, new String [] {
+            "     ",
+            "     ",
+            " ----"
+        });
+        this.setTexture(Tileset.SIDE_TOP, new String [] {
+            "     ",
+            " ----",
+            "     "
         });
     }
 
