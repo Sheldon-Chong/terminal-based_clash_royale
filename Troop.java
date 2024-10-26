@@ -62,6 +62,12 @@ class Troop extends Obj {
     public int travel(Pos vect) {
         Pos dest = this.getPos().Add(vect);
         
+        Obj object = gameSysRef.GetGrid()[dest.y][dest.x].getObject();
+
+        if (object instanceof TowerWall || object instanceof Empty) {
+            return DEST_COLLISION_WORLD;
+        }
+
         Troop[] troops = gameSysRef.GetTroops();
         
         for (int troopIndex = 0; troopIndex < troops.length; troopIndex++) {
@@ -74,12 +80,7 @@ class Troop extends Obj {
         || dest.y < 0 || dest.y >= gameSysRef.GetGrid().length)
             return DEST_OUT_OF_BOUNDS;
 
-        Obj object = gameSysRef.GetGrid()[dest.y][dest.x].getObject();
-
-        if (object instanceof TowerWall || object instanceof Empty) {
-            System.out.println("collision with world");
-            return DEST_COLLISION_WORLD;
-        }
+        
 
         this.setPos(dest.copy());
         
@@ -191,23 +192,55 @@ class Troop extends Obj {
     }
 
 
+    public int isAdjTower() {
+        Tile []neighbours = gameSysRef.GetTile(this.getPos()).GetNeighbours();
+
+        for (int i = 0; i < 4; i++) {
+            if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall)
+            {
+                if (((TowerWall)(neighbours[i].getObject())).GetParent() != null)
+                return ((TowerWall)(neighbours[i].getObject())).GetParent().GetPlayer().GetPlayerNum();
+            }
+        }
+
+        return 0;
+    }
+
+
     public void move() {
         if (this.GetDest() == null || this.getPos() == null)
             return;
 
-        this.moveTowards( this.GetDest() );
+        boolean isAdjTower = false;
+
+        if (this.isAdjTower() != 0)
+            System.out.printf("Troop %c is adjacent to a tower %d\n", this.nameInitial, this.isAdjTower());
+        else
+            this.moveTowards( this.GetDest() );
         this.SetRegion(gameSysRef.getObjRegion(this));
         this.recalcDest();
     }
 
 
-    public void attack(Pos pos) {
-        System.out.println("collision with troop");
+    private boolean isEnemy(Obj object) {
+        if (object == null)
+            return false;
+
+        if (object instanceof Troop && ((Troop)object).GetPlayer().GetPlayerNum() != this.GetPlayer().GetPlayerNum())
+            return true;
+
+        return false;
+    }
+
+
+    private void attack(Pos pos) {
         Obj object = this.gameSysRef.GetTile(pos).getObject();
 
-        if (object != null && object instanceof Troop && ((Troop)object).GetPlayer().GetPlayerNum() != this.GetPlayer().GetPlayerNum()) {
+        if (object == null)
+            return;
+
+        if (object instanceof Troop && isEnemy(object)) {
             Troop enemy = (Troop)object;
-            System.out.println("attack");
 
             enemy.DecreaseHP(1);
 
@@ -236,7 +269,7 @@ class Troop extends Obj {
         if (this.getPos().x < dest.x) moveVector.x = 1;
         if (this.getPos().x > dest.x) moveVector.x = -1;
         status = travel(new Pos(moveVector.x, 0));
-        if (status == DEST_TROOP_BLOCKING)
+        if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
             this.attack(currentPos.Add(moveVector));
         
         moveVector = new Pos(0, 0);
@@ -245,7 +278,7 @@ class Troop extends Obj {
         if (this.getPos().y > dest.y) moveVector.y = -1;
         status = travel(new Pos (0, moveVector.y));
 
-        if (status == DEST_TROOP_BLOCKING)
+        if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
             this.attack(currentPos.Add(moveVector));
 
         return true;

@@ -16,6 +16,25 @@ public abstract class Tileset extends Obj {
 
     private int type;
 
+    private String [][]textures;
+
+    public Tileset() {
+        this.textures = new String [12][];
+    }
+
+    public void setTexture(int textureId, String [] texture) {
+        this.textures[textureId] = texture;
+    }
+
+    public void setAllTextures(String [] texture) {
+        for (int i = 0; i < this.textures.length; i++)
+            this.textures[i] = texture;
+    }
+
+    public String [] getTexture(int textureId) {
+        return this.textures[textureId];
+    }
+
     public void setType(int type) {
         this.type = type;
     }
@@ -23,4 +42,5 @@ public abstract class Tileset extends Obj {
     public int getType() {
         return this.type;
     }
+
 }

@@ -73,6 +73,19 @@ class GameSystem {
         }
     }
 
+      // private Tile[][] copyTiledGrid(Tile[][] grid) {
+    //     Tile [][]newGrid = new Tile[grid.length][grid[0].length];
+
+    //     for (int row = 0; row < grid.length; row++) {
+
+    //         for (int col = 0; col < grid[row].length; col++)
+    //             newGrid[row][col] = grid[row][col].CopySelf();
+    //     }
+    //     return newGrid;
+    // }
+
+
+
     private void spawnTroops(int amt) {
         this.troops = new Troop[amt];
 
@@ -99,26 +112,6 @@ class GameSystem {
         }
     }
 
-    private void initWorld() {
-        this.player1 = new Player(PLAYER1_REGION);
-        this.player2 = new Player(PLAYER2);
-
-        FileHandler fHandler = new FileHandler();
-        char [][] grid = fHandler.readFile(FILENAME);
-        
-        this.worldGrid = this.ConvertChar2DtoTile2D(grid);
-
-        this.spawnTroops(20);
-
-        for (int y = 0; y < this.worldGrid.length; y++) {
-            for (int x = 0; x < this.worldGrid[y].length; x++) {
-                setTileType(this.worldGrid[y][x]);
-            }
-        }
-
-        this.UpdateWorldBuffer();
-    }
-
 
     private Troop spawnTroop(Pos startPos, char initial, Player playerRef, int hp) {
         Troop troop;
@@ -131,21 +124,6 @@ class GameSystem {
     }
 
 
-    
-
-
-    private Tile[][] copyTiledGrid(Tile[][] grid) {
-        Tile [][]newGrid = new Tile[grid.length][grid[0].length];
-
-        for (int row = 0; row < grid.length; row++) {
-
-            for (int col = 0; col < grid[row].length; col++)
-                newGrid[row][col] = grid[row][col].CopySelf();
-        }
-        return newGrid;
-    }
-
-
     private void setTileType(Tile currentTile) {
         if (!(currentTile.getObject() instanceof Tileset))
             return;
@@ -153,6 +131,9 @@ class GameSystem {
         // NOTE: migrate this function to the tile class
         Tileset tileset = (Tileset) currentTile.getObject();
         
+        if(true)
+        return ;
+
         switch (tileset.getType()) {
             case Tileset.CORNER_TOP_LEFT:
                 currentTile.left_side  = '|';
@@ -285,8 +266,44 @@ class GameSystem {
     }
 
 
+    private void initWorld() {
+        this.player1 = new Player(PLAYER1_REGION);
+        this.player2 = new Player(PLAYER2);
+
+        FileHandler fHandler = new FileHandler();
+        char [][] grid = fHandler.readFile(FILENAME);
+        
+        this.worldGrid = this.ConvertChar2DtoTile2D(grid);
+
+        this.spawnTroops(20);
+
+        for (int y = 0; y < this.worldGrid.length; y++) {
+            for (int x = 0; x < this.worldGrid[y].length; x++) {
+                setTileType(this.worldGrid[y][x]);
+
+                if (this.GetTile(new Pos(x, y)).getObject() instanceof Tower) {
+                    Tile []neighbours = this.GetTile(new Pos(x, y)).GetNeighbours();
+                    Tower parent = (Tower) this.GetTile(new Pos(x, y)).getObject();
+
+                    for (int i = 0; i < 4; i++) {
+                        if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall) {
+                            TowerWall wall = (TowerWall) neighbours[i].getObject();
+                            wall.SetParent(parent);
+                        }
+                    }
+                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(1,1)).getObject())).SetParent(parent);
+                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(-1,1)).getObject())).SetParent(parent);
+                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(1,-1)).getObject())).SetParent(parent);
+                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(-1,-1)).getObject())).SetParent(parent);
+                }
+            }
+
+        }
+        this.UpdateWorldBuffer();
+    }
+
     public Tile[][] ConvertChar2DtoTile2D(char[][] grid) {
-        Tile [][]worldGrid = new Tile[grid.length][grid[0].length];
+        Tile [][]wGrid = new Tile[grid.length][grid[0].length];
     
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[row].length; col++) {
@@ -298,7 +315,7 @@ class GameSystem {
                 char neighbourRight = getCharTile(row, col + 1, grid);
                 char neighbourUp    = getCharTile(row - 1, col, grid);
                 char neighbourDown  = getCharTile(row + 1, col, grid);
-
+                
                 switch (currentTile) {
                     case P1_TOWER_PRINCESS:
                         tileContent = new TowerPrincess(this.player1);
@@ -318,11 +335,11 @@ class GameSystem {
                         tileContent = new Floor();
                 }
 
-                Tile tile = new Tile(tileContent, worldGrid, new Pos(col, row));
-                worldGrid[row][col] = tile;
+                Tile tile = new Tile(tileContent, wGrid, new Pos(col, row));
+                wGrid[row][col] = tile;
             }
         }
-        return worldGrid;
+        return wGrid;
     }
 
 

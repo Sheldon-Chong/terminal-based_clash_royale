@@ -10,6 +10,7 @@ public class Displayer {
         this.gameRef = gameSystem;
     }
 
+    
     private void append(String value) {
         char[][] newOutput = new char[this.output.length + 1][];
         for (int i = 0; i < output.length; i++) {
@@ -19,6 +20,7 @@ public class Displayer {
         this.output = newOutput;
     }
 
+    
     private void add2LastItem(String value) {
         if (this.output.length == 0) {
             this.output = new char[1][];
@@ -32,15 +34,18 @@ public class Displayer {
         this.output[this.output.length - 1] = newLine;
     }
     
+    
     private void arrayCopy(char[] src, int srcPos, char[] dest, int destPos, int length) {
         for (int i = 0; i < length; i++) {
             dest[destPos + i] = src[srcPos + i];
         }
     }
 
+
     private char getChar(Pos pos) {
         return output[pos.y][pos.x];
     }
+
 
     private void setChar(Pos pos, char newChar) {
         if (pos.y < 0 || pos.y >= output.length - 1 || pos.x < 0 || pos.x >=  output[0].length - 1)
@@ -53,19 +58,27 @@ public class Displayer {
         for (int y = 0; y < texture.length; y++) {
             for (int x = 0; x < texture[y].length(); x++) {
                 Pos pos = new Pos(x, y).Add(startingPos);
-                if (pos.y < 0 || pos.y >= output.length - 1 || pos.x < 0 || pos.x >=  output[0].length - 1)
-                    continue;
-                output[pos.y][pos.x] = texture[y].charAt(x);
+                if (pos.y < 0 || pos.y >= output.length - 1 || pos.x < 0 || pos.x >=  output[0].length - 1) {}
+                else if (texture[y].charAt(x) == ' ') {}
+                else
+                    this.setChar(pos, texture[y].charAt(x));
             }
         }
     }
 
+
+    private void resetScreen () {
+        this.output = new char[0][]; 
+    }
+
+
     public void printWorld(Tile[][] grid) {
+        this.resetScreen();
+
         append("     ");
         for (int x = 0; x < grid[0].length; x++)
             add2LastItem(String.format(" %2d  ", x));
 
-        // iterate for every row
         append("   _");
         for (int x = 0; x < grid[0].length; x++) {
             if (grid[0][x].getObject() instanceof Empty)
@@ -93,31 +106,6 @@ public class Displayer {
             else
                 add2LastItem("_____");
         }
-        
-        
-        
-        
-        Pos []corners2 = new Pos[4];
-        
-        Pos startingPos = new Pos(0, 0);
-        corners2 = getCornersFromTile(startingPos);
-
-        setChar(corners2[TOP_LEFT_CORNER], 'B');
-        setChar(corners2[TOP_RIGHT_CORNER], 'B');
-        setChar(corners2[BOTTOM_LEFT_CORNER], 'B');
-        setChar(corners2[BOTTOM_RIGHT_CORNER], 'B');
-
-        
-        String [] test = {
-            "| |__ ",
-            "|____|",
-        };
-
-        String [] leftSide = {
-            " :   ",
-            " :   ",
-        };
-
 
         String [] tower = {
             ".____.    .____.",
@@ -133,25 +121,43 @@ public class Displayer {
             for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
                 Tile tile = gameRef.GetTile(new Pos (x,y));
 
-                if (tile != null && tile.getObject() instanceof TowerWall)
-                {
-                    Pos []corners = new Pos[4];
+                Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
+                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
 
-                    corners = getCornersFromTile(new Pos (x, y));
+                if (tile != null) {
+                    if (tile.getObject() instanceof TowerWall)
+                    {
+                        int type = ((Tileset)(tile.getObject())).getType();
+    
+                        TowerWall towerWall = (TowerWall)tile.getObject();
+                        if (type == Tileset.CORNER_TOP_LEFT)
+                            this.impose(towerWall.getTexture(Tileset.CORNER_TOP_LEFT), startingCorner);
+                        else if (type == Tileset.CORNER_TOP_RIGHT)
+                            this.impose(towerWall.getTexture(Tileset.CORNER_TOP_RIGHT), startingCorner);
+                        else if (type == Tileset.CORNER_BOTTOM_LEFT)
+                            this.impose(towerWall.getTexture(Tileset.CORNER_BOTTOM_LEFT), startingCorner);
+                        else if (type == Tileset.CORNER_BOTTOM_RIGHT)
+                            this.impose(towerWall.getTexture(Tileset.CORNER_BOTTOM_RIGHT), startingCorner);
+                    }
 
-                    // setChar(corners[TOP_LEFT_CORNER], '.');
-                    // setChar(corners[TOP_RIGHT_CORNER], '.');
-                    // setChar(corners[BOTTOM_LEFT_CORNER], '|');
-                    // setChar(corners[BOTTOM_RIGHT_CORNER], '|');
+                    else if (tile.getObject() instanceof Empty)
+                    {
+                        Empty empty = (Empty)tile.getObject();
 
-                    int type = ((Tileset)(tile.getObject())).getType();
-                    if (type == Tileset.CORNER_TOP_LEFT)
-                        this.impose(tower, corners[TOP_LEFT_CORNER]);
-                }
+                        if (empty.getType() == Tileset.CORNER_TOP_LEFT)
+                            this.impose(empty.getTexture(Tileset.CORNER_TOP_LEFT), startingCorner);
+                        else if (empty.getType() == Tileset.CORNER_TOP_RIGHT)
+                            this.impose(empty.getTexture(Tileset.CORNER_TOP_RIGHT), startingCorner);
+                        else if (empty.getType() == Tileset.CORNER_BOTTOM_LEFT)
+                            this.impose(empty.getTexture(Tileset.CORNER_BOTTOM_LEFT), startingCorner);
+                        else if (empty.getType() == Tileset.CORNER_BOTTOM_RIGHT)
+                            this.impose(empty.getTexture(Tileset.CORNER_BOTTOM_RIGHT), startingCorner);
+                        else if (empty.getType() == Tileset.SIDE_LEFT)
+                            this.impose(empty.getTexture(Tileset.SIDE_LEFT), startingCorner);
+                    }
+                } 
             }
         }
-        
-        
 
         for (int i = 0; i < output.length; i++)
             System.out.println(new String(output[i]));
@@ -170,6 +176,7 @@ public class Displayer {
     final static int TOP_LEFT_CORNER = 2;
     final static int TOP_RIGHT_CORNER = 3;
 
+
     private Pos[] getCornersFromTile (Pos pos) {
         Pos [] corners = new Pos[4];
 
@@ -180,6 +187,7 @@ public class Displayer {
         
         return corners;
     }
+
 
     private Tile getTile(int x, int y) {
         if (x < 0 || x >= gameRef.GetGrid()[0].length || y < 0 || y >= gameRef.GetGrid().length)
@@ -195,6 +203,7 @@ public class Displayer {
 
         return tile;
     }
+
 
     private void printEdgeRow(Tile[][] grid, int y) {
         // Initialize the buffer
@@ -217,6 +226,7 @@ public class Displayer {
         // Append the buffer to the output array
         this.append(buffer);
     }
+
 
     private void printContentRow(Tile[][] grid, int y) {
         // Initialize the buffer
