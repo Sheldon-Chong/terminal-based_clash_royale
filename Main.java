@@ -21,11 +21,27 @@ public class Main {
 		// 	System.out.println(tile.getObject());
 		// else
 		// 	System.out.println("null");
+		
+		 // Written by Daiki
+		 // Display title screen
+		 display.ShowTitleScreen();
 
+		 // Written by Daiki
+		 // Wait for ENTER to start the game
+		 System.out.println("\nPress ENTER to begin game...");
+		 scanner.nextLine();  // Waits for ENTER input
+ 
+		 // Written by Daiki
+		 // Load and display the game board
+		 System.out.println("\nLoading the board...");
+		 display.printWorld(gameSys.GetGrid());  // Display the initial board
+
+		
 		while (true) {
 			gameSys.PrintWorldGridRaw(gameSys.GetGrid());
 			gameSys.UpdateWorldBuffer();
-			display.printWorld(gameSys.GetGrid());
+			display.printWorld(gameSys.GetGrid()); // Dispalys the board
+			display.ShowGameInfo(gameSys.GetPlayer1()); // Display Player 1 info right below the board
 			System.out.println("Enter 'q' to quit or any other key to simulate a move: ");
 			input = scanner.nextLine();
 
@@ -34,9 +50,16 @@ public class Main {
 
 		}
 		scanner.close();
+		
+
+		
+		
+		
 	}
 
 	
+
+
 }
 
 

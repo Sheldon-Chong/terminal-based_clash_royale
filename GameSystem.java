@@ -1,3 +1,6 @@
+import java.util.Random;
+import javax.smartcardio.Card;
+
 class GameSystem {
 
     private Tile [][]worldGrid;
@@ -17,6 +20,9 @@ class GameSystem {
     public final static int NO_REGION = 0;
     public final static int PLAYER1_REGION = 1;
     public final static int PLAYER2 = 2;
+
+    //Written by Daiki
+    private int currentRound = 1; // Trakcs the current round number
 
     private Troop[] troops = new Troop[5];
     
@@ -238,7 +244,52 @@ class GameSystem {
         return Tileset.INSIDE;
     }
 
+    // Written by Daiki
+    // Helper method to shuffle cards for a given player
+    private void shuffleCards(Player player) {
+        Random random = new Random();
+        Card[] cards = player.getCardsOnHand();
 
+        for (int i = cards.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            Card temp = cards[i];
+            cards[i] = cards[j];
+            cards[j] = temp;
+        }
+
+        player.setCardsOnHand(cards);
+    }
+
+
+    // Written by Daiki
+    // Method to shuffle cards in each player's hand
+    public void shufflePlayerCards() { 
+        System.out.println("Shuffling player cards...");
+        
+        shuffleCards(player1);
+        shuffleCards(player2);
+    }
+
+    // Written by Daiki
+    // Method to get the current round
+    public int getRound() { 
+        return this.currentRound;
+    }
+
+    // Written by Daiki
+    // Method to check if troop/spell is deployed within the board
+    public boolean isWithinBoard(Pos pos) {
+        return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
+    }
+    
+
+    // Written by Daiki
+    // Method to increment the round count
+    public void nextRound() { 
+        this.currentRound++;
+        System.out.println("Starting Round " + this.currentRound);
+        shufflePlayerCards();
+    }
     public int getObjRegion(Obj object) {
         Pos pos = object.getPos();
 

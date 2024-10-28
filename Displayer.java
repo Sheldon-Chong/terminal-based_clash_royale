@@ -1,4 +1,6 @@
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Displayer {
 
@@ -72,6 +74,39 @@ public class Displayer {
 
     private void resetScreen () {
         this.output = new char[0][]; 
+    }
+
+    // Written by Daiki
+     // Display ASCII Title Screen
+     public void ShowTitleScreen() {
+       try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+            System.out.println("Press ENTER to begin game");
+            System.in.read();  // Wait for user to press ENTER
+        } catch (IOException e) {
+            System.out.println("Error loading title screen.");
+            e.printStackTrace();
+        }
+    }
+
+    public void ShowGameInfo(Player player) {
+        System.out.println("Player " + player.GetPlayerNum());
+        System.out.println("o===============================================================o");
+        System.out.printf("|  Next:        | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
+        System.out.printf("|  |   %s   |   |         |         |         |                |\n", "Zap");
+        System.out.println("|  |           |  |         |         |         |                |");
+        System.out.printf("|  |           |  |___[%d]___|___[%d]___|___[%d]___|___[%d]___       |\n", 3, 5, 8, 4); // Sample elixir costs
+        System.out.println("|  |___[3]___|      _______________________________________     |");
+        System.out.print("|              Elixir: ");
+        for (int i = 1; i <= 10; i++) {
+            System.out.print("|" + i + " ");
+        }
+        System.out.println("|");
+        System.out.println("|                      |__|___|___|___|___|___|___|___|___|____| |");
+        System.out.println("o===============================================================o");
     }
 
 
