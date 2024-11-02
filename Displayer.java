@@ -1,15 +1,19 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Displayer {
 
     private GameSystem gameRef;
     private char[][] output;
+    private Scanner input;
 
     public Displayer(GameSystem gameSystem) {
         output = new char[0][]; // Initialize with an empty array
         this.gameRef = gameSystem;
+
+        this.input = new Scanner(System.in);
     }
 
     
@@ -76,7 +80,7 @@ public class Displayer {
         this.output = new char[0][]; 
     }
 
-    // Written by Daiki
+     // Written by Daiki
      // Display ASCII Title Screen
      public void ShowTitleScreen() {
        try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
@@ -92,10 +96,15 @@ public class Displayer {
         }
     }
 
+    // Written by Daiki
+    public String getPlayerName(int playerNumber) {
+        return input.nextLine();
+    }
+
+    // Written by Daiki/Sheldon
     public void ShowGameInfo(Player player) {
-        System.out.println("Player " + player.GetPlayerNum());
         System.out.println("o===============================================================o");
-        System.out.printf("|  Next:        | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
+        System.out.printf("|  Next:          | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
         System.out.printf("|  |   %s   |   |         |         |         |                |\n", "Zap");
         System.out.println("|  |           |  |         |         |         |                |");
         System.out.printf("|  |           |  |___[%d]___|___[%d]___|___[%d]___|___[%d]___       |\n", 3, 5, 8, 4); // Sample elixir costs

@@ -5,11 +5,11 @@ public abstract class Card {
         this.elixirCost = elixirCost;
     }
 
-    public int getElixirCost() {
+    public int GetElixirCost() {
         return elixirCost;
     }
 
-    public void setElixirCost(int elixirCost) {
+    public void SetElixirCost(int elixirCost) {
         this.elixirCost = elixirCost;
     }
 

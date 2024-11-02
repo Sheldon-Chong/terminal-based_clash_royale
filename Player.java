@@ -1,9 +1,8 @@
-import javax.smartcardio.Card;
-
 class Player {
     private Card[] cardsOnHand = new Card[4]; // Written by Sheldon
     private int region;
     private TowerKing king;
+    private int elixir;
     private TowerPrincess princess1;
     private TowerPrincess princess2;
 

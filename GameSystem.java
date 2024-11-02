@@ -1,5 +1,4 @@
 import java.util.Random;
-import javax.smartcardio.Card;
 
 class GameSystem {
 

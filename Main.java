@@ -25,6 +25,21 @@ public class Main {
 		 // Written by Daiki
 		 // Display title screen
 		 display.ShowTitleScreen();
+		 
+		 // Written by Daiki
+		 // Prompt for player names
+		 String dummy = scanner.nextLine(); // Dummy user input
+
+		 System.out.print("Enter Player 1 name: ");
+		 String player1Name = display.getPlayerName(1);
+		 System.out.print("Enter Player 2 name: ");
+		 String player2Name = display.getPlayerName(2);
+ 
+		 System.out.println("Welcome " + player1Name + " and " + player2Name + "!");
+
+		 // Initialize current player
+		 String currentPlayer = player1Name;
+		 int currentPlayerTurn = 1;
 
 		 // Written by Daiki
 		 // Wait for ENTER to start the game
@@ -38,9 +53,10 @@ public class Main {
 
 		
 		while (true) {
-			gameSys.PrintWorldGridRaw(gameSys.GetGrid());
+			//gameSys.PrintWorldGridRaw(gameSys.GetGrid());
 			gameSys.UpdateWorldBuffer();
 			display.printWorld(gameSys.GetGrid()); // Dispalys the board
+			System.out.println(currentPlayer + "");
 			display.ShowGameInfo(gameSys.GetPlayer1()); // Display Player 1 info right below the board
 			System.out.println("Enter 'q' to quit or any other key to simulate a move: ");
 			input = scanner.nextLine();

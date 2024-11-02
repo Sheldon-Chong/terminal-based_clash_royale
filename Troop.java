@@ -10,6 +10,7 @@ class Troop extends Obj {
     private int         region = -1;
     private Player      player;
     private int         currentAction;
+    private int         atk;
 
     public static final int DEST_TROOP_BLOCKING     = -1;
     public static final int DEST_OUT_OF_BOUNDS      = -2;
@@ -32,6 +33,9 @@ class Troop extends Obj {
     public void SetHP(int hp) { this.hp = hp; }
     public void IncreaseHP(int hp) { this.hp += hp; }
     public void DecreaseHP(int hp) { this.hp -= hp; }
+
+    public void SetAttack(int atk) { this.atk = atk; }
+    public int  GetAttack() { return this.atk; }
 
     public Player GetPlayer() { return this.player; }
     public void   SetPlayer(Player player) { this.player = player; }
@@ -213,8 +217,9 @@ class Troop extends Obj {
 
         boolean isAdjTower = false;
 
-        if (this.isAdjTower() != 0)
-            System.out.printf("Troop %c is adjacent to a tower %d\n", this.nameInitial, this.isAdjTower());
+        if (this.isAdjTower() != 0) {
+            //System.out.printf("Troop %c is adjacent to a tower %d\n", this.nameInitial, this.isAdjTower());
+        }
         else
             this.moveTowards( this.GetDest() );
         this.SetRegion(gameSysRef.getObjRegion(this));
