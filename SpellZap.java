@@ -1,8 +1,8 @@
 // Written by Daiki
 
-public class Zap extends Spell {
+public class SpellZap extends Spell {
 
-    public Zap(int elixirCost, int radius, int damage) {
+    public SpellZap(int elixirCost, int radius, int damage) {
         super(elixirCost, radius, damage, 1); // Fixed duration of 1 for instant effect
     }
 
@@ -18,7 +18,7 @@ public class Zap extends Spell {
                 for (int x = -getRadius(); x <= getRadius(); x++) {
                     Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
                     if (gameSysRef.isWithinBoard(impactPos)) {
-                        Obj obj = gameSysRef.GetTile(impactPos).getObject();
+                        Obj obj = gameSysRef.GetCell(impactPos).getObject();
                         if (obj instanceof Troop) {
                             ((Troop) obj).DecreaseHP(getDamage());
                         }

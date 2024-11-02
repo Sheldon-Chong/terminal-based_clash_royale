@@ -1,8 +1,8 @@
 // Written by Daiki
 
-public class HogRider extends Troop {
+public class TroopHogRider extends Troop {
 
-    public HogRider(Pos startingPos, Player player) {
+    public TroopHogRider(Pos startingPos, Player player) {
         super(startingPos, 'H', player); // 'H' for Hog Rider
         this.SetHP(70); // Example value
         this.SetAttack(18); // Example attack value

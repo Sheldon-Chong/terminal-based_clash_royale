@@ -1,9 +1,9 @@
 // Entire class by Sheldon
 
 /*
- * The tile object, which serves as a unit in the grid, which will then be visually represneted by the game system.
+ * The cell object, which serves as a unit in the grid, which will then be visually represneted by the game system.
  * It's main purpose is to hold an object, and to be able to access it neighbour tiles. 
- * (neighbour tiles are tiles that are adjacent to the current tile)
+ * (neighbour tiles are tiles that are adjacent to the current cell)
  */
 
 public class Cell {
@@ -44,14 +44,9 @@ public class Cell {
 
 
     public Cell CopySelf() {
-        Cell tile = new Cell(this.object, this.gridRef, this.pos);
-
-        tile.right_side = this.right_side;
-        tile.left_side = this.left_side;
-        tile.top_side = this.top_side;
-        tile.bottom_side = this.bottom_side;
+        Cell cell = new Cell(this.object, this.gridRef, this.pos);
         
-        return tile;
+        return cell;
     }
 
 

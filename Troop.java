@@ -95,7 +95,7 @@ class Troop extends Obj {
 
 
     private Cell []FindAccessPoint(Pos pos) {
-        Cell []neighbours = this.gameSysRef.GetTile(pos).GetNeighbours();
+        Cell []neighbours = this.gameSysRef.GetCell(pos).GetNeighbours();
 
         int accessPointsLen =0;
         
@@ -124,8 +124,8 @@ class Troop extends Obj {
         
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
             for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
-                if (this.gameSysRef.GetTile(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetTile(new Pos (x, y)).getObject() instanceof TowerWall)
+                if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
+                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TowerWall)
                     towersLen++;
             }
         }
@@ -135,20 +135,20 @@ class Troop extends Obj {
 
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
             for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
-                if (this.gameSysRef.GetTile(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetTile(new Pos (x, y)).getObject() instanceof TowerWall)
-                    towersWalls[index++] = this.gameSysRef.GetTile(new Pos (x, y));
+                if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
+                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TowerWall)
+                    towersWalls[index++] = this.gameSysRef.GetCell(new Pos (x, y));
             }
         }
 
         return towersWalls;
     }
 
-    private Pos findNearestAccessPoint(Cell []tile) {
+    private Pos findNearestAccessPoint(Cell []cells) {
         Pos closestPoint = null;
 
-        for (int i = 0; i < tile.length; i++) {
-            Cell []accessPoints = FindAccessPoint(tile[i].getPos());
+        for (int i = 0; i < cells.length; i++) {
+            Cell []accessPoints = FindAccessPoint(cells[i].getPos());
 
             for (int j = 0; j < accessPoints.length; j++) {
                 if (closestPoint == null)
@@ -167,13 +167,13 @@ class Troop extends Obj {
         Pos closestTowerWall = null;
 
         Cell [] p1EntryPoints = {
-            gameSysRef.GetTile(new Pos(16, 3)), 
-            gameSysRef.GetTile(new Pos(16, 14))
+            gameSysRef.GetCell(new Pos(16, 3)), 
+            gameSysRef.GetCell(new Pos(16, 14))
         };
 
         Cell [] p2EntryPoints = {
-            gameSysRef.GetTile(new Pos(11, 3)), 
-            gameSysRef.GetTile(new Pos(11, 14))
+            gameSysRef.GetCell(new Pos(11, 3)), 
+            gameSysRef.GetCell(new Pos(11, 14))
         };
 
         int playerNum = this.player.GetPlayerNum(); 
@@ -186,7 +186,7 @@ class Troop extends Obj {
             closestTowerWall = findNearestAccessPoint(p2EntryPoints);
 
         else {
-            Cell []neighbours = gameSysRef.GetTile(this.getPos()).GetNeighbours();
+            Cell []neighbours = gameSysRef.GetCell(this.getPos()).GetNeighbours();
             
             for (int i = 0; i < 4; i++) {
                 if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall)
@@ -200,7 +200,7 @@ class Troop extends Obj {
 
 
     public int isAdjTower() {
-        Cell []neighbours = gameSysRef.GetTile(this.getPos()).GetNeighbours();
+        Cell []neighbours = gameSysRef.GetCell(this.getPos()).GetNeighbours();
 
         for (int i = 0; i < 4; i++) {
             if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall)
@@ -242,7 +242,7 @@ class Troop extends Obj {
 
 
     private void attack(Pos pos) {
-        Obj object = this.gameSysRef.GetTile(pos).getObject();
+        Obj object = this.gameSysRef.GetCell(pos).getObject();
 
         if (object == null)
             return;

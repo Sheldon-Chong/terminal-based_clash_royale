@@ -1,8 +1,8 @@
 // Written by Daiki
 
-public class Giant extends Troop {
+public class TroopGiant extends Troop {
 
-    public Giant(Pos startingPos, Player player) {
+    public TroopGiant(Pos startingPos, Player player) {
         super(startingPos, 'T', player); // 'T' for Giant
         this.SetHP(120); // Example value, modify as needed
         this.SetAttack(25); // Example attack value

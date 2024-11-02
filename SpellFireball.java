@@ -1,8 +1,8 @@
 // Written by Daiki
 
-public class Fireball extends Spell {
+public class SpellFireball extends Spell {
 
-    public Fireball(int elixirCost, int radius, int damage) {
+    public SpellFireball(int elixirCost, int radius, int damage) {
         super(elixirCost, radius, damage, 1);  // Fireball has a fixed duration of 1
     }
 
@@ -19,7 +19,7 @@ public class Fireball extends Spell {
                 for (int x = -getRadius(); x <= getRadius(); x++) {
                     Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
                     if (gameSysRef.isWithinBoard(impactPos)) {
-                        Obj obj = gameSysRef.GetTile(impactPos).getObject();
+                        Obj obj = gameSysRef.GetCell(impactPos).getObject();
                         if (obj instanceof Troop) {
                             ((Troop) obj).DecreaseHP(getDamage());
                         }

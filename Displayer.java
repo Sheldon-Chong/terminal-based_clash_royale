@@ -156,23 +156,21 @@ public class Displayer {
 
         for (int y = 0; y < gameRef.GetGrid().length; y++) {
             for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
-                Cell tile = gameRef.GetTile(new Pos (x,y));
+                Cell cell = gameRef.GetCell(new Pos (x,y));
 
                 Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
                 Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
 
-                if (tile != null) {
-                    if (tile.getObject() instanceof TowerWall)
-                    {
-                        int type = ((Tileset)(tile.getObject())).getType();
-    
-                        TowerWall towerWall = (TowerWall)tile.getObject();
+                if (cell != null) {
+                    if (cell.getObject() instanceof TowerWall)
+                    {    
+                        TowerWall towerWall = (TowerWall)cell.getObject();
                         this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
                     }
 
-                    else if (tile.getObject() instanceof Empty)
+                    else if (cell.getObject() instanceof Empty)
                     {
-                        Empty empty = (Empty)tile.getObject();
+                        Empty empty = (Empty)cell.getObject();
                         this.impose(empty.getTexture(empty.getType()), startingCorner);
                     }
                 } 
@@ -200,28 +198,28 @@ public class Displayer {
     private Pos[] getCornersFromTile (Pos pos) {
         Pos [] corners = new Pos[4];
 
-        corners[TOP_LEFT_CORNER] = convertPos2Corner(pos.Add(0,0));
-        corners[TOP_RIGHT_CORNER] = convertPos2Corner(pos.Add(1, 0));
-        corners[BOTTOM_LEFT_CORNER] = convertPos2Corner(pos.Add(0,1));
+        corners[TOP_LEFT_CORNER]     = convertPos2Corner(pos.Add(0,0));
+        corners[TOP_RIGHT_CORNER]    = convertPos2Corner(pos.Add(1, 0));
+        corners[BOTTOM_LEFT_CORNER]  = convertPos2Corner(pos.Add(0,1));
         corners[BOTTOM_RIGHT_CORNER] = convertPos2Corner(pos.Add(1,1));
         
         return corners;
     }
 
 
-    private Cell getTile(int x, int y) {
+    private Cell GetCell(int x, int y) {
         if (x < 0 || x >= gameRef.GetGrid()[0].length || y < 0 || y >= gameRef.GetGrid().length)
             return new Cell();
 
         if (y < 0 || y >= gameRef.GetGrid().length)
             return new Cell();
 
-        Cell tile = gameRef.GetGrid()[y][x];
+        Cell cell = gameRef.GetGrid()[y][x];
 
-        if (tile == null)
+        if (cell == null)
             return new Cell();
 
-        return tile;
+        return cell;
     }
 
 
@@ -232,12 +230,12 @@ public class Displayer {
         for (int x = 0; x < grid[y].length; x++) {
             char corner = '.';
 
-            if (getTile(x, y - 1).left_side == '|' || getTile(x - 1, y - 1).right_side == '|')
+            if (GetCell(x, y - 1).left_side == '|' || GetCell(x - 1, y - 1).right_side == '|')
                 corner = '|';
 
             String edge = "    ";
 
-            if (getTile(x, y).top_side == '|' || getTile(x, y - 1).bottom_side == '|')
+            if (GetCell(x, y).top_side == '|' || GetCell(x, y - 1).bottom_side == '|')
                 edge = "____";
 
             buffer += String.format("%c%s", corner, edge);
@@ -282,7 +280,7 @@ public class Displayer {
                     suffix = '*';
             }
 
-            if (this.getTile(x, y).left_side == '|' || (x > 0 && this.getTile(x - 1, y).right_side == '|'))
+            if (this.GetCell(x, y).left_side == '|' || (x > 0 && this.GetCell(x - 1, y).right_side == '|'))
                 edge = '|';
             else
                 edge = ' ';

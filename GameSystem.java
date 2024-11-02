@@ -39,15 +39,15 @@ class GameSystem {
 
     public Cell [][]GetGrid() { return this.worldGrid; }
 
-    public Cell GetTile(int row, int col) { return this.worldGrid[row][col]; }
-    public Cell GetTile(Pos pos) {
+    public Cell GetCell(int row, int col) { return this.worldGrid[row][col]; }
+    public Cell GetCell(Pos pos) {
         if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
             return null;
         
         return this.worldGrid[pos.y][pos.x];
     }
 
-    public void SetTile(int row, int col, Cell tile) { this.worldGrid[row][col] = tile; }
+    public void SetCell(int row, int col, Cell cell) { this.worldGrid[row][col] = cell; }
 
 
     // CONSTRUCTOR
@@ -128,7 +128,7 @@ class GameSystem {
     }
 
     // Written by Sheldon
-    private int getTileSideType(char []subject, 
+    private int GetCellSideType(char []subject, 
                                 char neighbourLeft, 
                                 char neighbourRight,
                                 char neighbourUp,
@@ -244,8 +244,8 @@ class GameSystem {
             Troop currentTroop = troops[i];
             Pos tempPos = currentTroop.getPos().copy();
             currentTroop.move();
-            GetTile(tempPos).SetObject(new TileFloor());
-            GetTile(currentTroop.getPos()).SetObject(currentTroop);
+            GetCell(tempPos).SetObject(new TileFloor());
+            GetCell(currentTroop.getPos()).SetObject(currentTroop);
         }
     }
     
@@ -275,9 +275,9 @@ class GameSystem {
 
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
-                if (this.GetTile(new Pos(x, y)).getObject() instanceof Tower) {
-                    Cell []neighbours = this.GetTile(new Pos(x, y)).GetNeighbours();
-                    Tower parent = (Tower) this.GetTile(new Pos(x, y)).getObject();
+                if (this.GetCell(new Pos(x, y)).getObject() instanceof Tower) {
+                    Cell []neighbours = this.GetCell(new Pos(x, y)).GetNeighbours();
+                    Tower parent = (Tower) this.GetCell(new Pos(x, y)).getObject();
 
                     for (int i = 0; i < 4; i++) {
                         if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall) {
@@ -285,10 +285,10 @@ class GameSystem {
                             wall.SetParent(parent);
                         }
                     }
-                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(1,1)).getObject())).SetParent(parent);
-                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(-1,1)).getObject())).SetParent(parent);
-                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(1,-1)).getObject())).SetParent(parent);
-                    ((TowerWall)(this.GetTile(new Pos(x, y).Add(-1,-1)).getObject())).SetParent(parent);
+                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(1,1)).getObject())).SetParent(parent);
+                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(-1,1)).getObject())).SetParent(parent);
+                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(1,-1)).getObject())).SetParent(parent);
+                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(-1,-1)).getObject())).SetParent(parent);
                 }
             }
 
@@ -323,15 +323,14 @@ class GameSystem {
                         tileContent = new TowerKing(this.player2);
 
                     break; case TOWER_WALL:
-                        tileContent = new TowerWall(getTileSideType(new char[]{TOWER_WALL, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new TowerWall(GetCellSideType(new char[]{TOWER_WALL, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case EMPTY:
-                        tileContent = new Empty(getTileSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new Empty(GetCellSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case FLOOR:
                         tileContent = new TileFloor();
                 }
 
-                Cell tile = new Cell(tileContent, wGrid, new Pos(col, row));
-                wGrid[row][col] = tile;
+                wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
             }
         }
         return wGrid;

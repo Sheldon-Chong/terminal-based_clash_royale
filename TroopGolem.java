@@ -1,8 +1,8 @@
 // Written by Daiki
 
-public class Golem extends Troop {
+public class TroopGolem extends Troop {
 
-    public Golem(Pos startingPos, Player player) {
+    public TroopGolem(Pos startingPos, Player player) {
         super(startingPos, 'G', player);
         this.SetHP(100); // Example value, modify as needed
         this.SetAttack(20); // Example attack value

@@ -1,8 +1,8 @@
 // Written by Daiki
 
-public class Lumberjack extends Troop {
+public class TroopLumberjack extends Troop {
 
-    public Lumberjack(Pos startingPos, Player player) {
+    public TroopLumberjack(Pos startingPos, Player player) {
         super(startingPos, 'L', player); // 'L' for Lumberjack
         this.SetHP(60); // Example value
         this.SetAttack(15); // Example attack value

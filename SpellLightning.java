@@ -3,9 +3,9 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Lightning extends Spell {
+public class SpellLightning extends Spell {
 
-    public Lightning(int elixirCost, int radius, int damage) {
+    public SpellLightning(int elixirCost, int radius, int damage) {
         super(elixirCost, radius, damage, 1); // Fixed duration of 1 for instant effect
     }
 
@@ -23,7 +23,7 @@ public class Lightning extends Spell {
                 for (int x = -getRadius(); x <= getRadius(); x++) {
                     Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
                     if (gameSysRef.isWithinBoard(impactPos)) {
-                        Obj obj = gameSysRef.GetTile(impactPos).getObject();
+                        Obj obj = gameSysRef.GetCell(impactPos).getObject();
                         if (obj instanceof Troop) {
                             targets.add((Troop) obj);
                         }
