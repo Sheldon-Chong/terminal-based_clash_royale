@@ -1,5 +1,9 @@
+// entire class by Sheldon
 
-
+/*
+ * The troop class, Every troop instance will inherit from the Troop class
+ * Troops are the main units in the game. They utilize specific algorithms to move towards the enemy's tower
+ */
 
 class Troop extends Obj {
 
@@ -84,31 +88,29 @@ class Troop extends Obj {
         || dest.y < 0 || dest.y >= gameSysRef.GetGrid().length)
             return DEST_OUT_OF_BOUNDS;
 
-        
-
         this.setPos(dest.copy());
         
         return 1;
     }
 
 
-    private Tile []FindAccessPoint(Pos pos) {
-        Tile []neighbours = this.gameSysRef.GetTile(pos).GetNeighbours();
+    private Cell []FindAccessPoint(Pos pos) {
+        Cell []neighbours = this.gameSysRef.GetTile(pos).GetNeighbours();
 
         int accessPointsLen =0;
         
         for (int i = 0; i < 4; i++) {
             if ( neighbours[i] != null 
-                && neighbours[i].getObject() instanceof Floor)
+                && neighbours[i].getObject() instanceof TileFloor)
                     accessPointsLen ++;
         }
         
-        Tile[] accessPoints = new Tile[accessPointsLen];
+        Cell[] accessPoints = new Cell[accessPointsLen];
         
         accessPointsLen = 0;
         for (int i = 0; i < 4; i++) {
             if ( neighbours[i] != null 
-                && neighbours[i].getObject() instanceof Floor)
+                && neighbours[i].getObject() instanceof TileFloor)
                     accessPoints[accessPointsLen++] = neighbours[i];
         }
         
@@ -116,7 +118,8 @@ class Troop extends Obj {
         return accessPoints;
     }
 
-    private Tile []findAllTowerTiles() {
+
+    private Cell []findAllTowerTiles() {
         int towersLen = 0;
         
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
@@ -127,7 +130,7 @@ class Troop extends Obj {
             }
         }
 
-        Tile[] towersWalls = new Tile[towersLen];
+        Cell[] towersWalls = new Cell[towersLen];
         int index = 0;
 
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
@@ -141,11 +144,11 @@ class Troop extends Obj {
         return towersWalls;
     }
 
-    private Pos findNearestAccessPoint(Tile []tile) {
+    private Pos findNearestAccessPoint(Cell []tile) {
         Pos closestPoint = null;
 
         for (int i = 0; i < tile.length; i++) {
-            Tile []accessPoints = FindAccessPoint(tile[i].getPos());
+            Cell []accessPoints = FindAccessPoint(tile[i].getPos());
 
             for (int j = 0; j < accessPoints.length; j++) {
                 if (closestPoint == null)
@@ -163,12 +166,12 @@ class Troop extends Obj {
     public void  recalcDest() {
         Pos closestTowerWall = null;
 
-        Tile [] p1EntryPoints = {
+        Cell [] p1EntryPoints = {
             gameSysRef.GetTile(new Pos(16, 3)), 
             gameSysRef.GetTile(new Pos(16, 14))
         };
 
-        Tile [] p2EntryPoints = {
+        Cell [] p2EntryPoints = {
             gameSysRef.GetTile(new Pos(11, 3)), 
             gameSysRef.GetTile(new Pos(11, 14))
         };
@@ -183,7 +186,7 @@ class Troop extends Obj {
             closestTowerWall = findNearestAccessPoint(p2EntryPoints);
 
         else {
-            Tile []neighbours = gameSysRef.GetTile(this.getPos()).GetNeighbours();
+            Cell []neighbours = gameSysRef.GetTile(this.getPos()).GetNeighbours();
             
             for (int i = 0; i < 4; i++) {
                 if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall)
@@ -197,7 +200,7 @@ class Troop extends Obj {
 
 
     public int isAdjTower() {
-        Tile []neighbours = gameSysRef.GetTile(this.getPos()).GetNeighbours();
+        Cell []neighbours = gameSysRef.GetTile(this.getPos()).GetNeighbours();
 
         for (int i = 0; i < 4; i++) {
             if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall)

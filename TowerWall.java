@@ -1,3 +1,12 @@
+// entire class by Sheldon
+
+/*
+ * The TowerWall class are walls that make up the towers in the game
+ * A series of adjacently connected TowerWalls make up a *complete tower*
+ * This complete tower is referrenced by *parentTower* 
+ * (aka one Towerclass will have several adjacent TowerWalls that belong under it)
+ */
+
 public class TowerWall extends Tileset {
     private int type;
     private Tower parentTower;

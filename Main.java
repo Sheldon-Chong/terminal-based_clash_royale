@@ -1,5 +1,6 @@
 import java.util.Scanner;
 
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -15,12 +16,6 @@ public class Main {
 		Scanner scanner = new Scanner(System.in);
 		String input;
 		Displayer display = new Displayer(gameSys);
-
-		// Tile tile = gameSys.GetTile(new Pos(1, 0)).GetNeighbours()[Tile.NEIGHBOUR_LEFT];
-		// if (tile != null)
-		// 	System.out.println(tile.getObject());
-		// else
-		// 	System.out.println("null");
 		
 		 // Written by Daiki
 		 // Display title screen
@@ -66,16 +61,7 @@ public class Main {
 
 		}
 		scanner.close();
-		
-
-		
-		
-		
 	}
-
-	
-
-
 }
 
 

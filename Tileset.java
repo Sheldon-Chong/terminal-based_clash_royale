@@ -1,3 +1,13 @@
+// entire class by Sheldon
+
+/*
+ * The tileset class, which is used to store the textures for the tiles
+ * Various static objects in the world typically inherit from this class
+ * The textures are stored in a 2D array, with each index representing a different part of the tile
+ * Tilesets have 12 different types. The type is determined based on what tiles are adjacent to it
+ * These 12 types are represented by constants in the class
+ */
+
 public abstract class Tileset extends Obj {
     public static final int INSIDE = 0;
     public static final int CORNER_TOP_LEFT = 1;

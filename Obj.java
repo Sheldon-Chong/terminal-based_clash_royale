@@ -1,3 +1,5 @@
+
+// entire class by Sheldon
 public abstract class Obj {
     
     private Pos pos;

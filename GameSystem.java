@@ -2,7 +2,7 @@ import java.util.Random;
 
 class GameSystem {
 
-    private Tile [][]worldGrid;
+    private Cell [][]worldGrid;
 
     public static final String FILENAME = "game_grid.txt";
 
@@ -37,17 +37,17 @@ class GameSystem {
     // GETTERS AND SETTERS
     public Troop []GetTroops() { return this.troops; }
 
-    public Tile [][]GetGrid() { return this.worldGrid; }
+    public Cell [][]GetGrid() { return this.worldGrid; }
 
-    public Tile GetTile(int row, int col) { return this.worldGrid[row][col]; }
-    public Tile GetTile(Pos pos) {
+    public Cell GetTile(int row, int col) { return this.worldGrid[row][col]; }
+    public Cell GetTile(Pos pos) {
         if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
             return null;
         
         return this.worldGrid[pos.y][pos.x];
     }
 
-    public void SetTile(int row, int col, Tile tile) { this.worldGrid[row][col] = tile; }
+    public void SetTile(int row, int col, Cell tile) { this.worldGrid[row][col] = tile; }
 
 
     // CONSTRUCTOR
@@ -55,6 +55,7 @@ class GameSystem {
         this.initWorld();
     }
 
+    // Written by Sheldon
     public void destroyTroop(Troop troop) {
         for (int i = 0; i < troops.length; i++) {
             if (troops[i] == troop) {
@@ -78,19 +79,7 @@ class GameSystem {
         }
     }
 
-      // private Tile[][] copyTiledGrid(Tile[][] grid) {
-    //     Tile [][]newGrid = new Tile[grid.length][grid[0].length];
-
-    //     for (int row = 0; row < grid.length; row++) {
-
-    //         for (int col = 0; col < grid[row].length; col++)
-    //             newGrid[row][col] = grid[row][col].CopySelf();
-    //     }
-    //     return newGrid;
-    // }
-
-
-
+    // Written by Sheldon
     private void spawnTroops(int amt) {
         this.troops = new Troop[amt];
 
@@ -109,7 +98,7 @@ class GameSystem {
                 else
                     startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
 
-                if (worldGrid[startPos.y][startPos.x].getObject() instanceof Floor)
+                if (worldGrid[startPos.y][startPos.x].getObject() instanceof TileFloor)
                     break;
             }
 
@@ -117,7 +106,7 @@ class GameSystem {
         }
     }
 
-
+    // Written by Sheldon
     private Troop spawnTroop(Pos startPos, char initial, Player playerRef, int hp) {
         Troop troop;
         
@@ -129,62 +118,7 @@ class GameSystem {
     }
 
 
-    private void setTileType(Tile currentTile) {
-        if (!(currentTile.getObject() instanceof Tileset))
-            return;
-
-        // NOTE: migrate this function to the tile class
-        Tileset tileset = (Tileset) currentTile.getObject();
-        
-        if(true)
-        return ;
-
-        switch (tileset.getType()) {
-            case Tileset.CORNER_TOP_LEFT:
-                currentTile.left_side  = '|';
-                currentTile.top_side = '|';
-                
-            break; case Tileset.CORNER_TOP_RIGHT:
-                currentTile.right_side   = '|';
-                currentTile.top_side = '|';
-
-            break; case Tileset.CORNER_BOTTOM_LEFT:
-                currentTile.bottom_side  = '|';
-                currentTile.left_side    = '|';
-
-            break; case Tileset.CORNER_BOTTOM_RIGHT:
-                currentTile.right_side   = '|';
-                currentTile.bottom_side    = '|';
-
-            break; case Tileset.PIPE_H:
-                currentTile.top_side    = '|';
-                currentTile.bottom_side = '|';
-
-            break; case Tileset.PIPE_V:
-                currentTile.right_side  = '|';
-                currentTile.left_side   = '|';
-
-            break; case Tileset.SIDE_LEFT:
-                currentTile.left_side   = '|';
-
-            break; case Tileset.SIDE_RIGHT:
-                currentTile.right_side  = '|';
-
-            break; case Tileset.SIDE_TOP:
-                currentTile.top_side    = '|';
-
-            break; case Tileset.SIDE_BOTTOM:
-                currentTile.bottom_side = '|';
-
-            break; case Tileset.INDEPENDANT:
-                currentTile.bottom_side = '|';
-                currentTile.top_side    = '|';
-                currentTile.left_side   = '|';
-                currentTile.right_side  = '|';
-        }
-    }
-
-
+    // Written by Sheldon
     private boolean isInCharArr(char []arr, char c) {
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] == c)
@@ -193,6 +127,7 @@ class GameSystem {
         return false;
     }
 
+    // Written by Sheldon
     private int getTileSideType(char []subject, 
                                 char neighbourLeft, 
                                 char neighbourRight,
@@ -289,6 +224,8 @@ class GameSystem {
         System.out.println("Starting Round " + this.currentRound);
         shufflePlayerCards();
     }
+
+    // Written by Daiki
     public int getObjRegion(Obj object) {
         Pos pos = object.getPos();
 
@@ -298,7 +235,7 @@ class GameSystem {
             return PLAYER2;
     }
 
-
+    // Written by Daiki
     public void UpdateWorldBuffer() { 
         for (int i = 0; i < troops.length; i++) {
             if (troops[i] == null)
@@ -307,12 +244,12 @@ class GameSystem {
             Troop currentTroop = troops[i];
             Pos tempPos = currentTroop.getPos().copy();
             currentTroop.move();
-            GetTile(tempPos).SetObject(new Floor());
+            GetTile(tempPos).SetObject(new TileFloor());
             GetTile(currentTroop.getPos()).SetObject(currentTroop);
         }
     }
     
-
+    // Written by Sheldon
     private char getCharTile(int row, int col, char [][]grid) {
         if (row < 0 || row >= grid.length)
             return 0;
@@ -324,6 +261,7 @@ class GameSystem {
     }
 
 
+    // Written by Sheldon
     private void initWorld() {
         this.player1 = new Player(PLAYER1_REGION);
         this.player2 = new Player(PLAYER2);
@@ -337,10 +275,8 @@ class GameSystem {
 
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
-                setTileType(this.worldGrid[y][x]);
-
                 if (this.GetTile(new Pos(x, y)).getObject() instanceof Tower) {
-                    Tile []neighbours = this.GetTile(new Pos(x, y)).GetNeighbours();
+                    Cell []neighbours = this.GetTile(new Pos(x, y)).GetNeighbours();
                     Tower parent = (Tower) this.GetTile(new Pos(x, y)).getObject();
 
                     for (int i = 0; i < 4; i++) {
@@ -360,14 +296,15 @@ class GameSystem {
         this.UpdateWorldBuffer();
     }
 
-    public Tile[][] ConvertChar2DtoTile2D(char[][] grid) {
-        Tile [][]wGrid = new Tile[grid.length][grid[0].length];
+    // Written by Sheldon
+    public Cell[][] ConvertChar2DtoTile2D(char[][] grid) {
+        Cell [][]wGrid = new Cell[grid.length][grid[0].length];
     
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[row].length; col++) {
                 char currentTile = getCharTile(row, col, grid);
 
-                Obj tileContent = new Floor();
+                Obj tileContent = new TileFloor();
 
                 char neighbourLeft  = getCharTile(row, col - 1, grid);
                 char neighbourRight = getCharTile(row, col + 1, grid);
@@ -390,18 +327,18 @@ class GameSystem {
                     break; case EMPTY:
                         tileContent = new Empty(getTileSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case FLOOR:
-                        tileContent = new Floor();
+                        tileContent = new TileFloor();
                 }
 
-                Tile tile = new Tile(tileContent, wGrid, new Pos(col, row));
+                Cell tile = new Cell(tileContent, wGrid, new Pos(col, row));
                 wGrid[row][col] = tile;
             }
         }
         return wGrid;
     }
 
-
-    public void PrintWorldGridRaw(Tile[][] grid) {
+    // Written by Sheldon
+    public void PrintWorldGridRaw(Cell[][] grid) {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[row].length; col++) {
                 Object currentContents = grid[row][col].getObject();
@@ -412,7 +349,7 @@ class GameSystem {
                 else if (currentContents instanceof Empty)
                     System.out.print(' ');
 
-                else if (currentContents instanceof Floor)
+                else if (currentContents instanceof TileFloor)
                     System.out.print('.');
 
                 else

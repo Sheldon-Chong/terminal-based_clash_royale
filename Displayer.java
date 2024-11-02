@@ -119,7 +119,7 @@ public class Displayer {
     }
 
 
-    public void printWorld(Tile[][] grid) {
+    public void printWorld(Cell[][] grid) {
         this.resetScreen();
 
         append("     ");
@@ -156,7 +156,7 @@ public class Displayer {
 
         for (int y = 0; y < gameRef.GetGrid().length; y++) {
             for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
-                Tile tile = gameRef.GetTile(new Pos (x,y));
+                Cell tile = gameRef.GetTile(new Pos (x,y));
 
                 Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
                 Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
@@ -209,23 +209,23 @@ public class Displayer {
     }
 
 
-    private Tile getTile(int x, int y) {
+    private Cell getTile(int x, int y) {
         if (x < 0 || x >= gameRef.GetGrid()[0].length || y < 0 || y >= gameRef.GetGrid().length)
-            return new Tile();
+            return new Cell();
 
         if (y < 0 || y >= gameRef.GetGrid().length)
-            return new Tile();
+            return new Cell();
 
-        Tile tile = gameRef.GetGrid()[y][x];
+        Cell tile = gameRef.GetGrid()[y][x];
 
         if (tile == null)
-            return new Tile();
+            return new Cell();
 
         return tile;
     }
 
 
-    private void printEdgeRow(Tile[][] grid, int y) {
+    private void printEdgeRow(Cell[][] grid, int y) {
         // Initialize the buffer
         String buffer = String.format("  | ", (char) (y + 'A'));
 
@@ -248,7 +248,7 @@ public class Displayer {
     }
 
 
-    private void printContentRow(Tile[][] grid, int y) {
+    private void printContentRow(Cell[][] grid, int y) {
         // Initialize the buffer
         String buffer = String.format("%c | ", (char) (y + 'A'));
 
