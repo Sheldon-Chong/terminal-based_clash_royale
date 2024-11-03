@@ -280,15 +280,15 @@ class GameSystem {
                     Tower parent = (Tower) this.GetCell(new Pos(x, y)).getObject();
 
                     for (int i = 0; i < 4; i++) {
-                        if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall) {
-                            TowerWall wall = (TowerWall) neighbours[i].getObject();
+                        if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower) {
+                            TileTower wall = (TileTower) neighbours[i].getObject();
                             wall.SetParent(parent);
                         }
                     }
-                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(1,1)).getObject())).SetParent(parent);
-                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(-1,1)).getObject())).SetParent(parent);
-                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(1,-1)).getObject())).SetParent(parent);
-                    ((TowerWall)(this.GetCell(new Pos(x, y).Add(-1,-1)).getObject())).SetParent(parent);
+                    ((TileTower)(this.GetCell(new Pos(x, y).Add(1,1)).getObject())).SetParent(parent);
+                    ((TileTower)(this.GetCell(new Pos(x, y).Add(-1,1)).getObject())).SetParent(parent);
+                    ((TileTower)(this.GetCell(new Pos(x, y).Add(1,-1)).getObject())).SetParent(parent);
+                    ((TileTower)(this.GetCell(new Pos(x, y).Add(-1,-1)).getObject())).SetParent(parent);
                 }
             }
 
@@ -323,7 +323,7 @@ class GameSystem {
                         tileContent = new TowerKing(this.player2);
 
                     break; case TOWER_WALL:
-                        tileContent = new TowerWall(GetCellSideType(new char[]{TOWER_WALL, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new TileTower(GetCellSideType(new char[]{TOWER_WALL, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case EMPTY:
                         tileContent = new Empty(GetCellSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case FLOOR:
@@ -342,7 +342,7 @@ class GameSystem {
             for (int col = 0; col < grid[row].length; col++) {
                 Object currentContents = grid[row][col].getObject();
 
-                if (currentContents instanceof TowerWall)
+                if (currentContents instanceof TileTower)
                     System.out.print(((Tileset)(currentContents)).getType());
 
                 else if (currentContents instanceof Empty)

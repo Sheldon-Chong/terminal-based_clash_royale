@@ -1,3 +1,12 @@
+
+// Entire class written by Sheldon
+
+/*
+ * The Pos class is used to store the position of objects in the world
+ * It exists as a separate class to make it easier to manage positions  
+ * It contains methods for adding, subtracting, and comparing positions
+ */
+
 public class Pos {
     public int x;
     public int y;
@@ -9,14 +18,8 @@ public class Pos {
     }
 
     // GETTER AND SETTER
-    public void setPos(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public Pos getPos() {
-        return new Pos(this.x, this.y);
-    }
+    public void setPos(int x, int y) { this.x = x; this.y = y; }
+    public Pos  getPos() { return new Pos(this.x, this.y); }
 
     // ADD OPERATIONS
     public Pos Add(int xVal, int yVal) {
@@ -49,14 +52,3 @@ public class Pos {
     }
 
 }
-
-
-    // public static final int ADD = 0;
-    // public static final int SUBTRACT = 1;
-    // public static final int MULTIPLY = 2;
-    // public static final int DIVIDE = 3;
-    // public static final int MODULO = 4;
-
-    // public static final int isEquals = 0;
-    // public static final int GREATER = 1;
-    // public static final int LESS = 2;

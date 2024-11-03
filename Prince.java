@@ -7,7 +7,6 @@ public class Prince extends Troop {
         this.SetHP(80); // Example value
         this.SetAttack(20); // Example attack value
     }
-
     
     public void MoveTo(Pos dest) {
         // Code for moving towards enemies

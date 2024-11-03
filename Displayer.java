@@ -162,9 +162,9 @@ public class Displayer {
                 Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
 
                 if (cell != null) {
-                    if (cell.getObject() instanceof TowerWall)
+                    if (cell.getObject() instanceof TileTower)
                     {    
-                        TowerWall towerWall = (TowerWall)cell.getObject();
+                        TileTower towerWall = (TileTower)cell.getObject();
                         this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
                     }
 

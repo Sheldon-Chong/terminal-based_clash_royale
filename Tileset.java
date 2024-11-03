@@ -1,7 +1,7 @@
 // entire class by Sheldon
 
 /*
- * The tileset class, which is used to store the textures for the tiles
+ * The tileset class is used to store the textures for the tiles
  * Various static objects in the world typically inherit from this class
  * The textures are stored in a 2D array, with each index representing a different part of the tile
  * Tilesets have 12 different types. The type is determined based on what tiles are adjacent to it
@@ -28,29 +28,22 @@ public abstract class Tileset extends Obj {
 
     private String [][]textures;
 
+    // CONSTRUCTORS
     public Tileset() {
         this.textures = new String [12][];
     }
 
-    public void setTexture(int textureId, String [] texture) {
-        this.textures[textureId] = texture;
-    }
-
+    // GETTERS & SETTERS
+    
+    public void      setTexture(int textureId, String [] texture) { this.textures[textureId] = texture; }
+    public String [] getTexture(int textureId) { return this.textures[textureId]; }
+    
     public void setAllTextures(String [] texture) {
         for (int i = 0; i < this.textures.length; i++)
-            this.textures[i] = texture;
-    }
-
-    public String [] getTexture(int textureId) {
-        return this.textures[textureId];
-    }
-
-    public void setType(int type) {
-        this.type = type;
+        this.textures[i] = texture;
     }
     
-    public int getType() {
-        return this.type;
-    }
+    public void setType(int type) { this.type = type; }
+    public int  getType() { return this.type; }
 
 }

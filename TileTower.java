@@ -7,11 +7,12 @@
  * (aka one Towerclass will have several adjacent TowerWalls that belong under it)
  */
 
-public class TowerWall extends Tileset {
+public class TileTower extends Tileset {
     private int type;
     private Tower parentTower;
 
-    public TowerWall () {
+    // CONSTRUCTORS
+    public TileTower () {
         this.setTexture(Tileset.CORNER_TOP_LEFT, new String [] {
             ".____.",
             "|  __|",
@@ -55,22 +56,18 @@ public class TowerWall extends Tileset {
         });
     }
 
-    public TowerWall (int type) {
+    public TileTower (int type) {
         this();
         this.setType(type);
     }
     
-    public TowerWall (int type, Tower parentTower) {
+    public TileTower (int type, Tower parentTower) {
         this.setType(type);
         this.parentTower = parentTower;
     }
 
-    public void SetParent(Tower parentTower) {
-        this.parentTower = parentTower;
-    }
-
-    public Tower GetParent() {
-        return this.parentTower;
-    }
+    // SETTERS & GETTERS
+    public void  SetParent(Tower parentTower) { this.parentTower = parentTower; }
+    public Tower GetParent() { return this.parentTower; }
 }
     

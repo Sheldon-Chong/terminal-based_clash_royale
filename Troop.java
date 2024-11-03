@@ -72,7 +72,7 @@ class Troop extends Obj {
         
         Obj object = gameSysRef.GetGrid()[dest.y][dest.x].getObject();
 
-        if (object instanceof TowerWall || object instanceof Empty) {
+        if (object instanceof TileTower || object instanceof Empty) {
             return DEST_COLLISION_WORLD;
         }
 
@@ -125,7 +125,7 @@ class Troop extends Obj {
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
             for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
                 if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TowerWall)
+                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TileTower)
                     towersLen++;
             }
         }
@@ -136,7 +136,7 @@ class Troop extends Obj {
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
             for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
                 if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TowerWall)
+                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TileTower)
                     towersWalls[index++] = this.gameSysRef.GetCell(new Pos (x, y));
             }
         }
@@ -189,7 +189,7 @@ class Troop extends Obj {
             Cell []neighbours = gameSysRef.GetCell(this.getPos()).GetNeighbours();
             
             for (int i = 0; i < 4; i++) {
-                if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall)
+                if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower)
                     return;
             }
             closestTowerWall = findNearestAccessPoint(findAllTowerTiles());
@@ -203,10 +203,10 @@ class Troop extends Obj {
         Cell []neighbours = gameSysRef.GetCell(this.getPos()).GetNeighbours();
 
         for (int i = 0; i < 4; i++) {
-            if (neighbours[i] != null && neighbours[i].getObject() instanceof TowerWall)
+            if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower)
             {
-                if (((TowerWall)(neighbours[i].getObject())).GetParent() != null)
-                return ((TowerWall)(neighbours[i].getObject())).GetParent().GetPlayer().GetPlayerNum();
+                if (((TileTower)(neighbours[i].getObject())).GetParent() != null)
+                return ((TileTower)(neighbours[i].getObject())).GetParent().GetPlayer().GetPlayerNum();
             }
         }
 

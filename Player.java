@@ -1,27 +1,25 @@
+
 class Player {
-    private Card[] cardsOnHand = new Card[4]; // Written by Sheldon
-    private int region;
-    private TowerKing king;
-    private int elixir;
-    private TowerPrincess princess1;
-    private TowerPrincess princess2;
+    private Card[]  cardsOnHand;
+    private int     region;
+    private         TowerKing king;
+    private int     elixir;
+    private         TowerPrincess princess1;
+    private         TowerPrincess princess2;
 
     // Written by Sheldon
     public int GetPlayerNum() { return this.region; }
     public void SetPlayerNum(int region) { this.region = region; }
-
+    
+    // Written by Daiki
+    public Card[] getCardsOnHand() { return this.cardsOnHand; }
+    public void setCardsOnHand(Card[] cards) { this.cardsOnHand = cards;  }
+    
+    // CONSTRUCTORS
+    // Written by Sheldon
     public Player(int region) {
+        this.cardsOnHand = new Card[4];
         this.SetPlayerNum(region);
-    }
-
-    public Card[] getCardsOnHand() { 
-        // Written by Daiki
-        return this.cardsOnHand; 
-    }
-
-    public void setCardsOnHand(Card[] cards) { 
-        // Written by Daiki
-        this.cardsOnHand = cards; 
     }
 
     // Written by Daiki

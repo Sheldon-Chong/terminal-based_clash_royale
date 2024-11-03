@@ -1,5 +1,12 @@
 
 // entire class by Sheldon
+
+/*
+ * The Obj class is the superclass for all objects in the game
+ * Objects reffer to anything that can be placed in the world grid
+ * It contains a position, which is used to determine where the object is in the world
+ */
+
 public abstract class Obj {
     
     private Pos pos;

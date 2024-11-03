@@ -1,0 +1,16 @@
+- top right
+.____.
+|  __|
+|_|   
+- top left
+.____.
+|__  |
+   |_|
+- bottom left
+.     
+| |__ 
+|____|     
+- bottom right
+     .
+ __| |
+|____|
