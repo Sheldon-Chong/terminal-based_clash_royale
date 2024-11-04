@@ -3,12 +3,32 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
+/*
+ * Used to display the game state to the console
+ */
+
+
 public class Displayer {
 
-    private GameSystem gameRef;
-    private char[][] output;
-    private Scanner input;
+    // CONSTANTS
+    final static int BOTTOM_LEFT_CORNER = 0;
+    final static int BOTTOM_RIGHT_CORNER = 1;
+    final static int TOP_LEFT_CORNER = 2;
+    final static int TOP_RIGHT_CORNER = 3;
 
+
+    // ATTRIBUTES
+    private GameSystem  gameRef;
+    private char[][]    output;
+    private Scanner     input;
+
+
+    // SETTER AND GETTER
+    // Written by Daiki
+    public String getPlayerName(int playerNumber) { return input.nextLine(); }
+
+    
+    // CONSTRUCTORS
     public Displayer(GameSystem gameSystem) {
         output = new char[0][]; // Initialize with an empty array
         this.gameRef = gameSystem;
@@ -16,7 +36,8 @@ public class Displayer {
         this.input = new Scanner(System.in);
     }
 
-    
+
+    // HELPER METHODS
     private void append(String value) {
         char[][] newOutput = new char[this.output.length + 1][];
         for (int i = 0; i < output.length; i++) {
@@ -25,7 +46,6 @@ public class Displayer {
         newOutput[this.output.length] = value.toCharArray(); // Convert string to char array
         this.output = newOutput;
     }
-
     
     private void add2LastItem(String value) {
         if (this.output.length == 0) {
@@ -40,25 +60,17 @@ public class Displayer {
         this.output[this.output.length - 1] = newLine;
     }
     
-    
     private void arrayCopy(char[] src, int srcPos, char[] dest, int destPos, int length) {
         for (int i = 0; i < length; i++) {
             dest[destPos + i] = src[srcPos + i];
         }
     }
 
-
-    private char getChar(Pos pos) {
-        return output[pos.y][pos.x];
-    }
-
-
     private void setChar(Pos pos, char newChar) {
         if (pos.y < 0 || pos.y >= output.length - 1 || pos.x < 0 || pos.x >=  output[0].length - 1)
             return;
         output[pos.y][pos.x] = newChar;
     }
-
 
     private void impose(String[] texture, Pos startingPos) {
         if (texture == null)
@@ -75,125 +87,13 @@ public class Displayer {
         }
     }
 
-
     private void resetScreen () {
         this.output = new char[0][]; 
     }
 
-     // Written by Daiki
-     // Display ASCII Title Screen
-     public void ShowTitleScreen() {
-       try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            System.out.println("Press ENTER to begin game");
-            System.in.read();  // Wait for user to press ENTER
-        } catch (IOException e) {
-            System.out.println("Error loading title screen.");
-            e.printStackTrace();
-        }
-    }
-
-    // Written by Daiki
-    public String getPlayerName(int playerNumber) {
-        return input.nextLine();
-    }
-
-    // Written by Daiki/Sheldon
-    public void ShowGameInfo(Player player) {
-        System.out.println("o===============================================================o");
-        System.out.printf("|  Next:          | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
-        System.out.printf("|  |   %s   |   |         |         |         |                |\n", "Zap");
-        System.out.println("|  |           |  |         |         |         |                |");
-        System.out.printf("|  |           |  |___[%d]___|___[%d]___|___[%d]___|___[%d]___       |\n", 3, 5, 8, 4); // Sample elixir costs
-        System.out.println("|  |___[3]___|      _______________________________________     |");
-        System.out.print("|              Elixir: ");
-        for (int i = 1; i <= 10; i++) {
-            System.out.print("|" + i + " ");
-        }
-        System.out.println("|");
-        System.out.println("|                      |__|___|___|___|___|___|___|___|___|____| |");
-        System.out.println("o===============================================================o");
-    }
-
-
-    public void printWorld(Cell[][] grid) {
-        this.resetScreen();
-
-        append("     ");
-        for (int x = 0; x < grid[0].length; x++)
-            add2LastItem(String.format(" %2d  ", x));
-
-        append("   _");
-        for (int x = 0; x < grid[0].length; x++) {
-            if (grid[0][x].getObject() instanceof Empty)
-                add2LastItem("     ");
-            else
-                add2LastItem("_____");
-        }
-
-        for (int y = 0; y < grid.length; y++) {
-            this.printEdgeRow(grid, y);
-            this.printContentRow(grid, y);
-        }
-
-        this.printEdgeRow(grid, grid.length - 1);
-        append("  |_");
-        for (int x = 0; x < grid[0].length; x++) {
-            if (grid[grid.length - 1][x].bottom_side == '|') {
-                if (grid[grid.length - 1][x - 1].left_side == ' ')
-                    add2LastItem("|    ");
-                else
-                    add2LastItem("     ");
-            } 
-            else if (x > 0 && grid[grid.length - 1][x - 1].getObject() instanceof Empty && grid[grid.length - 1][x].left_side == ' ')
-                add2LastItem("|____");
-            else
-                add2LastItem("_____");
-        }
-
-        for (int y = 0; y < gameRef.GetGrid().length; y++) {
-            for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
-                Cell cell = gameRef.GetCell(new Pos (x,y));
-
-                Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
-                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
-
-                if (cell != null) {
-                    if (cell.getObject() instanceof TileTower)
-                    {    
-                        TileTower towerWall = (TileTower)cell.getObject();
-                        this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
-                    }
-
-                    else if (cell.getObject() instanceof Empty)
-                    {
-                        Empty empty = (Empty)cell.getObject();
-                        this.impose(empty.getTexture(empty.getType()), startingCorner);
-                    }
-                } 
-            }
-        }
-
-        for (int i = 0; i < output.length; i++)
-            System.out.println(new String(output[i]));
-        System.out.println();
-
-    }
-
-
     private Pos convertPos2Corner( Pos pos ) {
         return (pos.Multiply(5,2).Add(4, 2));
     }
-
-    
-    final static int BOTTOM_LEFT_CORNER = 0;
-    final static int BOTTOM_RIGHT_CORNER = 1;
-    final static int TOP_LEFT_CORNER = 2;
-    final static int TOP_RIGHT_CORNER = 3;
-
 
     private Pos[] getCornersFromTile (Pos pos) {
         Pos [] corners = new Pos[4];
@@ -205,7 +105,6 @@ public class Displayer {
         
         return corners;
     }
-
 
     private Cell GetCell(int x, int y) {
         if (x < 0 || x >= gameRef.GetGrid()[0].length || y < 0 || y >= gameRef.GetGrid().length)
@@ -221,7 +120,6 @@ public class Displayer {
 
         return cell;
     }
-
 
     private void printEdgeRow(Cell[][] grid, int y) {
         // Initialize the buffer
@@ -244,7 +142,6 @@ public class Displayer {
         // Append the buffer to the output array
         this.append(buffer);
     }
-
 
     private void printContentRow(Cell[][] grid, int y) {
         // Initialize the buffer
@@ -280,16 +177,114 @@ public class Displayer {
                     suffix = '*';
             }
 
-            if (this.GetCell(x, y).left_side == '|' || (x > 0 && this.GetCell(x - 1, y).right_side == '|'))
-                edge = '|';
-            else
-                edge = ' ';
+            edge = ' ';
 
             buffer += String.format("%s%s%c%c%c", edge, prefix, icon, health, suffix);
         }
 
         // Append the buffer to the output array
         this.append(buffer);
+    }
+
+
+    // Written by Daiki
+    // Display ASCII Title Screen
+    public void ShowTitleScreen() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+            System.out.println("Press ENTER to begin game");
+            System.in.read();  // Wait for user to press ENTER
+        } catch (IOException e) {
+            System.out.println("Error loading title screen.");
+            e.printStackTrace();
+        }
+    }
+
+    
+    // PUBLIC METHODS
+
+    // Written by Daiki/Sheldon
+    public void ShowGameInfo(Player player) {
+        System.out.println("o===============================================================o");
+        System.out.printf("|  Next:          | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
+        System.out.printf("|  |   %s   |   |         |         |         |                |\n", "Zap");
+        System.out.println("|  |           |  |         |         |         |                |");
+        System.out.printf("|  |           |  |___[%d]___|___[%d]___|___[%d]___|___[%d]___       |\n", 3, 5, 8, 4); // Sample elixir costs
+        System.out.println("|  |___[3]___|      _______________________________________     |");
+        System.out.print("|              Elixir: ");
+        for (int i = 1; i <= 10; i++) {
+            System.out.print("|" + i + " ");
+        }
+        System.out.println("|");
+        System.out.println("|                      |__|___|___|___|___|___|___|___|___|____| |");
+        System.out.println("o===============================================================o");
+    }
+
+    public void printWorld(Cell[][] grid) {
+        this.resetScreen();
+
+        append("     ");
+        for (int x = 0; x < grid[0].length; x++)
+            add2LastItem(String.format(" %2d  ", x));
+
+        append("   _");
+        for (int x = 0; x < grid[0].length; x++) {
+            if (grid[0][x].getObject() instanceof TileEmpty)
+                add2LastItem("     ");
+            else
+                add2LastItem("_____");
+        }
+
+        for (int y = 0; y < grid.length; y++) {
+            this.printEdgeRow(grid, y);
+            this.printContentRow(grid, y);
+        }
+
+        this.printEdgeRow(grid, grid.length - 1);
+        append("  |_");
+        for (int x = 0; x < grid[0].length; x++) {
+            if (grid[grid.length - 1][x].bottom_side == '|') {
+                if (grid[grid.length - 1][x - 1].left_side == ' ')
+                    add2LastItem("|    ");
+                else
+                    add2LastItem("     ");
+            } 
+            else if (x > 0 && grid[grid.length - 1][x - 1].getObject() instanceof TileEmpty && grid[grid.length - 1][x].left_side == ' ')
+                add2LastItem("|____");
+            else
+                add2LastItem("_____");
+        }
+
+        for (int y = 0; y < gameRef.GetGrid().length; y++) {
+            for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
+                Cell cell = gameRef.GetCell(new Pos (x,y));
+
+                Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
+                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
+
+                if (cell != null) {
+                    if (cell.getObject() instanceof TileTower)
+                    {    
+                        TileTower towerWall = (TileTower)cell.getObject();
+                        this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
+                    }
+
+                    else if (cell.getObject() instanceof TileEmpty)
+                    {
+                        TileEmpty empty = (TileEmpty)cell.getObject();
+                        this.impose(empty.getTexture(empty.getType()), startingCorner);
+                    }
+                } 
+            }
+        }
+
+        for (int i = 0; i < output.length; i++)
+            System.out.println(new String(output[i]));
+        System.out.println();
+
     }
 }
 

@@ -17,15 +17,15 @@ public abstract class Spell extends Card {
     public abstract void cast(Pos targetPos, GameSystem gameSysRef);
     
     // Getters for accessing spell properties if needed
-    public int getRadius() {
+    public int GetRadius() {
         return radius;
     }
 
-    public int getDamage() {
+    public int GetDamage() {
         return damage;
     }
 
-    public int getDuration() {
+    public int GetDuration() {
         return duration;
     }
 }

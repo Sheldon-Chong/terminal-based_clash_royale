@@ -1,9 +1,12 @@
+// entire class by Sheldon
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+/*
+ * The FileHandler class is responsible for reading and writing files
+ */
 
-// entire class by Sheldon
 class FileHandler {
 
     // Written by Sheldon

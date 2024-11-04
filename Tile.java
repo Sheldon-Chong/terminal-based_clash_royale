@@ -8,7 +8,9 @@
  * These 12 types are represented by constants in the class
  */
 
-public abstract class Tileset extends Obj {
+public abstract class Tile extends Obj {
+
+    // CONSTANTS
     public static final int INSIDE = 0;
     public static final int CORNER_TOP_LEFT = 1;
     public static final int CORNER_TOP_RIGHT = 2;
@@ -24,17 +26,13 @@ public abstract class Tileset extends Obj {
     public static final int PIPE_H = 10;
     public static final int PIPE_V = 11;
 
-    private int type;
 
+    // ATTRIBUTES
+    private int        type;
     private String [][]textures;
 
-    // CONSTRUCTORS
-    public Tileset() {
-        this.textures = new String [12][];
-    }
 
     // GETTERS & SETTERS
-    
     public void      setTexture(int textureId, String [] texture) { this.textures[textureId] = texture; }
     public String [] getTexture(int textureId) { return this.textures[textureId]; }
     
@@ -46,4 +44,9 @@ public abstract class Tileset extends Obj {
     public void setType(int type) { this.type = type; }
     public int  getType() { return this.type; }
 
+
+    // CONSTRUCTORS
+    public Tile() {
+        this.textures = new String [12][];
+    }
 }

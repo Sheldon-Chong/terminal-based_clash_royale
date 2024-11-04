@@ -1,6 +1,6 @@
 
 
-public class TileFloor extends Tileset {
+public class TileFloor extends Tile {
     public TileFloor () {
         
     }

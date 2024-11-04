@@ -14,14 +14,14 @@ public class SpellFireball extends Spell {
 
    
     public void cast(Pos targetPos, GameSystem gameSysRef) {
-        if (gameSysRef.isWithinBoard(targetPos)) {
-            for (int y = -getRadius(); y <= getRadius(); y++) {
-                for (int x = -getRadius(); x <= getRadius(); x++) {
+        if (gameSysRef.IsWithinBoard(targetPos)) {
+            for (int y = -GetRadius(); y <= GetRadius(); y++) {
+                for (int x = -GetRadius(); x <= GetRadius(); x++) {
                     Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
-                    if (gameSysRef.isWithinBoard(impactPos)) {
+                    if (gameSysRef.IsWithinBoard(impactPos)) {
                         Obj obj = gameSysRef.GetCell(impactPos).getObject();
                         if (obj instanceof Troop) {
-                            ((Troop) obj).DecreaseHP(getDamage());
+                            ((Troop) obj).DecreaseHP(GetDamage());
                         }
                     }
                 }

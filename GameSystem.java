@@ -2,45 +2,42 @@ import java.util.Random;
 
 class GameSystem {
 
-    private Cell [][]worldGrid;
+    // CONSTANTS
+    public static final String  FILENAME = "game_grid.txt";
 
-    public static final String FILENAME = "game_grid.txt";
+    public final static char    TOWER_WALL = 'T';
+    public final static char    FLOOR = '.';
+    public final static char    EMPTY = ' ';
 
-    public final static char TOWER_WALL = 'T';
-    public final static char FLOOR = '.';
-    public final static char EMPTY = ' ';
-    
-    public final static char P1_TOWER_PRINCESS = 'P';
-    public final static char P1_TOWER_KING = 'K';
+    public final static char    P1_TOWER_PRINCESS = 'P';
+    public final static char    P1_TOWER_KING = 'K';
 
-    public final static char P2_TOWER_PRINCESS = 'p';
-    public final static char P2_TOWER_KING = 'k';
+    public final static char    P2_TOWER_PRINCESS = 'p';
+    public final static char    P2_TOWER_KING = 'k';
 
-    public final static int NO_REGION = 0;
-    public final static int PLAYER1_REGION = 1;
-    public final static int PLAYER2 = 2;
+    public final static int     NO_REGION = 0;
+    public final static int     PLAYER1_REGION = 1;
+    public final static int     PLAYER2 = 2;
+
+
+    // ATTRIBUTES
+    private Troop[]  troops;
+    private Cell[][] worldGrid;
+    private          Player player1;
+    private          Player player2;
 
     //Written by Daiki
-    private int currentRound = 1; // Trakcs the current round number
-
-    private Troop[] troops = new Troop[5];
+    private int      currentRound = 1; // Trakcs the current round number
     
-    private Pos WorldDimensions;
-
-    private Player player1;
-    private Player player2;
-
-    public Player GetPlayer1 () { return this.player1; }
-    public Player GetPlayer2 () { return this.player2; }
-
-
     // GETTERS AND SETTERS
-    public Troop []GetTroops() { return this.troops; }
+    public Player    GetPlayer1() { return this.player1; }
+    public Player    GetPlayer2() { return this.player2; }
+    public Troop []  GetTroops()  { return this.troops; }
+ 
+    public Cell [][] GetGrid()    { return this.worldGrid; }
 
-    public Cell [][]GetGrid() { return this.worldGrid; }
-
-    public Cell GetCell(int row, int col) { return this.worldGrid[row][col]; }
-    public Cell GetCell(Pos pos) {
+    public Cell      GetCell(int row, int col) { return this.worldGrid[row][col]; }
+    public Cell      GetCell(Pos pos) {
         if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
             return null;
         
@@ -49,6 +46,9 @@ class GameSystem {
 
     public void SetCell(int row, int col, Cell cell) { this.worldGrid[row][col] = cell; }
 
+    // Written by Daiki
+    // Method to get the current round
+    public int GetRound() { return this.currentRound; }
 
     // CONSTRUCTOR
     public GameSystem() {
@@ -59,7 +59,7 @@ class GameSystem {
     public void destroyTroop(Troop troop) {
         for (int i = 0; i < troops.length; i++) {
             if (troops[i] == troop) {
-                System.out.println(troops[i] + " diead");
+                System.out.println(troops[i] + " dead");
                 
                 Troop []newTroops = new Troop[troops.length - 1];
                 
@@ -146,36 +146,36 @@ class GameSystem {
         if (nUp)    wallCount++;
         if (nDown)  wallCount++;
 
-        if (wallCount == 0) return Tileset.INDEPENDANT;
-        if (wallCount == 4) return Tileset.INSIDE;
+        if (wallCount == 0) return Tile.INDEPENDANT;
+        if (wallCount == 4) return Tile.INSIDE;
 
         // sides
         if ((nLeft && nRight) || (nUp && nDown)) {
 
             if (nLeft && nRight) {
-                if (nUp && !nDown)  return Tileset.SIDE_BOTTOM;
-                if (nDown && !nUp)  return Tileset.SIDE_TOP;
-                                    return Tileset.PIPE_H;
+                if (nUp && !nDown)  return Tile.SIDE_BOTTOM;
+                if (nDown && !nUp)  return Tile.SIDE_TOP;
+                                    return Tile.PIPE_H;
             } 
 
             else {
-                if (nLeft && !nRight)   return Tileset.SIDE_RIGHT;
-                if (nRight && !nLeft)   return Tileset.SIDE_LEFT;
-                                        return Tileset.PIPE_V;
+                if (nLeft && !nRight)   return Tile.SIDE_RIGHT;
+                if (nRight && !nLeft)   return Tile.SIDE_LEFT;
+                                        return Tile.PIPE_V;
             }
 
         } 
         
         // corners
         else {
-            if (nRight && nDown)    return Tileset.CORNER_TOP_LEFT;
-            if (nLeft && nDown)   return Tileset.CORNER_TOP_RIGHT;
-            if (nRight && nUp)  return Tileset.CORNER_BOTTOM_LEFT;
-            if (nLeft && nUp) return Tileset.CORNER_BOTTOM_RIGHT;
+            if (nRight && nDown) return Tile.CORNER_TOP_LEFT;
+            if (nLeft && nDown)  return Tile.CORNER_TOP_RIGHT;
+            if (nRight && nUp)   return Tile.CORNER_BOTTOM_LEFT;
+            if (nLeft && nUp)    return Tile.CORNER_BOTTOM_RIGHT;
         }
 
         // inside
-        return Tileset.INSIDE;
+        return Tile.INSIDE;
     }
 
     // Written by Daiki
@@ -205,17 +205,10 @@ class GameSystem {
     }
 
     // Written by Daiki
-    // Method to get the current round
-    public int getRound() { 
-        return this.currentRound;
-    }
-
-    // Written by Daiki
     // Method to check if troop/spell is deployed within the board
-    public boolean isWithinBoard(Pos pos) {
+    public boolean IsWithinBoard(Pos pos) {
         return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
     }
-    
 
     // Written by Daiki
     // Method to increment the round count
@@ -226,7 +219,7 @@ class GameSystem {
     }
 
     // Written by Daiki
-    public int getObjRegion(Obj object) {
+    public int GetObjRegion(Obj object) {
         Pos pos = object.getPos();
 
         if (pos.x > 0 && pos.x < 14)
@@ -236,7 +229,7 @@ class GameSystem {
     }
 
     // Written by Daiki
-    public void UpdateWorldBuffer() { 
+    public void UpdateWorld() { 
         for (int i = 0; i < troops.length; i++) {
             if (troops[i] == null)
                 continue;
@@ -285,15 +278,25 @@ class GameSystem {
                             wall.SetParent(parent);
                         }
                     }
-                    ((TileTower)(this.GetCell(new Pos(x, y).Add(1,1)).getObject())).SetParent(parent);
-                    ((TileTower)(this.GetCell(new Pos(x, y).Add(-1,1)).getObject())).SetParent(parent);
-                    ((TileTower)(this.GetCell(new Pos(x, y).Add(1,-1)).getObject())).SetParent(parent);
-                    ((TileTower)(this.GetCell(new Pos(x, y).Add(-1,-1)).getObject())).SetParent(parent);
+                    
+                    Pos[] diagonalPositions = {
+                        new Pos(x, y).Add(1, 1),
+                        new Pos(x, y).Add(-1, 1),
+                        new Pos(x, y).Add(1, -1),
+                        new Pos(x, y).Add(-1, -1)
+                    };
+
+                    for (int i = 0; i < diagonalPositions.length; i++) {
+                        Cell cell = this.GetCell(diagonalPositions[i]);
+
+                        if (cell != null && cell.getObject() instanceof TileTower)
+                            ((TileTower) cell.getObject()).SetParent(parent);
+                    }
                 }
             }
 
         }
-        this.UpdateWorldBuffer();
+        this.UpdateWorld();
     }
 
     // Written by Sheldon
@@ -325,7 +328,7 @@ class GameSystem {
                     break; case TOWER_WALL:
                         tileContent = new TileTower(GetCellSideType(new char[]{TOWER_WALL, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case EMPTY:
-                        tileContent = new Empty(GetCellSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new TileEmpty(GetCellSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
                     break; case FLOOR:
                         tileContent = new TileFloor();
                 }
@@ -333,6 +336,7 @@ class GameSystem {
                 wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
             }
         }
+
         return wGrid;
     }
 
@@ -343,9 +347,9 @@ class GameSystem {
                 Object currentContents = grid[row][col].getObject();
 
                 if (currentContents instanceof TileTower)
-                    System.out.print(((Tileset)(currentContents)).getType());
+                    System.out.print(((Tile)(currentContents)).getType());
 
-                else if (currentContents instanceof Empty)
+                else if (currentContents instanceof TileEmpty)
                     System.out.print(' ');
 
                 else if (currentContents instanceof TileFloor)

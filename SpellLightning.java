@@ -1,41 +1,47 @@
 // Written by Daiki
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 public class SpellLightning extends Spell {
+    private static final int MAX_TARGETS = 3;
 
+    // Constructor for initializing Lightning spell
     public SpellLightning(int elixirCost, int radius, int damage) {
-        super(elixirCost, radius, damage, 1); // Fixed duration of 1 for instant effect
+        super(elixirCost, radius, damage, 1); // Duration of 1 since it's instant
     }
 
-    
     public void deploy(Pos targetPos, GameSystem gameSysRef) {
-        cast(targetPos, gameSysRef); // Pass gameSysRef to the cast method
+        // Implement the behavior for deploying the Lightning spell
+        cast(targetPos, gameSysRef);
     }
 
-    
+    // Overridden cast method for the Lightning spell
     public void cast(Pos targetPos, GameSystem gameSysRef) {
-        ArrayList<Troop> targets = new ArrayList<>();
+        Troop[] allTroops = gameSysRef.GetTroops();
+        Troop[] targets = new Troop[MAX_TARGETS];
+        int targetCount = 0;
 
-        if (gameSysRef.isWithinBoard(targetPos)) {
-            for (int y = -getRadius(); y <= getRadius(); y++) {
-                for (int x = -getRadius(); x <= getRadius(); x++) {
-                    Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
-                    if (gameSysRef.isWithinBoard(impactPos)) {
-                        Obj obj = gameSysRef.GetCell(impactPos).getObject();
-                        if (obj instanceof Troop) {
-                            targets.add((Troop) obj);
-                        }
-                    }
-                }
+        // Finding all troops within the radius and adding up to MAX_TARGETS
+        for (int i = 0; i < allTroops.length && targetCount < MAX_TARGETS; i++) {
+            if (allTroops[i] != null && allTroops[i].getPos().calcDistance(targetPos) <= this.GetRadius()) {
+                targets[targetCount++] = allTroops[i];
             }
         }
 
-        // Shuffle the targets and pick the first 3 to inflict damage
-        Collections.shuffle(targets);
-        for (int i = 0; i < Math.min(3, targets.size()); i++) {
-            targets.get(i).DecreaseHP(getDamage());
+        // Shuffle the targets to simulate randomness
+        for (int i = 0; i < targetCount; i++) {
+            int swapIndex = i + (int) (Math.random() * (targetCount - i));
+            Troop temp = targets[i];
+            targets[i] = targets[swapIndex];
+            targets[swapIndex] = temp;
+        }
+
+        // Inflict damage to up to three random targets
+        for (int i = 0; i < targetCount; i++) {
+            if (targets[i] != null) {
+                targets[i].DecreaseHP(this.GetDamage());
+                if (targets[i].GetHP() <= 0) {
+                    gameSysRef.destroyTroop(targets[i]);
+                }
+            }
         }
     }
 }

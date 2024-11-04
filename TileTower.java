@@ -7,49 +7,49 @@
  * (aka one Towerclass will have several adjacent TowerWalls that belong under it)
  */
 
-public class TileTower extends Tileset {
+public class TileTower extends Tile {
     private int type;
     private Tower parentTower;
 
     // CONSTRUCTORS
     public TileTower () {
-        this.setTexture(Tileset.CORNER_TOP_LEFT, new String [] {
+        this.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
             ".____.",
             "|  __|",
             "|_|   "
         });
 
-        this.setTexture(Tileset.CORNER_TOP_RIGHT, new String [] {
+        this.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
             ".____.",
             "|__  |",
             "   |_|"
         });
-        this.setTexture(Tileset.CORNER_BOTTOM_LEFT, new String [] {
+        this.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
             ".     ",
             "| |__ ",
             "|____|"
         });
-        this.setTexture(Tileset.CORNER_BOTTOM_RIGHT, new String [] {
+        this.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
             "     .",
             " __| | ",
             "|____|"
         });
-        this.setTexture(Tileset.SIDE_LEFT, new String [] {
+        this.setTexture(Tile.SIDE_LEFT, new String [] {
             "  ",
             " :",
             " : "
         });
-        this.setTexture(Tileset.SIDE_RIGHT, new String [] {
+        this.setTexture(Tile.SIDE_RIGHT, new String [] {
             "     ",
             "    :",
             "    :"
         });
-        this.setTexture(Tileset.SIDE_BOTTOM, new String [] {
+        this.setTexture(Tile.SIDE_BOTTOM, new String [] {
             "     ",
             "     ",
             " ----"
         });
-        this.setTexture(Tileset.SIDE_TOP, new String [] {
+        this.setTexture(Tile.SIDE_TOP, new String [] {
             "     ",
             " ----",
             "     "

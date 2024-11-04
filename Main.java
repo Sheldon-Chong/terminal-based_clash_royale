@@ -49,7 +49,7 @@ public class Main {
 		
 		while (true) {
 			//gameSys.PrintWorldGridRaw(gameSys.GetGrid());
-			gameSys.UpdateWorldBuffer();
+			gameSys.UpdateWorld();
 			display.printWorld(gameSys.GetGrid()); // Dispalys the board
 			System.out.println(currentPlayer + "");
 			display.ShowGameInfo(gameSys.GetPlayer1()); // Display Player 1 info right below the board

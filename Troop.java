@@ -72,7 +72,7 @@ class Troop extends Obj {
         
         Obj object = gameSysRef.GetGrid()[dest.y][dest.x].getObject();
 
-        if (object instanceof TileTower || object instanceof Empty) {
+        if (object instanceof TileTower || object instanceof TileEmpty) {
             return DEST_COLLISION_WORLD;
         }
 
@@ -225,7 +225,7 @@ class Troop extends Obj {
         }
         else
             this.moveTowards( this.GetDest() );
-        this.SetRegion(gameSysRef.getObjRegion(this));
+        this.SetRegion(gameSysRef.GetObjRegion(this));
         this.recalcDest();
     }
 
