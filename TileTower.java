@@ -8,8 +8,16 @@
  */
 
 public class TileTower extends Tile {
-    private int type;
-    private Tower parentTower;
+
+    // ATTRIBUTES
+    private int     type;
+    private Tower   parentTower;
+
+    
+    // SETTERS AND GETTERS
+    public void  SetParent(Tower parentTower) { this.parentTower = parentTower; }
+    public Tower GetParent() { return this.parentTower; }
+
 
     // CONSTRUCTORS
     public TileTower () {
@@ -66,8 +74,5 @@ public class TileTower extends Tile {
         this.parentTower = parentTower;
     }
 
-    // SETTERS & GETTERS
-    public void  SetParent(Tower parentTower) { this.parentTower = parentTower; }
-    public Tower GetParent() { return this.parentTower; }
 }
     

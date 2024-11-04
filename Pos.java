@@ -8,6 +8,8 @@
  */
 
 public class Pos {
+
+    // ATTRIBUTES
     public int x;
     public int y;
 
@@ -20,6 +22,8 @@ public class Pos {
     // GETTER AND SETTER
     public void setPos(int x, int y) { this.x = x; this.y = y; }
     public Pos  getPos() { return new Pos(this.x, this.y); }
+
+    // PUBLIC METHODS
 
     // ADD OPERATIONS
     public Pos Add(int xVal, int yVal) {

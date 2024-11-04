@@ -1,5 +1,8 @@
 import java.util.Scanner;
 
+/* 
+ * Main class is the entry point of the program
+ */
 
 public class Main {
 

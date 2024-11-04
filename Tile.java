@@ -32,6 +32,12 @@ public abstract class Tile extends Obj {
     private String [][]textures;
 
 
+    // CONSTRUCTORS
+    public Tile() {
+        this.textures = new String [12][];
+    }
+
+
     // GETTERS & SETTERS
     public void      setTexture(int textureId, String [] texture) { this.textures[textureId] = texture; }
     public String [] getTexture(int textureId) { return this.textures[textureId]; }
@@ -43,10 +49,4 @@ public abstract class Tile extends Obj {
     
     public void setType(int type) { this.type = type; }
     public int  getType() { return this.type; }
-
-
-    // CONSTRUCTORS
-    public Tile() {
-        this.textures = new String [12][];
-    }
 }

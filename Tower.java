@@ -9,9 +9,12 @@
 
 public class Tower extends Obj{
     
+    // ATTRIBUTES
     private Pos pos;
     private Player parentPlayer;
 
+
+    // CONSTRUCTORS
     Tower () {
     }
 
@@ -19,20 +22,12 @@ public class Tower extends Obj{
         this.parentPlayer = player;
     }
 
-    public void SetPos(Pos pos) {
-        this.pos = pos;
-    }
 
-    public Pos GetPos() {
-        return this.pos;
-    }
+    // SETTERS AND GETTERS
+    public void SetPos(Pos pos) { this.pos = pos; }
+    public Pos  GetPos()        { return this.pos; }
 
-    public void SetPlayer(Player parentPlayer) {
-        this.parentPlayer = parentPlayer;
-    }
-
-    public Player GetPlayer() {
-        return this.parentPlayer;
-    }
+    public void   SetPlayer(Player parentPlayer) { this.parentPlayer = parentPlayer; }
+    public Player GetPlayer() { return this.parentPlayer; }
 
 }

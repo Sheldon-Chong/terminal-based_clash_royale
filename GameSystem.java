@@ -1,5 +1,11 @@
 import java.util.Random;
 
+/*
+ * The GameSystem class is responsible for managing the game world and its entities
+ * It contains the game grid, players, troops, and the current round number
+ * contains methods to spawn troops, shuffle player cards, and update the world
+ */
+
 class GameSystem {
 
     // CONSTANTS
