@@ -12,17 +12,16 @@ public abstract class Obj {
     // ATTRIBUTES
     private Pos pos;
 
+    
+    // CONSTRUCTOR
+    public Obj () { }
 
+    
     // GETTERS AND SETTERS
     public Pos  getPos() { return pos; }
     public void setPos (Pos pos) { this.pos = pos; }
+
     
-    // CONSTRUCTOR
-    public Obj () {
-
-    }
-
-
     // PUBLIC METHODS
     public double calcDistance (Obj obj) {
         return pos.calcDistance(obj.getPos());

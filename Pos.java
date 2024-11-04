@@ -13,19 +13,21 @@ public class Pos {
     public int x;
     public int y;
 
+    
     // CONSTRUCTOR
     public Pos(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+
     // GETTER AND SETTER
     public void setPos(int x, int y) { this.x = x; this.y = y; }
     public Pos  getPos() { return new Pos(this.x, this.y); }
 
-    // PUBLIC METHODS
 
-    // ADD OPERATIONS
+    // PUBLIC METHODS
+    //      ADD OPERATIONS
     public Pos Add(int xVal, int yVal) {
         Pos pos = new Pos(this.x + xVal, this.y + yVal);
         return pos;

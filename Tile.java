@@ -11,15 +11,15 @@
 public abstract class Tile extends Obj {
 
     // CONSTANTS
-    public static final int INSIDE = 0;
-    public static final int CORNER_TOP_LEFT = 1;
-    public static final int CORNER_TOP_RIGHT = 2;
-    public static final int CORNER_BOTTOM_LEFT = 3;
+    public static final int INSIDE              = 0;
+    public static final int CORNER_TOP_LEFT     = 1;
+    public static final int CORNER_TOP_RIGHT    = 2;
+    public static final int CORNER_BOTTOM_LEFT  = 3;
     public static final int CORNER_BOTTOM_RIGHT = 4;
 
-    public static final int SIDE_RIGHT = 5;
-    public static final int SIDE_LEFT = 6;
-    public static final int SIDE_TOP = 7;
+    public static final int SIDE_RIGHT  = 5;
+    public static final int SIDE_LEFT   = 6;
+    public static final int SIDE_TOP    = 7;
     public static final int SIDE_BOTTOM = 8;
     public static final int INDEPENDANT = 9;
 
