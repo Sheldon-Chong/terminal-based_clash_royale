@@ -8,12 +8,12 @@ import java.util.Random;
 
 class GameSystem {
 
-    // CONSTANTS
-    public static final String  FILENAME = "game_grid.txt";
+    // -- CONSTANTS --
+    public final static String  FILENAME = "game_grid.txt";
 
-    public final static char    TOWER_WALL = 'T';
-    public final static char    FLOOR = '.';
-    public final static char    EMPTY = ' ';
+    public final static char    SYMBOL_TOWER = 'T';
+    public final static char    SYMBOL_FLOOR = '.';
+    public final static char    SYMBOL_EMPTY = ' ';
 
     public final static char    P1_TOWER_PRINCESS = 'P';
     public final static char    P1_TOWER_KING = 'K';
@@ -23,10 +23,10 @@ class GameSystem {
 
     public final static int     NO_REGION = 0;
     public final static int     PLAYER1_REGION = 1;
-    public final static int     PLAYER2 = 2;
+    public final static int     PLAYER2_REGION = 2;
 
 
-    // ATTRIBUTES
+    // -- ATTRIBUTES --
     private Troop[]  troops;
     private Cell[][] worldGrid;
     private          Player player1;
@@ -35,7 +35,18 @@ class GameSystem {
     //Written by Daiki
     private int      currentRound = 1; // Trakcs the current round number
     
+
+    // -- PUBLIC METHODS --
+
+    // CONSTRUCTORS
+    // Written by Sheldon
+    public GameSystem() {
+        this.initWorld();
+    }
+
+    
     // GETTERS AND SETTERS
+    // written by Sheldon
     public Player    GetPlayer1() { return this.player1; }
     public Player    GetPlayer2() { return this.player2; }
     public Troop []  GetTroops()  { return this.troops; }
@@ -56,9 +67,117 @@ class GameSystem {
     // Method to get the current round
     public int GetRound() { return this.currentRound; }
 
-    // CONSTRUCTOR
-    public GameSystem() {
-        this.initWorld();
+
+    // Written by Sheldon
+    public Cell[][] ConvertChar2DtoTile2D(char[][] grid) {
+        Cell [][]wGrid = new Cell[grid.length][grid[0].length];
+    
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[row].length; col++) {
+                char currentTile = getCharTile(row, col, grid);
+
+                Obj tileContent = new TileFloor();
+
+                char neighbourLeft  = getCharTile(row, col - 1, grid);
+                char neighbourRight = getCharTile(row, col + 1, grid);
+                char neighbourUp    = getCharTile(row - 1, col, grid);
+                char neighbourDown  = getCharTile(row + 1, col, grid);
+                
+                switch (currentTile) {
+                    case P1_TOWER_PRINCESS:
+                        tileContent = new TowerPrincess(this.player1);
+                    break; case P1_TOWER_KING:
+                        tileContent = new TowerKing(this.player1);
+                        
+                    break; case P2_TOWER_PRINCESS:
+                        tileContent = new TowerPrincess(this.player2);
+                    break; case P2_TOWER_KING:
+                        tileContent = new TowerKing(this.player2);
+
+                    break; case SYMBOL_TOWER:
+                        tileContent = new TileTower(GetCellSideType(new char[]{SYMBOL_TOWER, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                    break; case SYMBOL_EMPTY:
+                        tileContent = new TileEmpty(GetCellSideType(new char[] {SYMBOL_EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                    break; case SYMBOL_FLOOR:
+                        tileContent = new TileFloor();
+                }
+
+                wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
+            }
+        }
+
+        return wGrid;
+    }
+
+    // Written by Daiki
+    // Method to shuffle cards in each player's hand
+    public void shufflePlayerCards() { 
+        System.out.println("Shuffling player cards...");
+        
+        shuffleCards(player1);
+        shuffleCards(player2);
+    }
+
+    // Written by Daiki
+    // Method to check if troop/spell is deployed within the board
+    public boolean IsWithinBoard(Pos pos) {
+        return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
+    }
+
+    // Written by Daiki
+    // Method to increment the round count
+    public void nextRound() { 
+        this.currentRound++;
+        System.out.println("Starting Round " + this.currentRound);
+        shufflePlayerCards();
+    }
+
+    // Written by Daiki
+    public int GetObjRegion(Obj object) {
+        Pos pos = object.GetPos();
+
+        if (pos.x > 0 && pos.x < 14)
+            return PLAYER1_REGION;
+        else
+            return PLAYER2_REGION;
+    }
+
+    // Written by Daiki
+    public void UpdateWorld() { 
+        for (int i = 0; i < troops.length; i++) {
+            if (troops[i] == null)
+                continue;
+
+            Troop currentTroop = troops[i];
+            Pos tempPos = currentTroop.GetPos().Copy();
+            currentTroop.Move();
+            GetCell(tempPos).SetObject(new TileFloor());
+            GetCell(currentTroop.GetPos()).SetObject(currentTroop);
+        }
+    }
+
+    // Written by Sheldon
+    public void PrintWorldGridRaw(Cell[][] grid) {
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[row].length; col++) {
+                Object currentContents = grid[row][col].getObject();
+
+                if (currentContents instanceof TileTower)
+                    System.out.print(((Tile)(currentContents)).getType());
+
+                else if (currentContents instanceof TileEmpty)
+                    System.out.print(' ');
+
+                else if (currentContents instanceof TileFloor)
+                    System.out.print('.');
+
+                else
+                    System.out.print('?');
+                    
+                System.out.print(" ");
+            }
+            System.out.println("");
+        }
     }
 
     // Written by Sheldon
@@ -84,6 +203,9 @@ class GameSystem {
             }
         }
     }
+
+
+    // -- HELPER METHODS --
 
     // Written by Sheldon
     private void spawnTroops(int amt) {
@@ -123,7 +245,6 @@ class GameSystem {
         return troop;
     }
 
-
     // Written by Sheldon
     private boolean isInCharArr(char []arr, char c) {
         for (int i = 0; i < arr.length; i++) {
@@ -136,8 +257,8 @@ class GameSystem {
     // Written by Sheldon
     private int GetCellSideType(char []subject, 
                                 char neighbourLeft, 
-                                char neighbourRight,
-                                char neighbourUp,
+                                char neighbourRight, 
+                                char neighbourUp, 
                                 char neighbourDown) {
 
         boolean nLeft   = isInCharArr(subject, neighbourLeft);
@@ -199,54 +320,6 @@ class GameSystem {
 
         player.setCardsOnHand(cards);
     }
-
-
-    // Written by Daiki
-    // Method to shuffle cards in each player's hand
-    public void shufflePlayerCards() { 
-        System.out.println("Shuffling player cards...");
-        
-        shuffleCards(player1);
-        shuffleCards(player2);
-    }
-
-    // Written by Daiki
-    // Method to check if troop/spell is deployed within the board
-    public boolean IsWithinBoard(Pos pos) {
-        return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
-    }
-
-    // Written by Daiki
-    // Method to increment the round count
-    public void nextRound() { 
-        this.currentRound++;
-        System.out.println("Starting Round " + this.currentRound);
-        shufflePlayerCards();
-    }
-
-    // Written by Daiki
-    public int GetObjRegion(Obj object) {
-        Pos pos = object.getPos();
-
-        if (pos.x > 0 && pos.x < 14)
-            return PLAYER1_REGION;
-        else
-            return PLAYER2;
-    }
-
-    // Written by Daiki
-    public void UpdateWorld() { 
-        for (int i = 0; i < troops.length; i++) {
-            if (troops[i] == null)
-                continue;
-
-            Troop currentTroop = troops[i];
-            Pos tempPos = currentTroop.getPos().copy();
-            currentTroop.move();
-            GetCell(tempPos).SetObject(new TileFloor());
-            GetCell(currentTroop.getPos()).SetObject(currentTroop);
-        }
-    }
     
     // Written by Sheldon
     private char getCharTile(int row, int col, char [][]grid) {
@@ -263,7 +336,7 @@ class GameSystem {
     // Written by Sheldon
     private void initWorld() {
         this.player1 = new Player(PLAYER1_REGION);
-        this.player2 = new Player(PLAYER2);
+        this.player2 = new Player(PLAYER2_REGION);
 
         FileHandler fHandler = new FileHandler();
         char [][] grid = fHandler.readFile(FILENAME);
@@ -303,70 +376,5 @@ class GameSystem {
 
         }
         this.UpdateWorld();
-    }
-
-    // Written by Sheldon
-    public Cell[][] ConvertChar2DtoTile2D(char[][] grid) {
-        Cell [][]wGrid = new Cell[grid.length][grid[0].length];
-    
-        for (int row = 0; row < grid.length; row++) {
-            for (int col = 0; col < grid[row].length; col++) {
-                char currentTile = getCharTile(row, col, grid);
-
-                Obj tileContent = new TileFloor();
-
-                char neighbourLeft  = getCharTile(row, col - 1, grid);
-                char neighbourRight = getCharTile(row, col + 1, grid);
-                char neighbourUp    = getCharTile(row - 1, col, grid);
-                char neighbourDown  = getCharTile(row + 1, col, grid);
-                
-                switch (currentTile) {
-                    case P1_TOWER_PRINCESS:
-                        tileContent = new TowerPrincess(this.player1);
-                    break; case P1_TOWER_KING:
-                        tileContent = new TowerKing(this.player1);
-                        
-                    break; case P2_TOWER_PRINCESS:
-                        tileContent = new TowerPrincess(this.player2);
-                    break; case P2_TOWER_KING:
-                        tileContent = new TowerKing(this.player2);
-
-                    break; case TOWER_WALL:
-                        tileContent = new TileTower(GetCellSideType(new char[]{TOWER_WALL, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
-                    break; case EMPTY:
-                        tileContent = new TileEmpty(GetCellSideType(new char[] {EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
-                    break; case FLOOR:
-                        tileContent = new TileFloor();
-                }
-
-                wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
-            }
-        }
-
-        return wGrid;
-    }
-
-    // Written by Sheldon
-    public void PrintWorldGridRaw(Cell[][] grid) {
-        for (int row = 0; row < grid.length; row++) {
-            for (int col = 0; col < grid[row].length; col++) {
-                Object currentContents = grid[row][col].getObject();
-
-                if (currentContents instanceof TileTower)
-                    System.out.print(((Tile)(currentContents)).getType());
-
-                else if (currentContents instanceof TileEmpty)
-                    System.out.print(' ');
-
-                else if (currentContents instanceof TileFloor)
-                    System.out.print('.');
-
-                else
-                    System.out.print('?');
-                    
-                System.out.print(" ");
-            }
-            System.out.println("");
-        }
     }
 }

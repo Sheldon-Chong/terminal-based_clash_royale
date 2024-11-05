@@ -6,7 +6,7 @@
 
 public class TileEmpty extends Tile {
 
-    // CONSTRUCTORS
+    // -- CONSTRUCTORS -- 
     public TileEmpty(int type) {
         this();
         this.setType(type);

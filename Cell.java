@@ -7,6 +7,15 @@
  */
 
 public class Cell {
+    
+    // -- CONSTANTS --
+    static final int NEIGHBOUR_LEFT = 0;
+    static final int NEIGHBOUR_RIGHT = 1;
+    static final int NEIGHBOUR_UP = 2;
+    static final int NEIGHBOUR_DOWN = 3;
+
+
+    // -- ATTRIBUTES --
     private Obj object;
     public char right_side = ' ';
     public char left_side = ' ';
@@ -15,21 +24,17 @@ public class Cell {
     private Cell [][] gridRef;
     private Pos pos;
 
-    static final int NEIGHBOUR_LEFT = 0;
-    static final int NEIGHBOUR_RIGHT = 1;
-    static final int NEIGHBOUR_UP = 2;
-    static final int NEIGHBOUR_DOWN = 3;
 
+    // -- PUBLIC METHODS --
 
+    // CONSTRUCTORS
     public Cell() {
         
     }
 
-
     public Cell(Obj object) {
         this.SetObject(object);
     }
-
 
     public Cell(Obj object, Cell [][] gridRef, Pos pos) {
         this.SetObject(object);
@@ -37,18 +42,11 @@ public class Cell {
         this.pos = pos;
     }
 
+    // GETTERS AND SETTERS
+    public Pos      getPos() { return this.pos; }
 
-    public Pos getPos() {
-        return this.pos;
-    }
-
-
-    public Cell CopySelf() {
-        Cell cell = new Cell(this.object, this.gridRef, this.pos);
-        
-        return cell;
-    }
-
+    public void     SetObject(Obj object) { this.object = object; }
+    public Obj      getObject() { return this.object; }
 
     public Cell [] GetNeighbours() {
         Cell [] neighbours = new Cell[4];
@@ -71,15 +69,9 @@ public class Cell {
         return neighbours;
     }
 
-    public void     SetObject(Obj object) {
-        this.object = object;
-    }
-
-    public Obj getObject() {
-        return this.object;
-    }
-
-    public String getRepr(){
-        return "%c%d".formatted(((Troop)object).getNameInitial(), ((Troop)object).GetHP());
+    public Cell CopySelf() {
+        Cell cell = new Cell(this.object, this.gridRef, this.pos);
+        
+        return cell;
     }
 }

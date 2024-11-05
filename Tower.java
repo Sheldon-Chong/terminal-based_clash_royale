@@ -9,25 +9,29 @@
 
 public class Tower extends Obj{
     
-    // ATTRIBUTES
-    private Pos pos;
-    private Player parentPlayer;
+    // -- ATTRIBUTES --
+    private Pos     pos;
+    private Player  parentPlayer;
+    private int     health;
 
+    
+    // -- PUBLIC METHODS --
 
     // CONSTRUCTORS
-    Tower () {
-    }
+    Tower () { }
 
     Tower (Player player) {
         this.parentPlayer = player;
     }
 
-
     // SETTERS AND GETTERS
     public void SetPos(Pos pos) { this.pos = pos; }
     public Pos  GetPos()        { return this.pos; }
 
+    public void setHealth(int health) { this.health = health; }
+    public void subtractHealth(int health) { this.health -= health; }
+    public int  getHealth() { return this.health; }
+
     public void   SetPlayer(Player parentPlayer) { this.parentPlayer = parentPlayer; }
     public Player GetPlayer() { return this.parentPlayer; }
-
 }

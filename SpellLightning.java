@@ -21,7 +21,7 @@ public class SpellLightning extends Spell {
 
         // Finding all troops within the radius and adding up to MAX_TARGETS
         for (int i = 0; i < allTroops.length && targetCount < MAX_TARGETS; i++) {
-            if (allTroops[i] != null && allTroops[i].getPos().calcDistance(targetPos) <= this.GetRadius()) {
+            if (allTroops[i] != null && allTroops[i].GetPos().CalcDistance(targetPos) <= this.GetRadius()) {
                 targets[targetCount++] = allTroops[i];
             }
         }

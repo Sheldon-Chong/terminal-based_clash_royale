@@ -9,6 +9,15 @@ class Player {
     private         TowerPrincess princess1;
     private         TowerPrincess princess2;
 
+    
+    // --PUBLIC METHODS --
+
+    // CONSTRUCTORS
+    // Written by Sheldon
+    public Player(int region) {
+        this.cardsOnHand = new Card[4];
+        this.SetPlayerNum(region);
+    }
 
     // GETTERS AND SETTERS
     // Written by Sheldon
@@ -19,29 +28,9 @@ class Player {
     public Card[] getCardsOnHand() { return this.cardsOnHand; }
     public void   setCardsOnHand(Card[] cards) { this.cardsOnHand = cards;  }
     
-
-    // CONSTRUCTORS
-    // Written by Sheldon
-    public Player(int region) {
-        this.cardsOnHand = new Card[4];
-        this.SetPlayerNum(region);
-    }
-
-
-    // PUBLIC METHODS
     // Written by Daiki
-    public void DeployCard(int index) {
-        if (index >= 0 && index < cardsOnHand.length) {
-            Card selectedCard = cardsOnHand[index];
-            if (selectedCard != null && selectedCard.GetElixirCost() <= elixir) {
-                elixir -= selectedCard.GetElixirCost();
-                System.out.println("Deployed card: " + selectedCard);
-                cardsOnHand[index] = null; // Remove card from hand after deploying
-            } else {
-                System.out.println("Not enough elixir to deploy this card.");
-            }
-        }
-    }
+    public void SetElixir(int amt) { this.elixir = amt; }
+    public int  GetElixir() { return this.elixir; }
 
     // Written by Daiki
     public Tower GetTower(int index) {
@@ -58,12 +47,16 @@ class Player {
     }
 
     // Written by Daiki
-    public void SetElixir(int amt) {
-        this.elixir = amt;
-    }
-
-    // Written by Daiki
-    public int GetElixir() {
-        return this.elixir;
+    public void DeployCard(int index) {
+        if (index >= 0 && index < cardsOnHand.length) {
+            Card selectedCard = cardsOnHand[index];
+            if (selectedCard != null && selectedCard.GetElixirCost() <= elixir) {
+                elixir -= selectedCard.GetElixirCost();
+                System.out.println("Deployed card: " + selectedCard);
+                cardsOnHand[index] = null; // Remove card from hand after deploying
+            } else {
+                System.out.println("Not enough elixir to deploy this card.");
+            }
+        }
     }
 }

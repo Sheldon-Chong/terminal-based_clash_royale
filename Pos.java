@@ -44,16 +44,16 @@ public class Pos {
     }
 
     // COMPARE OPERATIONS
-    public boolean isEquals(Pos pos) {
+    public boolean IsEquals(Pos pos) {
         return (this.x == pos.x && this.y == pos.y);
     }
 
-    public Pos copy() {
+    public Pos Copy() {
         return new Pos(this.x, this.y);
     }
 
     // MATH OPERATIONS
-    public double calcDistance(Pos pos) {
+    public double CalcDistance(Pos pos) {
         return Math.sqrt(Math.pow(this.x - pos.x, 2) + Math.pow(this.y - pos.y, 2));
     }
 

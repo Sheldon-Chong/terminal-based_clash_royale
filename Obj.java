@@ -18,12 +18,12 @@ public abstract class Obj {
 
     
     // GETTERS AND SETTERS
-    public Pos  getPos() { return pos; }
-    public void setPos (Pos pos) { this.pos = pos; }
+    public Pos  GetPos() { return pos; }
+    public void SetPos (Pos pos) { this.pos = pos; }
 
     
     // PUBLIC METHODS
-    public double calcDistance (Obj obj) {
-        return pos.calcDistance(obj.getPos());
+    public double CalcDistance (Obj obj) {
+        return pos.CalcDistance(obj.GetPos());
     }
 }

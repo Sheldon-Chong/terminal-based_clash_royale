@@ -7,7 +7,7 @@
 
 class Troop extends Obj {
 
-    // CONSTANTS
+    // -- CONSTANTS --
     public static final int DEST_TROOP_BLOCKING     = -1;
     public static final int DEST_OUT_OF_BOUNDS      = -2;
     public static final int DEST_COLLISION_WORLD    = -3;
@@ -19,7 +19,7 @@ class Troop extends Obj {
     public static final int ACTION_MOVE   = 1;
 
 
-    // ATTRIBUTES
+    // -- ATTRIBUTES --
     private Pos         Dest;
     private char        nameInitial = 't';
     private int         hp;
@@ -29,6 +29,20 @@ class Troop extends Obj {
     private int         currentAction;
     private int         atk;
 
+
+    // -- PUBLIC METHODS --
+
+    // CONSTRUCTORS
+    public Troop() {
+        this.SetPos(new Pos(0, 0));
+    }
+
+    public Troop(Pos startingPos, char nameInitial, Player parent) {
+        this.SetPos(startingPos);
+        this.Dest = new Pos(5, 5);
+        this.nameInitial = nameInitial;
+        this.player = parent;
+    }
 
     // GETTER AND SETTERS
     public void SetRegion(int region) { this.region = region; }
@@ -51,28 +65,14 @@ class Troop extends Obj {
     public Pos  GetDest() { return this.Dest; }
     public void SetDest(Pos dest) { this.Dest = dest; }
 
-    public char getNameInitial() { return this.nameInitial; }
-    public void setNameInitial(char nameInitial) { this.nameInitial = nameInitial; }
+    public char GetNameInitial() { return this.nameInitial; }
+    public void SetNameInitial(char nameInitial) { this.nameInitial = nameInitial; }
 
     public void SetGameSysRef(GameSystem gameSysRef) { this.gameSysRef = gameSysRef; }
-
-
-    // CONSTRUCTORS
-    public Troop() {
-        this.setPos(new Pos(0, 0));
-    }
-
-    public Troop(Pos startingPos, char nameInitial, Player parent) {
-        this.setPos(startingPos);
-        this.Dest = new Pos(5, 5);
-        this.nameInitial = nameInitial;
-        this.player = parent;
-    }
-
-    // PUBLIC METHODS
-    public boolean moveTowards(Pos dest) {
+    
+    public boolean MoveTowards(Pos dest) {
         Pos moveVector = new Pos(0, 0);
-        Pos currentPos = this.getPos().copy();
+        Pos currentPos = this.GetPos().Copy();
         int status;
         
         this.SetAction(ACTION_MOVE);
@@ -84,17 +84,17 @@ class Troop extends Obj {
         //     dest.x, 
         //     dest.y);
 
-        if (this.getPos().x < dest.x) moveVector.x = 1;
-        if (this.getPos().x > dest.x) moveVector.x = -1;
-        status = travel(new Pos(moveVector.x, 0));
+        if (this.GetPos().x < dest.x) moveVector.x = 1;
+        if (this.GetPos().x > dest.x) moveVector.x = -1;
+        status = Travel(new Pos(moveVector.x, 0));
         if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
             this.attack(currentPos.Add(moveVector));
         
         moveVector = new Pos(0, 0);
         
-        if (this.getPos().y < dest.y) moveVector.y = 1;
-        if (this.getPos().y > dest.y) moveVector.y = -1;
-        status = travel(new Pos (0, moveVector.y));
+        if (this.GetPos().y < dest.y) moveVector.y = 1;
+        if (this.GetPos().y > dest.y) moveVector.y = -1;
+        status = Travel(new Pos (0, moveVector.y));
 
         if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
             this.attack(currentPos.Add(moveVector));
@@ -102,8 +102,8 @@ class Troop extends Obj {
         return true;
     }
     
-    public int travel(Pos vect) {
-        Pos dest = this.getPos().Add(vect);
+    public int Travel(Pos vect) {
+        Pos dest = this.GetPos().Add(vect);
         
         Obj object = gameSysRef.GetGrid()[dest.y][dest.x].getObject();
 
@@ -114,7 +114,7 @@ class Troop extends Obj {
         
         for (int troopIndex = 0; troopIndex < troops.length; troopIndex++) {
             Troop currentTroop = troops[troopIndex];
-            if (currentTroop.getPos().isEquals(dest) && !troops[troopIndex].getPos().isEquals(this.getPos()))
+            if (currentTroop.GetPos().IsEquals(dest) && !troops[troopIndex].GetPos().IsEquals(this.GetPos()))
                 return DEST_TROOP_BLOCKING;
         }
         
@@ -122,12 +122,12 @@ class Troop extends Obj {
         || dest.y < 0 || dest.y >= gameSysRef.GetGrid().length)
             return DEST_OUT_OF_BOUNDS;
 
-        this.setPos(dest.copy());
+        this.SetPos(dest.Copy());
         
         return 1;
     }
 
-    public void  recalcDest() {
+    public void  RecalcDest() {
         Pos closestTowerWall = null;
 
         Cell [] p1EntryPoints = {
@@ -146,11 +146,11 @@ class Troop extends Obj {
         if (playerNum == GameSystem.PLAYER1_REGION && currRegion == GameSystem.PLAYER1_REGION)
             closestTowerWall = findNearestAccessPoint(p1EntryPoints);
 
-        else if (playerNum == GameSystem.PLAYER2 && currRegion == GameSystem.PLAYER2)
+        else if (playerNum == GameSystem.PLAYER2_REGION && currRegion == GameSystem.PLAYER2_REGION)
             closestTowerWall = findNearestAccessPoint(p2EntryPoints);
 
         else {
-            Cell []neighbours = gameSysRef.GetCell(this.getPos()).GetNeighbours();
+            Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
             
             for (int i = 0; i < 4; i++) {
                 if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower)
@@ -162,8 +162,8 @@ class Troop extends Obj {
         this.SetDest(closestTowerWall);
     }
 
-    public int isAdjTower() {
-        Cell []neighbours = gameSysRef.GetCell(this.getPos()).GetNeighbours();
+    public int IsAdjTower() {
+        Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
 
         for (int i = 0; i < 4; i++) {
             if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower)
@@ -176,24 +176,25 @@ class Troop extends Obj {
         return 0;
     }
 
-    public void move() {
-        if (this.GetDest() == null || this.getPos() == null)
+    public void Move() {
+        if (this.GetDest() == null || this.GetPos() == null)
             return;
 
         boolean isAdjTower = false;
 
-        if (this.isAdjTower() != 0) {
+        if (this.IsAdjTower() != 0) {
             //System.out.printf("Troop %c is adjacent to a tower %d\n", this.nameInitial, this.isAdjTower());
         }
         else
-            this.moveTowards( this.GetDest() );
+            this.MoveTowards( this.GetDest() );
         this.SetRegion(gameSysRef.GetObjRegion(this));
-        this.recalcDest();
+        this.RecalcDest();
     }
 
 
-    // HELPER METHODS
-    private Cell []FindAccessPoint(Pos pos) {
+    // -- HELPER METHODS --
+
+    private Cell []findAccessPoint(Pos pos) {
         Cell []neighbours = this.gameSysRef.GetCell(pos).GetNeighbours();
 
         int accessPointsLen =0;
@@ -245,13 +246,13 @@ class Troop extends Obj {
         Pos closestPoint = null;
 
         for (int i = 0; i < cells.length; i++) {
-            Cell []accessPoints = FindAccessPoint(cells[i].getPos());
+            Cell []accessPoints = findAccessPoint(cells[i].getPos());
 
             for (int j = 0; j < accessPoints.length; j++) {
                 if (closestPoint == null)
                     closestPoint = accessPoints[j].getPos();
 
-                else if (this.getPos().calcDistance(accessPoints[j].getPos()) < this.getPos().calcDistance(closestPoint))
+                else if (this.GetPos().CalcDistance(accessPoints[j].getPos()) < this.GetPos().CalcDistance(closestPoint))
                     closestPoint = accessPoints[j].getPos();
             }
         }

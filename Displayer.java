@@ -22,18 +22,118 @@ public class Displayer {
     private char[][]    output;
     private Scanner     input;
 
-
-    // SETTER AND GETTER
-    // Written by Daiki
-    public String getPlayerName(int playerNumber) { return input.nextLine(); }
-
     
     // CONSTRUCTORS
     public Displayer(GameSystem gameSystem) {
         output = new char[0][]; // Initialize with an empty array
         this.gameRef = gameSystem;
-
+        
         this.input = new Scanner(System.in);
+    }
+    
+
+    // PUBLIC METHODS
+
+    // SETTER AND GETTER
+    // Written by Daiki
+    public String GetPlayerName(int playerNumber) { return input.nextLine(); }
+
+
+    // Written by Daiki
+    // Display ASCII Title Screen
+    public void ShowTitleScreen() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+            System.out.println("Press ENTER to begin game");
+            System.in.read();  // Wait for user to press ENTER
+        } catch (IOException e) {
+            System.out.println("Error loading title screen.");
+            e.printStackTrace();
+        }
+    }
+
+    // Written by Daiki/Sheldon
+    public void ShowGameInfo(Player player) {
+        System.out.println("o===============================================================o");
+        System.out.printf("|  Next:          | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
+        System.out.printf("|  |   %s   |   |         |         |         |                |\n", "Zap");
+        System.out.println("|  |           |  |         |         |         |                |");
+        System.out.printf("|  |           |  |___[%d]___|___[%d]___|___[%d]___|___[%d]___       |\n", 3, 5, 8, 4); // Sample elixir costs
+        System.out.println("|  |___[3]___|      _______________________________________     |");
+        System.out.print("|              Elixir: ");
+        for (int i = 1; i <= 10; i++) {
+            System.out.print("|" + i + " ");
+        }
+        System.out.println("|");
+        System.out.println("|                      |__|___|___|___|___|___|___|___|___|____| |");
+        System.out.println("o===============================================================o");
+    }
+
+    public void PrintWorld(Cell[][] grid) {
+        this.resetScreen();
+
+        append("     ");
+        for (int x = 0; x < grid[0].length; x++)
+            add2LastItem(String.format(" %2d  ", x));
+
+        append("   _");
+        for (int x = 0; x < grid[0].length; x++) {
+            if (grid[0][x].getObject() instanceof TileEmpty)
+                add2LastItem("     ");
+            else
+                add2LastItem("_____");
+        }
+
+        for (int y = 0; y < grid.length; y++) {
+            this.printEdgeRow(grid, y);
+            this.printContentRow(grid, y);
+        }
+
+        this.printEdgeRow(grid, grid.length - 1);
+        append("  |_");
+        for (int x = 0; x < grid[0].length; x++) {
+            if (grid[grid.length - 1][x].bottom_side == '|') {
+                if (grid[grid.length - 1][x - 1].left_side == ' ')
+                    add2LastItem("|    ");
+                else
+                    add2LastItem("     ");
+            } 
+            else if (x > 0 && grid[grid.length - 1][x - 1].getObject() instanceof TileEmpty && grid[grid.length - 1][x].left_side == ' ')
+                add2LastItem("|____");
+            else
+                add2LastItem("_____");
+        }
+
+        for (int y = 0; y < gameRef.GetGrid().length; y++) {
+            for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
+                Cell cell = gameRef.GetCell(new Pos (x,y));
+
+                Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
+                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
+
+                if (cell != null) {
+                    if (cell.getObject() instanceof TileTower)
+                    {    
+                        TileTower towerWall = (TileTower)cell.getObject();
+                        this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
+                    }
+
+                    else if (cell.getObject() instanceof TileEmpty)
+                    {
+                        TileEmpty empty = (TileEmpty)cell.getObject();
+                        this.impose(empty.getTexture(empty.getType()), startingCorner);
+                    }
+                } 
+            }
+        }
+
+        for (int i = 0; i < output.length; i++)
+            System.out.println(new String(output[i]));
+        System.out.println();
+
     }
 
 
@@ -106,7 +206,7 @@ public class Displayer {
         return corners;
     }
 
-    private Cell GetCell(int x, int y) {
+    private Cell getCell(int x, int y) {
         if (x < 0 || x >= gameRef.GetGrid()[0].length || y < 0 || y >= gameRef.GetGrid().length)
             return new Cell();
 
@@ -128,12 +228,12 @@ public class Displayer {
         for (int x = 0; x < grid[y].length; x++) {
             char corner = '.';
 
-            if (GetCell(x, y - 1).left_side == '|' || GetCell(x - 1, y - 1).right_side == '|')
+            if (getCell(x, y - 1).left_side == '|' || getCell(x - 1, y - 1).right_side == '|')
                 corner = '|';
 
             String edge = "    ";
 
-            if (GetCell(x, y).top_side == '|' || GetCell(x, y - 1).bottom_side == '|')
+            if (getCell(x, y).top_side == '|' || getCell(x, y - 1).bottom_side == '|')
                 edge = "____";
 
             buffer += String.format("%c%s", corner, edge);
@@ -164,10 +264,10 @@ public class Displayer {
                 Troop troop = (Troop) grid[y][x].getObject();
 
                 health = (char) (troop.GetHP() + '0');
-                icon = troop.getNameInitial();
+                icon = troop.GetNameInitial();
                 if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER1_REGION)
                     prefix = '1';
-                else if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2)
+                else if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2_REGION)
                     prefix = '2';
 
                 if (troop.GetAction() == Troop.ACTION_MOVE)
@@ -184,107 +284,6 @@ public class Displayer {
 
         // Append the buffer to the output array
         this.append(buffer);
-    }
-
-
-    // Written by Daiki
-    // Display ASCII Title Screen
-    public void ShowTitleScreen() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            System.out.println("Press ENTER to begin game");
-            System.in.read();  // Wait for user to press ENTER
-        } catch (IOException e) {
-            System.out.println("Error loading title screen.");
-            e.printStackTrace();
-        }
-    }
-
-    
-    // PUBLIC METHODS
-
-    // Written by Daiki/Sheldon
-    public void ShowGameInfo(Player player) {
-        System.out.println("o===============================================================o");
-        System.out.printf("|  Next:          | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
-        System.out.printf("|  |   %s   |   |         |         |         |                |\n", "Zap");
-        System.out.println("|  |           |  |         |         |         |                |");
-        System.out.printf("|  |           |  |___[%d]___|___[%d]___|___[%d]___|___[%d]___       |\n", 3, 5, 8, 4); // Sample elixir costs
-        System.out.println("|  |___[3]___|      _______________________________________     |");
-        System.out.print("|              Elixir: ");
-        for (int i = 1; i <= 10; i++) {
-            System.out.print("|" + i + " ");
-        }
-        System.out.println("|");
-        System.out.println("|                      |__|___|___|___|___|___|___|___|___|____| |");
-        System.out.println("o===============================================================o");
-    }
-
-    public void printWorld(Cell[][] grid) {
-        this.resetScreen();
-
-        append("     ");
-        for (int x = 0; x < grid[0].length; x++)
-            add2LastItem(String.format(" %2d  ", x));
-
-        append("   _");
-        for (int x = 0; x < grid[0].length; x++) {
-            if (grid[0][x].getObject() instanceof TileEmpty)
-                add2LastItem("     ");
-            else
-                add2LastItem("_____");
-        }
-
-        for (int y = 0; y < grid.length; y++) {
-            this.printEdgeRow(grid, y);
-            this.printContentRow(grid, y);
-        }
-
-        this.printEdgeRow(grid, grid.length - 1);
-        append("  |_");
-        for (int x = 0; x < grid[0].length; x++) {
-            if (grid[grid.length - 1][x].bottom_side == '|') {
-                if (grid[grid.length - 1][x - 1].left_side == ' ')
-                    add2LastItem("|    ");
-                else
-                    add2LastItem("     ");
-            } 
-            else if (x > 0 && grid[grid.length - 1][x - 1].getObject() instanceof TileEmpty && grid[grid.length - 1][x].left_side == ' ')
-                add2LastItem("|____");
-            else
-                add2LastItem("_____");
-        }
-
-        for (int y = 0; y < gameRef.GetGrid().length; y++) {
-            for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
-                Cell cell = gameRef.GetCell(new Pos (x,y));
-
-                Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
-                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
-
-                if (cell != null) {
-                    if (cell.getObject() instanceof TileTower)
-                    {    
-                        TileTower towerWall = (TileTower)cell.getObject();
-                        this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
-                    }
-
-                    else if (cell.getObject() instanceof TileEmpty)
-                    {
-                        TileEmpty empty = (TileEmpty)cell.getObject();
-                        this.impose(empty.getTexture(empty.getType()), startingCorner);
-                    }
-                } 
-            }
-        }
-
-        for (int i = 0; i < output.length; i++)
-            System.out.println(new String(output[i]));
-        System.out.println();
-
     }
 }
 

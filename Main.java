@@ -29,9 +29,9 @@ public class Main {
 		 String dummy = scanner.nextLine(); // Dummy user input
 
 		 System.out.print("Enter Player 1 name: ");
-		 String player1Name = display.getPlayerName(1);
+		 String player1Name = display.GetPlayerName(1);
 		 System.out.print("Enter Player 2 name: ");
-		 String player2Name = display.getPlayerName(2);
+		 String player2Name = display.GetPlayerName(2);
  
 		 System.out.println("Welcome " + player1Name + " and " + player2Name + "!");
 
@@ -47,13 +47,13 @@ public class Main {
 		 // Written by Daiki
 		 // Load and display the game board
 		 System.out.println("\nLoading the board...");
-		 display.printWorld(gameSys.GetGrid());  // Display the initial board
+		 display.PrintWorld(gameSys.GetGrid());  // Display the initial board
 
 		
 		while (true) {
 			//gameSys.PrintWorldGridRaw(gameSys.GetGrid());
 			gameSys.UpdateWorld();
-			display.printWorld(gameSys.GetGrid()); // Dispalys the board
+			display.PrintWorld(gameSys.GetGrid()); // Dispalys the board
 			System.out.println(currentPlayer + "");
 			display.ShowGameInfo(gameSys.GetPlayer1()); // Display Player 1 info right below the board
 			System.out.println("Enter 'q' to quit or any other key to simulate a move: ");
