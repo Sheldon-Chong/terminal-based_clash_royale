@@ -105,7 +105,7 @@ class Troop extends Obj {
     public int Travel(Pos vect) {
         Pos dest = this.GetPos().Add(vect);
         
-        Obj object = gameSysRef.GetGrid()[dest.y][dest.x].getObject();
+        Obj object = gameSysRef.GetGrid()[dest.y][dest.x].GetObject();
 
         if (object instanceof TileTower || object instanceof TileEmpty)
             return DEST_COLLISION_WORLD;
@@ -153,7 +153,7 @@ class Troop extends Obj {
             Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
             
             for (int i = 0; i < 4; i++) {
-                if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower)
+                if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
                     return;
             }
             closestTowerWall = findNearestAccessPoint(findAllTowerTiles());
@@ -166,10 +166,10 @@ class Troop extends Obj {
         Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
 
         for (int i = 0; i < 4; i++) {
-            if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower)
+            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
             {
-                if (((TileTower)(neighbours[i].getObject())).GetParent() != null)
-                return ((TileTower)(neighbours[i].getObject())).GetParent().GetPlayer().GetPlayerNum();
+                if (((TileTower)(neighbours[i].GetObject())).GetParent() != null)
+                return ((TileTower)(neighbours[i].GetObject())).GetParent().GetPlayer().GetPlayerNum();
             }
         }
 
@@ -201,7 +201,7 @@ class Troop extends Obj {
         
         for (int i = 0; i < 4; i++) {
             if ( neighbours[i] != null 
-                && neighbours[i].getObject() instanceof TileFloor)
+                && neighbours[i].GetObject() instanceof TileFloor)
                     accessPointsLen ++;
         }
         
@@ -210,7 +210,7 @@ class Troop extends Obj {
         accessPointsLen = 0;
         for (int i = 0; i < 4; i++) {
             if ( neighbours[i] != null 
-                && neighbours[i].getObject() instanceof TileFloor)
+                && neighbours[i].GetObject() instanceof TileFloor)
                     accessPoints[accessPointsLen++] = neighbours[i];
         }
 
@@ -223,7 +223,7 @@ class Troop extends Obj {
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
             for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
                 if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TileTower)
+                    this.gameSysRef.GetCell(new Pos (x, y)).GetObject() instanceof TileTower)
                     towersLen++;
             }
         }
@@ -234,7 +234,7 @@ class Troop extends Obj {
         for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
             for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
                 if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetCell(new Pos (x, y)).getObject() instanceof TileTower)
+                    this.gameSysRef.GetCell(new Pos (x, y)).GetObject() instanceof TileTower)
                     towersWalls[index++] = this.gameSysRef.GetCell(new Pos (x, y));
             }
         }
@@ -246,14 +246,14 @@ class Troop extends Obj {
         Pos closestPoint = null;
 
         for (int i = 0; i < cells.length; i++) {
-            Cell []accessPoints = findAccessPoint(cells[i].getPos());
+            Cell []accessPoints = findAccessPoint(cells[i].GetPos());
 
             for (int j = 0; j < accessPoints.length; j++) {
                 if (closestPoint == null)
-                    closestPoint = accessPoints[j].getPos();
+                    closestPoint = accessPoints[j].GetPos();
 
-                else if (this.GetPos().CalcDistance(accessPoints[j].getPos()) < this.GetPos().CalcDistance(closestPoint))
-                    closestPoint = accessPoints[j].getPos();
+                else if (this.GetPos().CalcDistance(accessPoints[j].GetPos()) < this.GetPos().CalcDistance(closestPoint))
+                    closestPoint = accessPoints[j].GetPos();
             }
         }
 
@@ -272,7 +272,7 @@ class Troop extends Obj {
 
 
     private void attack(Pos pos) {
-        Obj object = this.gameSysRef.GetCell(pos).getObject();
+        Obj object = this.gameSysRef.GetCell(pos).GetObject();
 
         if (object == null)
             return;

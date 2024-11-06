@@ -81,7 +81,7 @@ public class Displayer {
 
         append("   _");
         for (int x = 0; x < grid[0].length; x++) {
-            if (grid[0][x].getObject() instanceof TileEmpty)
+            if (grid[0][x].GetObject() instanceof TileEmpty)
                 add2LastItem("     ");
             else
                 add2LastItem("_____");
@@ -95,16 +95,7 @@ public class Displayer {
         this.printEdgeRow(grid, grid.length - 1);
         append("  |_");
         for (int x = 0; x < grid[0].length; x++) {
-            if (grid[grid.length - 1][x].bottom_side == '|') {
-                if (grid[grid.length - 1][x - 1].left_side == ' ')
-                    add2LastItem("|    ");
-                else
-                    add2LastItem("     ");
-            } 
-            else if (x > 0 && grid[grid.length - 1][x - 1].getObject() instanceof TileEmpty && grid[grid.length - 1][x].left_side == ' ')
-                add2LastItem("|____");
-            else
-                add2LastItem("_____");
+            add2LastItem("_____");
         }
 
         for (int y = 0; y < gameRef.GetGrid().length; y++) {
@@ -115,15 +106,15 @@ public class Displayer {
                 Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
 
                 if (cell != null) {
-                    if (cell.getObject() instanceof TileTower)
+                    if (cell.GetObject() instanceof TileTower)
                     {    
-                        TileTower towerWall = (TileTower)cell.getObject();
+                        TileTower towerWall = (TileTower)cell.GetObject();
                         this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
                     }
 
-                    else if (cell.getObject() instanceof TileEmpty)
+                    else if (cell.GetObject() instanceof TileEmpty)
                     {
-                        TileEmpty empty = (TileEmpty)cell.getObject();
+                        TileEmpty empty = (TileEmpty)cell.GetObject();
                         this.impose(empty.getTexture(empty.getType()), startingCorner);
                     }
                 } 
@@ -228,13 +219,7 @@ public class Displayer {
         for (int x = 0; x < grid[y].length; x++) {
             char corner = '.';
 
-            if (getCell(x, y - 1).left_side == '|' || getCell(x - 1, y - 1).right_side == '|')
-                corner = '|';
-
             String edge = "    ";
-
-            if (getCell(x, y).top_side == '|' || getCell(x, y - 1).bottom_side == '|')
-                edge = "____";
 
             buffer += String.format("%c%s", corner, edge);
         }
@@ -255,13 +240,13 @@ public class Displayer {
             char suffix = ' ';
             char edge;
 
-            if (grid[y][x].getObject() instanceof Tower) {
+            if (grid[y][x].GetObject() instanceof Tower) {
                 health = '5';
                 icon = 'T';
             }
 
-            if (grid[y][x].getObject() instanceof Troop) {
-                Troop troop = (Troop) grid[y][x].getObject();
+            if (grid[y][x].GetObject() instanceof Troop) {
+                Troop troop = (Troop) grid[y][x].GetObject();
 
                 health = (char) (troop.GetHP() + '0');
                 icon = troop.GetNameInitial();

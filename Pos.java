@@ -22,8 +22,8 @@ public class Pos {
 
 
     // GETTER AND SETTER
-    public void setPos(int x, int y) { this.x = x; this.y = y; }
-    public Pos  getPos() { return new Pos(this.x, this.y); }
+    public void SetPos(int x, int y) { this.x = x; this.y = y; }
+    public Pos  GetPos() { return new Pos(this.x, this.y); }
 
 
     // PUBLIC METHODS

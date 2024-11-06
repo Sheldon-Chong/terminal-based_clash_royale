@@ -17,10 +17,6 @@ public class Cell {
 
     // -- ATTRIBUTES --
     private Obj object;
-    public char right_side = ' ';
-    public char left_side = ' ';
-    public char top_side = ' ';
-    public char bottom_side = ' ';
     private Cell [][] gridRef;
     private Pos pos;
 
@@ -28,9 +24,7 @@ public class Cell {
     // -- PUBLIC METHODS --
 
     // CONSTRUCTORS
-    public Cell() {
-        
-    }
+    public Cell() { }
 
     public Cell(Obj object) {
         this.SetObject(object);
@@ -43,10 +37,10 @@ public class Cell {
     }
 
     // GETTERS AND SETTERS
-    public Pos      getPos() { return this.pos; }
+    public Pos      GetPos() { return this.pos; }
 
     public void     SetObject(Obj object) { this.object = object; }
-    public Obj      getObject() { return this.object; }
+    public Obj      GetObject() { return this.object; }
 
     public Cell [] GetNeighbours() {
         Cell [] neighbours = new Cell[4];

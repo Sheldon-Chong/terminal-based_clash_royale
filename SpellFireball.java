@@ -19,7 +19,7 @@ public class SpellFireball extends Spell {
                 for (int x = -GetRadius(); x <= GetRadius(); x++) {
                     Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
                     if (gameSysRef.IsWithinBoard(impactPos)) {
-                        Obj obj = gameSysRef.GetCell(impactPos).getObject();
+                        Obj obj = gameSysRef.GetCell(impactPos).GetObject();
                         if (obj instanceof Troop) {
                             ((Troop) obj).DecreaseHP(GetDamage());
                         }

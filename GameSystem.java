@@ -160,7 +160,7 @@ class GameSystem {
     public void PrintWorldGridRaw(Cell[][] grid) {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[row].length; col++) {
-                Object currentContents = grid[row][col].getObject();
+                Object currentContents = grid[row][col].GetObject();
 
                 if (currentContents instanceof TileTower)
                     System.out.print(((Tile)(currentContents)).getType());
@@ -226,7 +226,7 @@ class GameSystem {
                 else
                     startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
 
-                if (worldGrid[startPos.y][startPos.x].getObject() instanceof TileFloor)
+                if (worldGrid[startPos.y][startPos.x].GetObject() instanceof TileFloor)
                     break;
             }
 
@@ -347,13 +347,13 @@ class GameSystem {
 
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
-                if (this.GetCell(new Pos(x, y)).getObject() instanceof Tower) {
+                if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
                     Cell []neighbours = this.GetCell(new Pos(x, y)).GetNeighbours();
-                    Tower parent = (Tower) this.GetCell(new Pos(x, y)).getObject();
+                    Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
 
                     for (int i = 0; i < 4; i++) {
-                        if (neighbours[i] != null && neighbours[i].getObject() instanceof TileTower) {
-                            TileTower wall = (TileTower) neighbours[i].getObject();
+                        if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
+                            TileTower wall = (TileTower) neighbours[i].GetObject();
                             wall.SetParent(parent);
                         }
                     }
@@ -368,8 +368,8 @@ class GameSystem {
                     for (int i = 0; i < diagonalPositions.length; i++) {
                         Cell cell = this.GetCell(diagonalPositions[i]);
 
-                        if (cell != null && cell.getObject() instanceof TileTower)
-                            ((TileTower) cell.getObject()).SetParent(parent);
+                        if (cell != null && cell.GetObject() instanceof TileTower)
+                            ((TileTower) cell.GetObject()).SetParent(parent);
                     }
                 }
             }
