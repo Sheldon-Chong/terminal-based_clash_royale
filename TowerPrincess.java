@@ -9,5 +9,6 @@ public class TowerPrincess extends Tower {
     // CONSTRUCTORS
     public TowerPrincess (Player parentPlayer) {
         super(parentPlayer);
+        this.setHealth(5);
     }
 }

@@ -3,9 +3,9 @@
 public class TroopGoblins extends Troop {
 
     public TroopGoblins(Pos startingPos, Player player) {
-        super(startingPos, 'O', player);
-        this.SetHP(40); // Example value
-        this.SetAttack(10); // Example attack value
+        super(startingPos, "goblins", player); // 'goblins' for Goblins
+        this.SetHP(5); // Example value
+        this.SetAttack(1); // Example attack value
     }
 
     

@@ -32,6 +32,11 @@ public class Tower extends Obj{
     public void subtractHealth(int health) { this.health -= health; }
     public int  getHealth() { return this.health; }
 
+    
     public void   SetPlayer(Player parentPlayer) { this.parentPlayer = parentPlayer; }
     public Player GetPlayer() { return this.parentPlayer; }
+    
+    public boolean IsDestroyed() { 
+        return this.health <= 0; 
+    }
 }

@@ -28,12 +28,14 @@ class Troop extends Obj {
     private Player      player;
     private int         currentAction;
     private int         atk;
+    private String      name;
 
 
     // -- PUBLIC METHODS --
 
     // CONSTRUCTORS
     public Troop() {
+        this.name = "troop";
         this.SetPos(new Pos(0, 0));
     }
 
@@ -41,6 +43,13 @@ class Troop extends Obj {
         this.SetPos(startingPos);
         this.Dest = new Pos(5, 5);
         this.nameInitial = nameInitial;
+        this.player = parent;
+    }
+
+    public Troop(Pos startingPos, String name, Player parent) {
+        this.SetPos(startingPos);
+        this.Dest = new Pos(5, 5);
+        this.name = name;
         this.player = parent;
     }
 
@@ -65,8 +74,8 @@ class Troop extends Obj {
     public Pos  GetDest() { return this.Dest; }
     public void SetDest(Pos dest) { this.Dest = dest; }
 
-    public char GetNameInitial() { return this.nameInitial; }
-    public void SetNameInitial(char nameInitial) { this.nameInitial = nameInitial; }
+    public char GetNameInitial() { return this.name.charAt(0); }
+    public String GetNameShort() { return this.name.substring(0, 2); }
 
     public void SetGameSysRef(GameSystem gameSysRef) { this.gameSysRef = gameSysRef; }
     
@@ -181,10 +190,19 @@ class Troop extends Obj {
         if (this.GetDest() == null || this.GetPos() == null)
             return;
 
-        if (IsAdjTower() != null) {
+        Cell adjTower = IsAdjTower();
+        
+        if (adjTower != null) {
+            Tower parent = ((TileTower)adjTower.GetObject()).GetParent();
+
+            if (parent != null && isEnemy(parent)) {
+                this.SetAction(ACTION_ATTACK);
+                parent.subtractHealth(1);
+                return;
+            }
         }
-        else
-            this.MoveTowards( this.GetDest() );
+        
+        this.MoveTowards(this.GetDest());
         this.SetRegion(gameSysRef.GetObjRegion(this));
         this.RecalcDest();
     }
@@ -195,7 +213,7 @@ class Troop extends Obj {
     private Cell []findAccessPoint(Pos pos) {
         Cell []neighbours = this.gameSysRef.GetCell(pos).GetNeighbours();
 
-        int accessPointsLen =0;
+        int accessPointsLen = 0;
         
         for (int i = 0; i < 4; i++) {
             if ( neighbours[i] != null 
@@ -263,6 +281,9 @@ class Troop extends Obj {
             return false;
 
         if (object instanceof Troop && ((Troop)object).GetPlayer().GetPlayerNum() != this.GetPlayer().GetPlayerNum())
+            return true;
+        
+        if (object instanceof Tower && ((Tower)object).GetPlayer().GetPlayerNum() != this.GetPlayer().GetPlayerNum())
             return true;
 
         return false;

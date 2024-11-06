@@ -3,7 +3,7 @@
 public class TroopElixirGolem extends Troop {
 
     public TroopElixirGolem(Pos startingPos, Player player) {
-        super(startingPos, 'E', player);
+        super(startingPos, "elixir golem", player);
         this.SetHP(80); // Example value, modify as needed
         this.SetAttack(15); // Example attack value
     }

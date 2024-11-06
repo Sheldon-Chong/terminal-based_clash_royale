@@ -154,6 +154,25 @@ class GameSystem {
             GetCell(tempPos).SetObject(new TileFloor());
             GetCell(currentTroop.GetPos()).SetObject(currentTroop);
         }
+
+        for (int y = 0; y < this.GetGrid().length; y ++) {
+            for (int x = 0; x < this.GetGrid()[y].length; x++) {
+                
+                if (this.GetCell(y, x).GetObject() instanceof Tower) {
+                    Tower tower = (Tower) this.GetCell(y, x).GetObject();
+
+                    if (tower.IsDestroyed())
+                        this.GetCell(y, x).SetObject(new TileFloor());
+                }
+
+                if (this.GetCell(y, x).GetObject() instanceof TileTower) {
+                    TileTower tower = (TileTower) this.GetCell(y, x).GetObject();
+
+                    if (tower.GetParent().IsDestroyed())
+                        this.GetCell(y, x).SetObject(new TileFloor());
+                }
+            }
+        }
     }
 
     // Written by Sheldon
@@ -238,7 +257,7 @@ class GameSystem {
     private Troop spawnTroop(Pos startPos, char initial, Player playerRef, int hp) {
         Troop troop;
         
-        troop = new Troop(startPos, initial, playerRef);
+        troop = new TroopGoblins(startPos, playerRef);
         troop.SetHP(9);
         troop.SetGameSysRef(this);
 

@@ -72,6 +72,23 @@ public class Displayer {
         System.out.println("o===============================================================o");
     }
 
+    private String getRepr(Obj object) {
+        if (object instanceof Troop) {
+            Troop troop = (Troop) object;
+            String name = troop.GetNameShort(); 
+            if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2_REGION)
+                name = name.toUpperCase();
+
+            return name + (troop.GetHP());
+        }
+        else if (object instanceof Tower) {
+            Tower tower = (Tower) object;
+            return "T" + (tower.getHealth());
+        }
+        
+        return " ";
+    }
+
     public void PrintWorld(Cell[][] grid) {
         this.resetScreen();
 
@@ -98,6 +115,12 @@ public class Displayer {
             add2LastItem("_____");
         }
 
+        for (int i = 0; i < gameRef.GetTroops().length; i++) {
+            Troop troop = gameRef.GetTroops()[i];
+            Pos pos = this.convertPos2Corner((troop.GetPos())).Add(2,1);
+            this.impose(this.getRepr(troop), pos);
+        }
+
         for (int y = 0; y < gameRef.GetGrid().length; y++) {
             for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
                 Cell cell = gameRef.GetCell(new Pos (x,y));
@@ -106,20 +129,32 @@ public class Displayer {
                 Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
 
                 if (cell != null) {
-                    if (cell.GetObject() instanceof TileTower)
-                    {    
+                    Obj object = cell.GetObject();
+                    
+                    if (object instanceof Tower) {
+                        Tower tower = (Tower)cell.GetObject();
+                        this.impose(this.getRepr(tower), startingCorner.Add(2, 1));
+                    }
+
+                    else if (object instanceof TileTower) {    
                         TileTower towerWall = (TileTower)cell.GetObject();
                         this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
                     }
 
-                    else if (cell.GetObject() instanceof TileEmpty)
-                    {
+                    else if (object instanceof TileEmpty) {
                         TileEmpty empty = (TileEmpty)cell.GetObject();
                         this.impose(empty.getTexture(empty.getType()), startingCorner);
                     }
                 } 
             }
         }
+
+        WorldSpell spell = new WorldSpell(new Pos(3, 6), new Pos(7, 8));
+
+        this.impose(spell.getTexture().getTexture(Texture.CORNER_TOP_LEFT), this.convertPos2Corner(spell.GetStartPos()));
+        this.impose(spell.getTexture().getTexture(Texture.CORNER_BOTTOM_RIGHT), this.convertPos2Corner(spell.GetEndPos()));
+        this.impose(spell.getTexture().getTexture(Texture.CORNER_BOTTOM_LEFT), this.convertPos2Corner(new Pos(spell.GetStartPos().x, spell.GetEndPos().y)));
+        this.impose(spell.getTexture().getTexture(Texture.CORNER_TOP_RIGHT), this.convertPos2Corner(new Pos(spell.GetEndPos().x, spell.GetStartPos().y)));
 
         for (int i = 0; i < output.length; i++)
             System.out.println(new String(output[i]));
@@ -158,7 +193,7 @@ public class Displayer {
     }
 
     private void setChar(Pos pos, char newChar) {
-        if (pos.y < 0 || pos.y >= output.length - 1 || pos.x < 0 || pos.x >=  output[0].length - 1)
+        if (pos.y < 0 || pos.y >= output.length - 1 || pos.x < 0 || pos.x >=  output[pos.y].length - 1)
             return;
         output[pos.y][pos.x] = newChar;
     }
@@ -170,12 +205,22 @@ public class Displayer {
         for (int y = 0; y < texture.length; y++) {
             for (int x = 0; x < texture[y].length(); x++) {
                 Pos pos = new Pos(x, y).Add(startingPos);
-                if (pos.y < 0 || pos.y >= output.length - 1 || pos.x < 0 || pos.x >=  output[0].length - 1) {}
-                else if (texture[y].charAt(x) == ' ') {}
+                if (pos.y < 0 || pos.y >= output.length || pos.x < 0 || pos.x >= output[0].length) {
+                    // skip if out of bounds
+                }
+                else if (texture[y].charAt(x) == ' ') {
+                    // skip if empty
+                }
                 else
                     this.setChar(pos, texture[y].charAt(x));
             }
         }
+    }
+
+    private void impose(String texture, Pos startingPos) {
+        String [] textureArr = {texture};
+        
+        this.impose(textureArr, startingPos);
     }
 
     private void resetScreen () {
@@ -228,43 +273,41 @@ public class Displayer {
         this.append(buffer);
     }
 
+    private String generateCellRepr(Cell cell) {
+        char health = ' ';
+        String icon = " ";
+        char prefix = ' ';
+        char suffix = ' ';
+
+        if (cell.GetObject() instanceof Tower) {
+            Tower tower = (Tower) cell.GetObject();
+            health = (char)((char)tower.getHealth() + '0');
+            icon = "T";
+        }
+
+        if (cell.GetObject() instanceof Troop) {
+            Troop troop = (Troop) cell.GetObject();
+
+            health = (char) (troop.GetHP() + '0');
+            icon = troop.GetNameShort();
+            if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER1_REGION)
+                prefix = '1';
+            else if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2_REGION)
+                prefix = '2';
+
+        }
+
+        return "     ";
+        //return String.format("%s%s%c%c", prefix, icon, health, suffix);
+    }
+
     private void printContentRow(Cell[][] grid, int y) {
         // Initialize the buffer
         String buffer = String.format("%c | ", (char) (y + 'A'));
 
         // Print columns
         for (int x = 0; x < grid[y].length; x++) {
-            char health = ' ';
-            char icon = ' ';
-            char prefix = ' ';
-            char suffix = ' ';
-            char edge;
-
-            if (grid[y][x].GetObject() instanceof Tower) {
-                health = '5';
-                icon = 'T';
-            }
-
-            if (grid[y][x].GetObject() instanceof Troop) {
-                Troop troop = (Troop) grid[y][x].GetObject();
-
-                health = (char) (troop.GetHP() + '0');
-                icon = troop.GetNameInitial();
-                if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER1_REGION)
-                    prefix = '1';
-                else if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2_REGION)
-                    prefix = '2';
-
-                if (troop.GetAction() == Troop.ACTION_MOVE)
-                    suffix = '>';
-
-                if (troop.GetAction() == Troop.ACTION_ATTACK)
-                    suffix = '*';
-            }
-
-            edge = ' ';
-
-            buffer += String.format("%s%s%c%c%c", edge, prefix, icon, health, suffix);
+            buffer += generateCellRepr(grid[y][x]);
         }
 
         // Append the buffer to the output array

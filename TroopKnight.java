@@ -3,7 +3,7 @@
 public class TroopKnight extends Troop {
 
     public TroopKnight(Pos startingPos, Player player) {
-        super(startingPos, 'K', player); // 'K' for Knight
+        super(startingPos, "knight", player); // 'knight' for Knight
         this.SetHP(55); // Example value
         this.SetAttack(10); // Example attack value
     }

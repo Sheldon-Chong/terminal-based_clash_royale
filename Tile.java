@@ -29,22 +29,66 @@ public abstract class Tile extends Obj {
 
     // ATTRIBUTES
     private int        type;
-    private String [][]textures;
-
+    private int         textureState;
+    //private String [][]textures;
+    private Texture []textureSet;
 
     // CONSTRUCTORS
     public Tile() {
-        this.textures = new String [12][];
+        this.textureSet = new Texture [1];
+        for (int i = 0; i < this.textureSet.length; i++)
+            this.textureSet[i] = new Texture();
     }
 
 
+    public void popTextureFromSet(int textureId) {
+        Texture [] newTextureSet = new Texture [this.textureSet.length - 1];
+
+        if (textureId < 0) {
+            textureId = textureSet.length - 1;
+        }
+
+        for (int i = 0; i < this.textureSet.length; i++) {
+            if (i < textureId)
+                newTextureSet[i] = this.textureSet[i];
+            else if (i > textureId)
+                newTextureSet[i - 1] = this.textureSet[i];
+        } 
+    }
+
+    public void addTextureToSet(Texture texture) {
+        Texture [] newTextureSet = new Texture [this.textureSet.length + 1];
+
+        for (int i = 0; i < this.textureSet.length; i++)
+            newTextureSet[i] = this.textureSet[i];
+
+        newTextureSet[newTextureSet.length - 1] = texture;
+        this.textureSet = newTextureSet;
+    }
+
     // GETTERS & SETTERS
-    public void      setTexture(int textureId, String [] texture) { this.textures[textureId] = texture; }
-    public String [] getTexture(int textureId) { return this.textures[textureId]; }
+    public void SetTextureState(int textureState) { this.textureState = textureState; }
+    public int  GetTextureState() { return this.textureState; }
+
+    public Texture GetActiveTexture() {
+        return this.textureSet[this.GetTextureState()];
+    }
+
+    public void      setTexture(int textureId, String [] texture) { 
+        this.GetActiveTexture().setTexture(textureId, texture); 
+    }
+
+    public void setTextureSet(int textureSetEntry, Texture texture) {
+        this.textureSet[textureSetEntry] = texture;
+    }
+
+    public String [] getTexture(int textureId) { 
+        return this.GetActiveTexture().getTexture(textureId); 
+    }
     
     public void setAllTextures(String [] texture) {
-        for (int i = 0; i < this.textures.length; i++)
-        this.textures[i] = texture;
+        for (int i = 0; i < this.GetActiveTexture().GetTextures().length; i++)
+            this.setTexture(i, texture);
     }
     
     public void setType(int type) { this.type = type; }

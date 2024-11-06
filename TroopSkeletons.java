@@ -3,7 +3,7 @@
 public class TroopSkeletons extends Troop {
 
     public TroopSkeletons(Pos startingPos, Player player) {
-        super(startingPos, 'S', player); // 'S' for Skeletons
+        super(startingPos, "skeletons", player); // 'skeletons' for Skeletons
         this.SetHP(20); // Example value
         this.SetAttack(5); // Example attack value
     }

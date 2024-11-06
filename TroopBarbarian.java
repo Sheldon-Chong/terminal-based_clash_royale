@@ -3,7 +3,7 @@
 public class TroopBarbarian extends Troop {
 
     public TroopBarbarian(Pos startingPos, Player player) {
-        super(startingPos, 'B', player);
+        super(startingPos, "barbarian", player); // 'barbarian' for Barbarian
         this.SetHP(50); // Example value
         this.SetAttack(12); // Example attack value
     }
