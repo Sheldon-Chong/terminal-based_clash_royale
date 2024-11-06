@@ -162,28 +162,26 @@ class Troop extends Obj {
         this.SetDest(closestTowerWall);
     }
 
-    public int IsAdjTower() {
+    public Cell IsAdjTower() {
         Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
 
         for (int i = 0; i < 4; i++) {
-            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
-            {
-                if (((TileTower)(neighbours[i].GetObject())).GetParent() != null)
-                return ((TileTower)(neighbours[i].GetObject())).GetParent().GetPlayer().GetPlayerNum();
+            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
+                TileTower tileTower = (TileTower)neighbours[i].GetObject();
+
+                if (tileTower.GetParent() != null)
+                    return neighbours[i];
             }
         }
 
-        return 0;
+        return null;
     }
 
     public void Move() {
         if (this.GetDest() == null || this.GetPos() == null)
             return;
 
-        boolean isAdjTower = false;
-
-        if (this.IsAdjTower() != 0) {
-            //System.out.printf("Troop %c is adjacent to a tower %d\n", this.nameInitial, this.isAdjTower());
+        if (IsAdjTower() != null) {
         }
         else
             this.MoveTowards( this.GetDest() );
