@@ -32,14 +32,13 @@ class GameSystem {
     private ObjList  spellQueue;
     private          Player player1;
     private          Player player2;
-
-    //Written by Daiki
     private int      currentRound = 1; // Trakcs the current round number
     
 
     // -- PUBLIC METHODS --
 
     // CONSTRUCTORS
+    
     // Written by Sheldon
     public GameSystem() {
         this.initWorld();
@@ -47,6 +46,7 @@ class GameSystem {
 
     
     // GETTERS AND SETTERS
+
     // written by Sheldon
     public Player    GetPlayer1() { return this.player1; }
     public Player    GetPlayer2() { return this.player2; }
@@ -61,6 +61,7 @@ class GameSystem {
  
     public Cell [][] GetGrid()    { return this.worldGrid; }
 
+    public void      SetCell(int row, int col, Cell cell) { this.worldGrid[row][col] = cell; }
     public Cell      GetCell(int row, int col) { return this.worldGrid[row][col]; }
     public Cell      GetCell(Pos pos) {
         if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
@@ -68,17 +69,23 @@ class GameSystem {
         
         return this.worldGrid[pos.y][pos.x];
     }
+    private char     getCharTile(int row, int col, char [][]grid) {
+        if (row < 0 || row >= grid.length)
+            return 0;
 
-    public void SetCell(int row, int col, Cell cell) { this.worldGrid[row][col] = cell; }
+        if (col < 0 || col >= grid[row].length)
+            return 0;
+
+        return grid[row][col];
+    }
+
 
     // Written by Daiki
     // Method to get the current round
     public int GetRound() { return this.currentRound; }
-
     public ObjList GetSpells () {
         return this.spellQueue;
     }
-
 
     // Written by Sheldon
     public Cell[][] ConvertChar2DtoTile2D(char[][] grid) {
@@ -154,8 +161,6 @@ class GameSystem {
             return PLAYER2_REGION;
     }
 
-    
-
     // Written by Daiki
     public void UpdateWorld() { 
 
@@ -164,6 +169,15 @@ class GameSystem {
         this.updateSpellQueue();
     }
 
+    // Written by Sheldon
+    public void destroyTroop(Troop troop) {
+        this.troops.Pop(troop);
+    }
+    
+    
+    // -- HELPER METHODS --
+
+    // Written by Sheldon
     private void updateTroops() {
         for (int i = 0; i < troops.GetLen(); i++) {
             Troop currentTroop = (Troop)troops.GetItem(i);
@@ -174,6 +188,7 @@ class GameSystem {
         }
     }
 
+    // Written by Sheldon
     private void updateTiles() {
         for (int y = 0; y < this.GetGrid().length; y ++) {
             for (int x = 0; x < this.GetGrid()[y].length; x++) {
@@ -195,6 +210,7 @@ class GameSystem {
         }
     }
 
+    // Written by Sheldon
     private void updateSpellQueue() {
         for (int i = 0; i < this.spellQueue.GetLen(); i++) {
             WorldSpell spell = (WorldSpell)this.spellQueue.GetItem(i);
@@ -215,21 +231,9 @@ class GameSystem {
         }
     }
 
-
     // Written by Sheldon
-    public void destroyTroop(Troop troop) {
-        this.troops.Pop(troop);
-    }
-
-
-    // -- HELPER METHODS --
-
-
-
     private Troop str2Troop(String str, Pos pos, Player player) {
         str = str.toLowerCase();
-
-        
         
         if      (str.equals("barbarian"))   { return new TroopBarbarian(pos, player); }
         else if (str.equals("elixir golem")){ return new TroopElixirGolem(pos, player); }
@@ -244,7 +248,6 @@ class GameSystem {
         else
             return null;
     }
-
 
     // Written by Sheldon
     private void spawnTroops(int amt) {
@@ -265,7 +268,8 @@ class GameSystem {
                 else
                     startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
 
-                if (worldGrid[startPos.y][startPos.x].GetObject() instanceof TileFloor)
+                    
+                if (this.GetCell(startPos).GetObject() instanceof TileFloor)
                     break;
             }
 
@@ -359,17 +363,6 @@ class GameSystem {
 
         player.setCardsOnHand(cards);
     }
-    
-    // Written by Sheldon
-    private char getCharTile(int row, int col, char [][]grid) {
-        if (row < 0 || row >= grid.length)
-            return 0;
-
-        if (col < 0 || col >= grid[row].length)
-            return 0;
-
-        return grid[row][col];
-    }
 
     // Written by Sheldon
     private void initWorld() {
@@ -420,35 +413,7 @@ class GameSystem {
                     }
                 }
             }
-
         }
         this.UpdateWorld();
     }
-
-
-
-        // // Written by Sheldon
-        // public void PrintWorldGridRaw(Cell[][] grid) {
-        //     for (int row = 0; row < grid.length; row++) {
-        //         for (int col = 0; col < grid[row].length; col++) {
-        //             Object currentContents = grid[row][col].GetObject();
-    
-        //             if (currentContents instanceof TileTower)
-        //                 System.out.print(((Tile)(currentContents)).getType());
-    
-        //             else if (currentContents instanceof TileEmpty)
-        //                 System.out.print(' ');
-    
-        //             else if (currentContents instanceof TileFloor)
-        //                 System.out.print('.');
-    
-        //             else
-        //                 System.out.print('?');
-                        
-        //             System.out.print(" ");
-        //         }
-        //         System.out.println("");
-        //     }
-        // }
-    
 }
