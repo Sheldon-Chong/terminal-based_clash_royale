@@ -97,11 +97,11 @@ public class Displayer {
     // Written by Sheldon
     private void printBoard(Cell[][] grid) {
         screen.AppendLine("     ");
-        for (int x = 0; x < grid[0].length; x++) {
+        for (int x = 0; x < grid[0].length; x++)
             screen.Add2LastItem(String.format(" %2d  ", x));
-        }
 
         screen.AppendLine("   _");
+        
         for (int x = 0; x < grid[0].length; x++) {
             if (grid[0][x].GetObject() instanceof TileEmpty)
                 screen.Add2LastItem("     ");
@@ -110,15 +110,31 @@ public class Displayer {
         }
 
         for (int y = 0; y < grid.length; y++) {
-            this.renderEdgeRow(grid, y);
-            this.renderContentRow(grid, y);
+            // Render edge row
+            String edgeBuffer = String.format("  | ", (char) (y + 'A'));
+            
+            for (int x = 0; x < grid[y].length; x++) {
+                char corner = '.';
+                String edge = "    ";
+                edgeBuffer += String.format("%c%s", corner, edge);
+            }
+
+            screen.AppendLine(edgeBuffer);
+
+            // Render content row
+            String contentBuffer = String.format("%c | ", (char) (y + 'A'));
+            
+            for (int x = 0; x < grid[y].length; x++)
+                contentBuffer += "     ";
+
+            screen.AppendLine(contentBuffer);
         }
 
-        this.renderEdgeRow(grid, grid.length - 1);
-        screen.AppendLine("  |_");
-        for (int x = 0; x < grid[0].length; x++) {
-            screen.Add2LastItem("_____");
-        }
+        // Render the last edge row
+        String lastEdgeBuffer = "  |_";
+        for (int x = 0; x < grid[0].length; x++)
+            lastEdgeBuffer += "_____";
+        screen.AppendLine(lastEdgeBuffer);
     }
 
     // Written by Sheldon
@@ -210,23 +226,6 @@ public class Displayer {
     }
 
     // Written by Sheldon
-    private void renderEdgeRow(Cell[][] grid, int y) {
-        // Initialize the buffer
-        String buffer = String.format("  | ", (char) (y + 'A'));
-
-        for (int x = 0; x < grid[y].length; x++) {
-            char corner = '.';
-
-            String edge = "    ";
-
-            buffer += String.format("%c%s", corner, edge);
-        }
-
-        // Append the buffer to the output array
-        screen.AppendLine(buffer);
-    }
-
-    // Written by Sheldon
     private String generateCellRepr(Cell cell) {
         char health = ' ';
         String icon = " ";
@@ -252,20 +251,7 @@ public class Displayer {
 
         }
 
-        return "     ";
+        return " ";
         //return String.format("%s%s%c%c", prefix, icon, health, suffix);
-    }
-
-    private void renderContentRow(Cell[][] grid, int y) {
-        // Initialize the buffer
-        String buffer = String.format("%c | ", (char) (y + 'A'));
-
-        // Print columns
-        for (int x = 0; x < grid[y].length; x++) {
-            buffer += generateCellRepr(grid[y][x]);
-        }
-
-        // Append the buffer to the output array
-        screen.AppendLine(buffer);
     }
 }

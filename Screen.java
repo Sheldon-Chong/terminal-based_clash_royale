@@ -1,20 +1,22 @@
 public class Screen {
     private char[][] output;
 
+    // -- CONSTRUCTORS --
+
     public Screen() {
         this.output = new char[0][];
     }
 
-    public char[][] GetScreen() {
-        return this.output;
-    }
+    // -- GETTERS AND SETTERS --
+
+    public char[][] GetScreen() { return this.output; }
 
     public void SetPixel(Pos pos, char newChar) {
-        if (pos.y < 0 || pos.y >= output.length || pos.x < 0 || pos.x >= output[pos.y].length) {
+        if (pos.y < 0 || pos.y >= output.length || pos.x < 0 || pos.x >= output[pos.y].length)
             return;
-        }
         output[pos.y][pos.x] = newChar;
     }
+    public void SetScreen(char[][] output) { this.output = output; }
 
     // Written by Sheldon
     public void ImposeImage(String[] texture, Pos startingPos) {
@@ -48,11 +50,7 @@ public class Screen {
         this.output = new char[0][];
     }
 
-    public void SetScreen(char[][] output) {
-        this.output = output;
-    }
-
-    
+    // Written by Sheldon
     public void PrintScreen() {
         
         for (int i = 0; i < output.length; i++)
@@ -62,6 +60,7 @@ public class Screen {
         
     }
     
+    // Written by Sheldon
     public void Add2LastItem(String value) {
         if (this.output.length == 0) {
             this.output = new char[1][];
@@ -77,6 +76,7 @@ public class Screen {
         this.output[this.output.length - 1] = newLine;
     }
 
+    // Written by Sheldon
     public void AppendLine(String value) {
         
         char[][] newOutput = new char[this.output.length + 1][];
