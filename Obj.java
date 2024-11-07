@@ -20,6 +20,7 @@ public abstract class Obj {
     // GETTERS AND SETTERS
     public Pos  GetPos() { return pos; }
     public void SetPos (Pos pos) { this.pos = pos; }
+    public void SetPos (int x, int y) { this.pos = new Pos(x, y); }
 
     
     // PUBLIC METHODS

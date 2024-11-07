@@ -4,8 +4,10 @@ public class WorldSpell extends Obj {
     private Pos startPos;
     private Pos endPos;
     private Texture texture;
+    private int cooldown;
 
-    public WorldSpell (Pos startingPos, Pos endPos) {
+    public WorldSpell (Pos startingPos, Pos endPos, int cooldown) {
+        this.cooldown = cooldown;
         this.startPos = startingPos;
         this.endPos = endPos;
 
@@ -48,5 +50,13 @@ public class WorldSpell extends Obj {
 
     public Texture getTexture() {
         return this.texture;
+    }
+
+    public void DeductCooldown() {
+        this.cooldown--;
+    }
+
+    public int GetCooldown() {
+        return this.cooldown;
     }
 }

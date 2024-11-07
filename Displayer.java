@@ -149,7 +149,7 @@ public class Displayer {
             }
         }
 
-        WorldSpell spell = new WorldSpell(new Pos(3, 6), new Pos(7, 8));
+        WorldSpell spell = new WorldSpell(new Pos(3, 6), new Pos(7, 8), 2);
 
         this.impose(spell.getTexture().getTexture(Texture.CORNER_TOP_LEFT), this.convertPos2Corner(spell.GetStartPos()));
         this.impose(spell.getTexture().getTexture(Texture.CORNER_BOTTOM_RIGHT), this.convertPos2Corner(spell.GetEndPos()));

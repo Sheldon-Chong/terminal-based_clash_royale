@@ -24,11 +24,12 @@ class GameSystem {
     public final static int     NO_REGION = 0;
     public final static int     PLAYER1_REGION = 1;
     public final static int     PLAYER2_REGION = 2;
-
-
+    
+    
     // -- ATTRIBUTES --
     private Troop[]  troops;
     private Cell[][] worldGrid;
+    private WorldSpell []SpellQueue;
     private          Player player1;
     private          Player player2;
 
@@ -101,12 +102,35 @@ class GameSystem {
                     break; case SYMBOL_FLOOR:
                         tileContent = new TileFloor();
                 }
-
+                
                 wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
             }
         }
 
         return wGrid;
+    }
+
+    public void AddSpellToQueue (WorldSpell spell) {
+        WorldSpell []newQueue = new WorldSpell[this.SpellQueue.length + 1];
+
+        for (int i = 0; i < this.SpellQueue.length; i++)
+            newQueue[i] = this.SpellQueue[i];
+
+        newQueue[newQueue.length - 1] = spell;
+        this.SpellQueue = newQueue;
+    }
+
+    public void PopSpellFromQueue(int index) {
+        WorldSpell []newQueue = new WorldSpell[this.SpellQueue.length - 1];
+
+        for (int i = 0; i < this.SpellQueue.length; i++) {
+            if (i < index)
+                newQueue[i] = this.SpellQueue[i];
+            else if (i > index)
+                newQueue[i - 1] = this.SpellQueue[i];
+        }
+
+        this.SpellQueue = newQueue;
     }
 
     // Written by Daiki
