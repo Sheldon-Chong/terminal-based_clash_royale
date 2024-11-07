@@ -44,9 +44,8 @@ public abstract class Tile extends Obj {
     public void popTextureFromSet(int textureId) {
         Texture [] newTextureSet = new Texture [this.textureSet.length - 1];
 
-        if (textureId < 0) {
+        if (textureId < 0)
             textureId = textureSet.length - 1;
-        }
 
         for (int i = 0; i < this.textureSet.length; i++) {
             if (i < textureId)

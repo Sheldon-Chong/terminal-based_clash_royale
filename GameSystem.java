@@ -27,9 +27,9 @@ class GameSystem {
     
     
     // -- ATTRIBUTES --
-    private Troop[]  troops;
+    private ObjList  troops;
     private Cell[][] worldGrid;
-    private WorldSpell []SpellQueue;
+    private ObjList  spellQueue;
     private          Player player1;
     private          Player player2;
 
@@ -50,7 +50,14 @@ class GameSystem {
     // written by Sheldon
     public Player    GetPlayer1() { return this.player1; }
     public Player    GetPlayer2() { return this.player2; }
-    public Troop []  GetTroops()  { return this.troops; }
+    public Troop[] GetTroops() {
+        Obj[] objArray = this.troops.GetList();
+        Troop[] troopArray = new Troop[objArray.length];
+        for (int i = 0; i < objArray.length; i++) {
+            troopArray[i] = (Troop) objArray[i];
+        }
+        return troopArray;
+    }
  
     public Cell [][] GetGrid()    { return this.worldGrid; }
 
@@ -67,6 +74,10 @@ class GameSystem {
     // Written by Daiki
     // Method to get the current round
     public int GetRound() { return this.currentRound; }
+
+    public ObjList GetSpells () {
+        return this.spellQueue;
+    }
 
 
     // Written by Sheldon
@@ -110,29 +121,6 @@ class GameSystem {
         return wGrid;
     }
 
-    public void AddSpellToQueue (WorldSpell spell) {
-        WorldSpell []newQueue = new WorldSpell[this.SpellQueue.length + 1];
-
-        for (int i = 0; i < this.SpellQueue.length; i++)
-            newQueue[i] = this.SpellQueue[i];
-
-        newQueue[newQueue.length - 1] = spell;
-        this.SpellQueue = newQueue;
-    }
-
-    public void PopSpellFromQueue(int index) {
-        WorldSpell []newQueue = new WorldSpell[this.SpellQueue.length - 1];
-
-        for (int i = 0; i < this.SpellQueue.length; i++) {
-            if (i < index)
-                newQueue[i] = this.SpellQueue[i];
-            else if (i > index)
-                newQueue[i - 1] = this.SpellQueue[i];
-        }
-
-        this.SpellQueue = newQueue;
-    }
-
     // Written by Daiki
     // Method to shuffle cards in each player's hand
     public void shufflePlayerCards() { 
@@ -166,19 +154,27 @@ class GameSystem {
             return PLAYER2_REGION;
     }
 
+    
+
     // Written by Daiki
     public void UpdateWorld() { 
-        for (int i = 0; i < troops.length; i++) {
-            if (troops[i] == null)
-                continue;
 
-            Troop currentTroop = troops[i];
+        this.updateTroops();
+        this.updateTiles();
+        this.updateSpellQueue();
+    }
+
+    private void updateTroops() {
+        for (int i = 0; i < troops.GetLen(); i++) {
+            Troop currentTroop = (Troop)troops.GetItem(i);
             Pos tempPos = currentTroop.GetPos().Copy();
             currentTroop.Move();
             GetCell(tempPos).SetObject(new TileFloor());
             GetCell(currentTroop.GetPos()).SetObject(currentTroop);
         }
+    }
 
+    private void updateTiles() {
         for (int y = 0; y < this.GetGrid().length; y ++) {
             for (int x = 0; x < this.GetGrid()[y].length; x++) {
                 
@@ -199,65 +195,65 @@ class GameSystem {
         }
     }
 
-    // Written by Sheldon
-    public void PrintWorldGridRaw(Cell[][] grid) {
-        for (int row = 0; row < grid.length; row++) {
-            for (int col = 0; col < grid[row].length; col++) {
-                Object currentContents = grid[row][col].GetObject();
-
-                if (currentContents instanceof TileTower)
-                    System.out.print(((Tile)(currentContents)).getType());
-
-                else if (currentContents instanceof TileEmpty)
-                    System.out.print(' ');
-
-                else if (currentContents instanceof TileFloor)
-                    System.out.print('.');
-
-                else
-                    System.out.print('?');
-                    
-                System.out.print(" ");
+    private void updateSpellQueue() {
+        for (int i = 0; i < this.spellQueue.GetLen(); i++) {
+            WorldSpell spell = (WorldSpell)this.spellQueue.GetItem(i);
+            spell.DeductCooldown();
+            if (spell.GetCooldown() * -1 > spell.GetDuration()) {
+                this.spellQueue.SetItem(i, null);
             }
-            System.out.println("");
+            System.out.print("Spell " + i + " has " + spell.GetCooldown() + " turns left. Duration is " + spell.GetDuration() + "\n");
+        }
+
+        int index = 0;
+        
+        while(index < this.spellQueue.GetLen()) {
+            if (this.spellQueue.GetItem(index) == null)
+                this.spellQueue.Pop(index);
+            else
+                index++;
         }
     }
 
+
     // Written by Sheldon
     public void destroyTroop(Troop troop) {
-        for (int i = 0; i < troops.length; i++) {
-            if (troops[i] == troop) {
-                System.out.println(troops[i] + " dead");
-                
-                Troop []newTroops = new Troop[troops.length - 1];
-                
-                int index = 0;
-
-                for (int j = 0; j < troops.length; j++) {
-                    if (troops[j] != troop) {
-                        newTroops[index] = troops[j];
-                        index++;
-                    }
-                }
-
-                troops = newTroops;
-
-                break;
-            }
-        }
+        this.troops.Pop(troop);
     }
 
 
     // -- HELPER METHODS --
 
+
+
+    private Troop str2Troop(String str, Pos pos, Player player) {
+        str = str.toLowerCase();
+
+        
+        
+        if      (str.equals("barbarian"))   { return new TroopBarbarian(pos, player); }
+        else if (str.equals("elixir golem")){ return new TroopElixirGolem(pos, player); }
+        else if (str.equals("giant"))       { return new TroopGiant(pos, player); }
+        else if (str.equals("goblins"))     { return new TroopGoblins(pos, player); }
+        else if (str.equals("golem"))       { return new TroopGolem(pos, player); }
+        else if (str.equals("hog rider"))   { return new TroopHogRider(pos, player); }
+        else if (str.equals("knight"))      { return new TroopKnight(pos, player); }
+        else if (str.equals("lumberjack"))  { return new TroopLumberjack(pos, player); }
+        else if (str.equals("pekka"))       { return new TroopPEKKA(pos, player); }
+        else if (str.equals("skeletons"))   { return new TroopSkeletons(pos, player); }
+        else
+            return null;
+    }
+
+
     // Written by Sheldon
     private void spawnTroops(int amt) {
-        this.troops = new Troop[amt];
+        this.troops.ClearList();
 
-        for (int i = 0; i < troops.length; i++) {
+        for (int i = 0; i < amt; i++) {
             Player currPlayer = player1;
             
-            if (i > (troops.length / 2))
+            if (i > (amt / 2))
                 currPlayer = player2;
 
             Pos startPos;
@@ -273,7 +269,7 @@ class GameSystem {
                     break;
             }
 
-            this.troops[i] = spawnTroop(startPos, (char) ('A' + i), currPlayer, 9);
+            this.troops.append(spawnTroop(startPos, (char) ('A' + i), currPlayer, 9));
         }
     }
 
@@ -281,7 +277,7 @@ class GameSystem {
     private Troop spawnTroop(Pos startPos, char initial, Player playerRef, int hp) {
         Troop troop;
         
-        troop = new TroopGoblins(startPos, playerRef);
+        troop = str2Troop("barbarian", startPos, playerRef);
         troop.SetHP(9);
         troop.SetGameSysRef(this);
 
@@ -375,9 +371,17 @@ class GameSystem {
         return grid[row][col];
     }
 
-
     // Written by Sheldon
     private void initWorld() {
+        this.spellQueue = new ObjList();
+        this.spellQueue.append(new WorldSpell(new Pos(3, 6), new Pos(7, 8), 10));
+        this.spellQueue.append(new WorldSpell(new Pos(4, 7), new Pos(10, 15), 10));
+
+        ((WorldSpell)(spellQueue.GetItem(0))).SetDuration(4);
+        ((WorldSpell)(spellQueue.GetItem(1))).SetDuration(4);
+
+        this.troops = new ObjList();
+
         this.player1 = new Player(PLAYER1_REGION);
         this.player2 = new Player(PLAYER2_REGION);
 
@@ -420,4 +424,31 @@ class GameSystem {
         }
         this.UpdateWorld();
     }
+
+
+
+        // // Written by Sheldon
+        // public void PrintWorldGridRaw(Cell[][] grid) {
+        //     for (int row = 0; row < grid.length; row++) {
+        //         for (int col = 0; col < grid[row].length; col++) {
+        //             Object currentContents = grid[row][col].GetObject();
+    
+        //             if (currentContents instanceof TileTower)
+        //                 System.out.print(((Tile)(currentContents)).getType());
+    
+        //             else if (currentContents instanceof TileEmpty)
+        //                 System.out.print(' ');
+    
+        //             else if (currentContents instanceof TileFloor)
+        //                 System.out.print('.');
+    
+        //             else
+        //                 System.out.print('?');
+                        
+        //             System.out.print(" ");
+        //         }
+        //         System.out.println("");
+        //     }
+        // }
+    
 }

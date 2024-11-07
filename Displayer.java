@@ -87,10 +87,18 @@ public class Displayer {
         }
         
         return " ";
-    }
+        }
 
     public void PrintWorld(Cell[][] grid) {
         this.resetScreen();
+        printBoard(grid);
+        printTroops();
+        printSpells();
+        printCells();
+        printOutput();
+    }
+
+    private void printBoard(Cell[][] grid) {
 
         append("     ");
         for (int x = 0; x < grid[0].length; x++)
@@ -99,9 +107,9 @@ public class Displayer {
         append("   _");
         for (int x = 0; x < grid[0].length; x++) {
             if (grid[0][x].GetObject() instanceof TileEmpty)
-                add2LastItem("     ");
+            add2LastItem("     ");
             else
-                add2LastItem("_____");
+            add2LastItem("_____");
         }
 
         for (int y = 0; y < grid.length; y++) {
@@ -114,54 +122,81 @@ public class Displayer {
         for (int x = 0; x < grid[0].length; x++) {
             add2LastItem("_____");
         }
+    }
 
+    private void printTroops() {
         for (int i = 0; i < gameRef.GetTroops().length; i++) {
             Troop troop = gameRef.GetTroops()[i];
-            Pos pos = this.convertPos2Corner((troop.GetPos())).Add(2,1);
+            Pos pos = this.pos2Corner((troop.GetPos())).Add(2, 1);
             this.impose(this.getRepr(troop), pos);
         }
+    }
 
-        for (int y = 0; y < gameRef.GetGrid().length; y++) {
-            for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
-                Cell cell = gameRef.GetCell(new Pos (x,y));
+    private void printSpells() {
+        ObjList spellQueue = gameRef.GetSpells();
 
-                Pos []cornersPositions = getCornersFromTile(new Pos (x, y));
-                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
-
-                if (cell != null) {
-                    Obj object = cell.GetObject();
-                    
-                    if (object instanceof Tower) {
-                        Tower tower = (Tower)cell.GetObject();
-                        this.impose(this.getRepr(tower), startingCorner.Add(2, 1));
-                    }
-
-                    else if (object instanceof TileTower) {    
-                        TileTower towerWall = (TileTower)cell.GetObject();
-                        this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
-                    }
-
-                    else if (object instanceof TileEmpty) {
-                        TileEmpty empty = (TileEmpty)cell.GetObject();
-                        this.impose(empty.getTexture(empty.getType()), startingCorner);
-                    }
-                } 
+        for (int i = 0; i < spellQueue.GetLen(); i++) {
+            WorldSpell spell = (WorldSpell) spellQueue.GetItem(i);
+            Pos[] corners = getCornersFromTile(spell.GetStartPos());
+            
+            Pos startingCorner = corners[TOP_LEFT_CORNER];
+            
+            int textureID = (spell.GetCooldown() < 0) ? 1 : 0;
+            Texture texture = spell.getTexture(textureID);
+            
+            Pos startPos = spell.GetStartPos();
+            Pos endPos = spell.GetEndPos();
+            
+            this.impose(texture.getTexture(Texture.CORNER_TOP_LEFT), startingCorner);
+            this.impose(texture.getTexture(Texture.CORNER_BOTTOM_RIGHT),pos2Corner(endPos));
+            this.impose(texture.getTexture(Texture.CORNER_BOTTOM_LEFT), pos2Corner(new Pos(startPos.x, endPos.y)));
+            this.impose(texture.getTexture(Texture.CORNER_TOP_RIGHT),   pos2Corner(new Pos(endPos.x, startPos.y)));
+            
+            for (int y = startPos.y + 1; y < endPos.y; y++) {
+                this.impose(texture.getTexture(Texture.SIDE_LEFT),  pos2Corner(new Pos(startPos.x, y)));
+                this.impose(texture.getTexture(Texture.SIDE_RIGHT), pos2Corner(new Pos(endPos.x, y)));
+            }
+            
+            for (int x = startPos.x + 1; x < endPos.x; x++) {
+                this.impose(texture.getTexture(Texture.SIDE_TOP),    pos2Corner(new Pos(x, startPos.y)));
+                this.impose(texture.getTexture(Texture.SIDE_BOTTOM), pos2Corner(new Pos(x, endPos.y)));
             }
         }
+    }
 
-        WorldSpell spell = new WorldSpell(new Pos(3, 6), new Pos(7, 8), 2);
+    private void printCells() {
+        for (int y = 0; y < gameRef.GetGrid().length; y++) {
+            for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
+            Cell cell = gameRef.GetCell(new Pos(x, y));
 
-        this.impose(spell.getTexture().getTexture(Texture.CORNER_TOP_LEFT), this.convertPos2Corner(spell.GetStartPos()));
-        this.impose(spell.getTexture().getTexture(Texture.CORNER_BOTTOM_RIGHT), this.convertPos2Corner(spell.GetEndPos()));
-        this.impose(spell.getTexture().getTexture(Texture.CORNER_BOTTOM_LEFT), this.convertPos2Corner(new Pos(spell.GetStartPos().x, spell.GetEndPos().y)));
-        this.impose(spell.getTexture().getTexture(Texture.CORNER_TOP_RIGHT), this.convertPos2Corner(new Pos(spell.GetEndPos().x, spell.GetStartPos().y)));
+            Pos[] cornersPositions = getCornersFromTile(new Pos(x, y));
+            Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
 
+            if (cell != null) {
+                Obj object = cell.GetObject();
+
+                if (object instanceof Tower) {
+                    Tower tower = (Tower) cell.GetObject();
+                    this.impose(this.getRepr(tower), startingCorner.Add(2, 1));
+                } 
+                else if (object instanceof TileTower) {
+                    TileTower towerWall = (TileTower) cell.GetObject();
+                    this.impose(towerWall.getTexture(towerWall.getType()), startingCorner);
+                } 
+                else if (object instanceof TileEmpty) {
+                    TileEmpty empty = (TileEmpty) cell.GetObject();
+                    this.impose(empty.getTexture(empty.getType()), startingCorner);
+                }
+            }
+            }
+        }
+    }
+
+    private void printOutput() {
         for (int i = 0; i < output.length; i++)
             System.out.println(new String(output[i]));
         System.out.println();
-
     }
-
 
     // HELPER METHODS
     private void append(String value) {
@@ -227,35 +262,21 @@ public class Displayer {
         this.output = new char[0][]; 
     }
 
-    private Pos convertPos2Corner( Pos pos ) {
+    private Pos pos2Corner( Pos pos ) {
         return (pos.Multiply(5,2).Add(4, 2));
     }
 
     private Pos[] getCornersFromTile (Pos pos) {
         Pos [] corners = new Pos[4];
 
-        corners[TOP_LEFT_CORNER]     = convertPos2Corner(pos.Add(0,0));
-        corners[TOP_RIGHT_CORNER]    = convertPos2Corner(pos.Add(1, 0));
-        corners[BOTTOM_LEFT_CORNER]  = convertPos2Corner(pos.Add(0,1));
-        corners[BOTTOM_RIGHT_CORNER] = convertPos2Corner(pos.Add(1,1));
+        corners[TOP_LEFT_CORNER]     = pos2Corner(pos.Add(0,0));
+        corners[TOP_RIGHT_CORNER]    = pos2Corner(pos.Add(1, 0));
+        corners[BOTTOM_LEFT_CORNER]  = pos2Corner(pos.Add(0,1));
+        corners[BOTTOM_RIGHT_CORNER] = pos2Corner(pos.Add(1,1));
         
         return corners;
     }
 
-    private Cell getCell(int x, int y) {
-        if (x < 0 || x >= gameRef.GetGrid()[0].length || y < 0 || y >= gameRef.GetGrid().length)
-            return new Cell();
-
-        if (y < 0 || y >= gameRef.GetGrid().length)
-            return new Cell();
-
-        Cell cell = gameRef.GetGrid()[y][x];
-
-        if (cell == null)
-            return new Cell();
-
-        return cell;
-    }
 
     private void printEdgeRow(Cell[][] grid, int y) {
         // Initialize the buffer

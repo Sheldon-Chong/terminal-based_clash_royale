@@ -1,4 +1,8 @@
 
+/*
+ * A class that stores a list of objects.
+ * Contains many methods to manipulate the list, without depending on existing libraries.
+ */
 
 public class ObjList {
     private Obj[] list;
@@ -55,6 +59,14 @@ public class ObjList {
         return true;
     }
 
+    public void SetItem(int index, Obj obj) {
+        if (index >= list.length)
+            return ;
+        if (index < 0)
+            index = list.length + index;
+        list[index] = obj;
+    }
+
     public Obj GetItem(int index) {
         if (index < 0)
             index = list.length + index;
@@ -69,11 +81,11 @@ public class ObjList {
         return -1;
     }
 
-    public Obj[] GetItem() {
+    public Obj[] GetList() {
         return this.list;
     }
 
-    public Obj Pop(int index) {
+    public void Pop(int index) {
         if (index < 0)
             index = list.length + index;
 
@@ -86,8 +98,17 @@ public class ObjList {
                 newList[i - 1] = list[i];
         }
         this.list = newList;
-        return obj;
+        return ;
     }
+
+    public void Pop(Obj object) {
+        int index = this.FindItem(object);
+
+        if (index == -1)
+            return ;
+
+        this.Pop(index);
+    }        
 
     public void PrintList() {
         System.out.print("{ ");
@@ -103,7 +124,7 @@ public class ObjList {
         this.list = null;
     }
 
-    public int GetSize() {
+    public int GetLen() {
         if (list == null)
             return 0;
         return list.length;
