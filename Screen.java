@@ -1,11 +1,23 @@
+
+/* A class that represents the screen of the game
+ * Contains a 2D array of characters, and has several methods to manipulate the "pixels" of the screen
+ * Each pixel is represented by a character
+ * The screen can be printed to the console
+ */
+
 public class Screen {
+
+    // -- ATTRIBUTES --
+
     private char[][] output;
+
 
     // -- CONSTRUCTORS --
 
     public Screen() {
         this.output = new char[0][];
     }
+
 
     // -- GETTERS AND SETTERS --
 

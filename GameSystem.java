@@ -67,19 +67,19 @@ class GameSystem {
         
         return this.worldGrid[pos.y][pos.x];
     }
-    private char     accessChar(int row, int col, char [][]grid) {
-        if (row < 0 || row >= grid.length)
-            return 0;
 
-        if (col < 0 || col >= grid[row].length)
-            return 0;
-
-        return grid[row][col];
-    }
-
-
+    /* checks if a position is out of bounds
+     * @param pos - the position to be checked
+     * @return - true if the position is out of bounds, false otherwise
+     */
     public boolean isOutOfBounds (Pos pos) {
         return pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length;
+    }
+
+    // DEVELOPED BY: Daiki
+    // Method to check if troop/spell is deployed within the board
+    public boolean IsWithinBoard(Pos pos) {
+        return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
     }
 
     // DEVELOPED BY: Daiki
@@ -96,12 +96,6 @@ class GameSystem {
         
         shuffleCards(player1);
         shuffleCards(player2);
-    }
-
-    // DEVELOPED BY: Daiki
-    // Method to check if troop/spell is deployed within the board
-    public boolean IsWithinBoard(Pos pos) {
-        return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
     }
 
     // DEVELOPED BY: Daiki
@@ -131,12 +125,29 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
+    /* destroy the troop given a refference, by popping the item of the troop array */
     public void destroyTroop(Troop troop) {
         this.troops.Pop(troop);
     }
     
     
     // -- HELPER METHODS --
+
+    // DEVELOPED BY: Sheldon
+    /* get the character at a given position in the grid
+     * @param row - the row of the position
+     * @param col - the column of the position
+     * @param grid - the grid to be accessed
+     * @return - the character at the given position */
+    private char     accessChar(int row, int col, char [][]grid) {
+        if (row < 0 || row >= grid.length)
+            return 0;
+
+        if (col < 0 || col >= grid[row].length)
+            return 0;
+
+        return grid[row][col];
+    }
 
     // DEVELOPED BY: Sheldon
     /* update the troops in the world grid, by accessing each element of the troops list
@@ -197,7 +208,7 @@ class GameSystem {
         
         // iterate through the spell queue and deduct the remaining deploy time of each spell
         for (int i = 0; i < this.spellQueue.GetLen(); i++) {
-            WorldSpell spell = (WorldSpell)this.spellQueue.GetItem(i);
+            ObjSpell spell = (ObjSpell)this.spellQueue.GetItem(i);
 
             spell.DeductDeployTime();
 
@@ -379,8 +390,8 @@ class GameSystem {
 
         // delete later
         this.spawnTroops(20);
-        this.spellQueue.append(new WorldSpell(new Pos(3, 6), new Pos(7, 8), 10, 4));
-        this.spellQueue.append(new WorldSpell(new Pos(4, 7), new Pos(10, 15), 10, 4));
+        this.spellQueue.append(new ObjSpell(new Pos(3, 6), new Pos(7, 8), 10, 4));
+        this.spellQueue.append(new ObjSpell(new Pos(4, 7), new Pos(10, 15), 10, 4));
 
 
         for (int y = 0; y < this.worldGrid.length; y++) {

@@ -48,8 +48,9 @@ public abstract class Tile extends Obj {
 
 
     // -- GETTERS & SETTERS --
-    public void SetTextureState(int textureState) { this.textureState = textureState; }
-    public int  GetTextureState() { return this.textureState; }
+    
+    public void      SetTextureState(int textureState) { this.textureState = textureState; }
+    public int       GetTextureState() { return this.textureState; }
 
     public Texture   GetActiveTexture() { return this.textureSet[this.GetTextureState()]; }
     
@@ -58,16 +59,16 @@ public abstract class Tile extends Obj {
     public void      setTexture(int textureId, String [] texture) { this.GetActiveTexture().setTexture(textureId, texture); }
     public String [] getTexture(int textureId) {  return this.GetActiveTexture().getTexture(textureId); }
     
-    public void setAllTextures(String [] texture) {
+    public void      setAllTextures(String [] texture) {
         for (int i = 0; i < this.GetActiveTexture().GetTextures().length; i++)
             this.setTexture(i, texture);
     }
     
-    public void SetType(int type) { this.type = type; }
-    public int  GetType() { return this.type; }
+    public void      SetType(int type) { this.type = type; }
+    public int       GetType() { return this.type; }
 
-    public void    SetSolid(boolean isSolid) { this.isSolid = isSolid; }
-    public boolean IsSolid() { return this.isSolid; }
+    public void      SetSolid(boolean isSolid) { this.isSolid = isSolid; }
+    public boolean   IsSolid() { return this.isSolid; }
 
     // -- METHODS --
 

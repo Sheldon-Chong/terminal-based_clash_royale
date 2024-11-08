@@ -6,7 +6,7 @@
  * a world instance of a spell that occupies a position and radius
  */
 
-public class WorldSpell extends Obj {
+public class ObjSpell extends Obj {
     
     // -- ATTRIBUTES --
     
@@ -20,7 +20,7 @@ public class WorldSpell extends Obj {
 
     // -- CONSTRUCTOR --
     
-    public WorldSpell (Pos startingPos, Pos endPos, int deployTime, int effectDuration) {
+    public ObjSpell (Pos startingPos, Pos endPos, int deployTime, int effectDuration) {
         this.effectDuration = effectDuration;
         this.deployTime = deployTime;
         this.startPos = startingPos;

@@ -163,7 +163,7 @@ public class Displayer {
         ObjList spellQueue = gameRef.GetSpells();
 
         for (int i = 0; i < spellQueue.GetLen(); i++) {
-            WorldSpell spell = (WorldSpell) spellQueue.GetItem(i);
+            ObjSpell spell = (ObjSpell) spellQueue.GetItem(i);
 
             Pos[] corners = getCornersFromTile(spell.GetStartPos());
 
