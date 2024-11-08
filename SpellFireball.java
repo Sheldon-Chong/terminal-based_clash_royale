@@ -1,4 +1,4 @@
-// Written by Daiki
+// DEVELOPED BY: Daiki
 
 public class SpellFireball extends Spell {
 

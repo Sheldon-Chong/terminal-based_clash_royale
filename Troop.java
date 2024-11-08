@@ -8,6 +8,7 @@
 class Troop extends Obj {
 
     // -- CONSTANTS --
+
     public static final int DEST_TROOP_BLOCKING     = -1;
     public static final int DEST_OUT_OF_BOUNDS      = -2;
     public static final int DEST_COLLISION_WORLD    = -3;
@@ -20,8 +21,8 @@ class Troop extends Obj {
 
 
     // -- ATTRIBUTES --
+
     private Pos         Dest;
-    private char        nameInitial = 't';
     private int         hp;
     private GameSystem  gameSysRef;
     private int         region = -1;
@@ -31,19 +32,11 @@ class Troop extends Obj {
     private String      name;
 
 
-    // -- PUBLIC METHODS --
+    // -- CONSTRUCTORS --
 
-    // CONSTRUCTORS
     public Troop() {
         this.name = "troop";
         this.SetPos(new Pos(0, 0));
-    }
-
-    public Troop(Pos startingPos, char nameInitial, Player parent) {
-        this.SetPos(startingPos);
-        this.Dest = new Pos(5, 5);
-        this.nameInitial = nameInitial;
-        this.player = parent;
     }
 
     public Troop(Pos startingPos, String name, Player parent) {
@@ -53,7 +46,9 @@ class Troop extends Obj {
         this.player = parent;
     }
 
-    // GETTER AND SETTERS
+
+    // -- GETTER AND SETTERS --
+
     public void SetRegion(int region) { this.region = region; }
     public int  GetRegion() { return this.region; }
 
@@ -63,7 +58,12 @@ class Troop extends Obj {
     public int  GetHP() { return this.hp; }
     public void SetHP(int hp) { this.hp = hp; }
     public void IncreaseHP(int hp) { this.hp += hp; }
-    public void DecreaseHP(int hp) { this.hp -= hp; }
+    public void DecreaseHP(int hp) { 
+        this.hp -= hp;
+        
+        if (this.hp <= 0)
+            gameSysRef.destroyTroop(this);
+    }
 
     public void SetAttack(int atk) { this.atk = atk; }
     public int  GetAttack() { return this.atk; }
@@ -74,12 +74,19 @@ class Troop extends Obj {
     public Pos  GetDest() { return this.Dest; }
     public void SetDest(Pos dest) { this.Dest = dest; }
 
-    public char GetNameInitial() { return this.name.charAt(0); }
+    public char   GetNameInitial() { return this.name.charAt(0); }
     public String GetNameShort() { return this.name.substring(0, 2); }
 
     public void SetGameSysRef(GameSystem gameSysRef) { this.gameSysRef = gameSysRef; }
     
-    public boolean MoveTowards(Pos dest) {
+
+    // -- METHODS --
+
+    /* moves the troop towards a specified position
+     * @param dest - the position to move towards
+     * @return boolean - true if the troop has moved, false otherwise
+     */
+    private boolean moveTowards(Pos dest) {
         Pos moveVector = new Pos(0, 0);
         Pos currentPos = this.GetPos().Copy();
         int status;
@@ -95,26 +102,27 @@ class Troop extends Obj {
 
         if (this.GetPos().x < dest.x) moveVector.x = 1;
         if (this.GetPos().x > dest.x) moveVector.x = -1;
-        status = Travel(new Pos(moveVector.x, 0));
+        status = MoveTo(new Pos(moveVector.x, 0));
         if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
-            this.attack(currentPos.Add(moveVector));
+            this.attack(gameSysRef.GetCell(currentPos.Add(moveVector)).GetObject());
         
         moveVector = new Pos(0, 0);
         
         if (this.GetPos().y < dest.y) moveVector.y = 1;
         if (this.GetPos().y > dest.y) moveVector.y = -1;
-        status = Travel(new Pos (0, moveVector.y));
+        status = MoveTo(new Pos (0, moveVector.y));
 
         if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
-            this.attack(currentPos.Add(moveVector));
+            this.attack(gameSysRef.GetCell(currentPos.Add(moveVector)).GetObject());
 
         return true;
     }
     
-    public int Travel(Pos vect) {
-        Pos dest = this.GetPos().Add(vect);
+    /* moves the troop to a specified position, and checks for collisions with other objects */
+    public int MoveTo(Pos destPos) {
+        Pos movedPosition = this.GetPos().Add(destPos);
         
-        Obj object = gameSysRef.GetGrid()[dest.y][dest.x].GetObject();
+        Obj object = gameSysRef.GetGrid()[movedPosition.y][movedPosition.x].GetObject();
 
         if (object instanceof TileTower || object instanceof TileEmpty)
             return DEST_COLLISION_WORLD;
@@ -123,19 +131,19 @@ class Troop extends Obj {
         
         for (int troopIndex = 0; troopIndex < troops.length; troopIndex++) {
             Troop currentTroop = troops[troopIndex];
-            if (currentTroop.GetPos().IsEquals(dest) && !troops[troopIndex].GetPos().IsEquals(this.GetPos()))
+            if (currentTroop.GetPos().IsEquals(movedPosition) && !troops[troopIndex].GetPos().IsEquals(this.GetPos()))
                 return DEST_TROOP_BLOCKING;
         }
         
-        if (dest.x < 0 || dest.x >= gameSysRef.GetGrid()[0].length
-        || dest.y < 0 || dest.y >= gameSysRef.GetGrid().length)
+        if (gameSysRef.isOutOfBounds(movedPosition))
             return DEST_OUT_OF_BOUNDS;
 
-        this.SetPos(dest.Copy());
+        this.SetPos(movedPosition.Copy());
         
         return 1;
     }
 
+    /* recalculates the destination of the troop */
     public void  RecalcDest() {
         Pos closestTowerWall = null;
 
@@ -171,6 +179,9 @@ class Troop extends Obj {
         this.SetDest(closestTowerWall);
     }
 
+    /* checks if the troop is adjacent to a tower
+     * @return Cell - the tower tile that the troop is adjacent to
+     */
     public Cell IsAdjTower() {
         Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
 
@@ -186,7 +197,8 @@ class Troop extends Obj {
         return null;
     }
 
-    public void Move() {
+    /* performs an action (either moving or attacking), and sets the state of the troop */
+    public void Action() {
         if (this.GetDest() == null || this.GetPos() == null)
             return;
 
@@ -202,7 +214,7 @@ class Troop extends Obj {
             }
         }
         
-        this.MoveTowards(this.GetDest());
+        this.moveTowards(this.GetDest());
         this.SetRegion(gameSysRef.GetObjRegion(this));
         this.RecalcDest();
     }
@@ -210,6 +222,8 @@ class Troop extends Obj {
 
     // -- HELPER METHODS --
 
+    /* locate available adjacent cells that allow the troop to reach a specified position, that isn't blocked by walls
+     */
     private Cell []findAccessPoint(Pos pos) {
         Cell []neighbours = this.gameSysRef.GetCell(pos).GetNeighbours();
 
@@ -233,6 +247,29 @@ class Troop extends Obj {
         return accessPoints;
     }
 
+    /* locate the closest position to the troop that allows it to reach the specified position
+     */
+    private Pos findNearestAccessPoint(Cell []cells) {
+        Pos closestPoint = null;
+
+        for (int i = 0; i < cells.length; i++) {
+            Cell []accessPoints = findAccessPoint(cells[i].GetPos());
+
+            for (int j = 0; j < accessPoints.length; j++) {
+                if (closestPoint == null)
+                    closestPoint = accessPoints[j].GetPos();
+
+                else if (this.GetPos().CalcDistance(accessPoints[j].GetPos()) < this.GetPos().CalcDistance(closestPoint))
+                    closestPoint = accessPoints[j].GetPos();
+            }
+        }
+
+        return closestPoint;
+    }
+
+    /* gets a list to a refferrence of all the tower tiles on the grid
+     * @return Cell[] - an array of all the tower tiles on the grid
+     */
     private Cell []findAllTowerTiles() {
         int towersLen = 0;
         
@@ -258,24 +295,9 @@ class Troop extends Obj {
         return towersWalls;
     }
 
-    private Pos findNearestAccessPoint(Cell []cells) {
-        Pos closestPoint = null;
-
-        for (int i = 0; i < cells.length; i++) {
-            Cell []accessPoints = findAccessPoint(cells[i].GetPos());
-
-            for (int j = 0; j < accessPoints.length; j++) {
-                if (closestPoint == null)
-                    closestPoint = accessPoints[j].GetPos();
-
-                else if (this.GetPos().CalcDistance(accessPoints[j].GetPos()) < this.GetPos().CalcDistance(closestPoint))
-                    closestPoint = accessPoints[j].GetPos();
-            }
-        }
-
-        return closestPoint;
-    }
-
+    /* checks if an object belongs to an enemy
+     * @param object - the object to be checked
+     */    
     private boolean isEnemy(Obj object) {
         if (object == null)
             return false;
@@ -289,20 +311,16 @@ class Troop extends Obj {
         return false;
     }
 
-
-    private void attack(Pos pos) {
-        Obj object = this.gameSysRef.GetCell(pos).GetObject();
-
+    /*
+     * 
+     */
+    private void attack(Obj object) {
         if (object == null)
             return;
 
         if (object instanceof Troop && isEnemy(object)) {
             Troop enemy = (Troop)object;
-
             enemy.DecreaseHP(1);
-
-            if (enemy.GetHP() <= 0)
-                this.gameSysRef.destroyTroop(enemy);
         }
 
         this.SetAction(ACTION_ATTACK);

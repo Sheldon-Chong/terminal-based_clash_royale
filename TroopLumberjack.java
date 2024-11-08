@@ -1,4 +1,4 @@
-// Written by Daiki
+// DEVELOPED BY: Daiki
 
 public class TroopLumberjack extends Troop {
 
@@ -6,10 +6,5 @@ public class TroopLumberjack extends Troop {
         super(startingPos, "lumberjack", player); // 'lumberjack' for Lumberjack
         this.SetHP(60); // Example value
         this.SetAttack(15); // Example attack value
-    }
-
-    
-    public void MoveTo(Pos dest) {
-        // Code for moving towards enemies
     }
 }

@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 class FileHandler {
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private int[] getFileDimensions (String fileName) {
         int rows = 0;
         int cols = 0;
@@ -36,7 +36,7 @@ class FileHandler {
         return dimensions;
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     public char[][] readFile(String fileName) {
         File file = new File(fileName);
         
@@ -66,7 +66,7 @@ class FileHandler {
         return charArray;
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     public void print2DCharArr(char[][] arr) {
         for (int row = 0; row < arr.length; row ++) {
             for (int col = 0; col < arr[row].length; col ++)

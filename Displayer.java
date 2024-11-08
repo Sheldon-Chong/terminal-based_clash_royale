@@ -9,30 +9,40 @@ import java.util.Scanner;
 public class Displayer {
 
     // -- CONSTANTS --
+
     final static int BOTTOM_LEFT_CORNER = 0;
     final static int BOTTOM_RIGHT_CORNER = 1;
     final static int TOP_LEFT_CORNER = 2;
     final static int TOP_RIGHT_CORNER = 3;
 
+
     // -- ATTRIBUTES --
+
     private GameSystem gameRef;
     private Scanner input;
     private Screen screen;
 
+
     // -- CONSTRUCTORS --
+
     public Displayer(GameSystem gameSystem) {
         this.screen = new Screen();
         this.gameRef = gameSystem;
         this.input = new Scanner(System.in);
     }
 
+
     // -- SETTER AND GETTER --
-    // Written by Daiki
+
+    // DEVELOPED BY: Daiki
     public String GetPlayerName(int playerNumber) {
         return input.nextLine();
     }
 
-    // Written by Daiki
+
+    // -- METHODS --
+    
+    // DEVELOPED BY: Daiki
     // Display ASCII Title Screen
     public void ShowTitleScreen() {
         try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
@@ -48,7 +58,7 @@ public class Displayer {
         }
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     public void ShowGameInfo(Player player) {
         System.out.println("o===============================================================o");
         System.out.printf("|  Next:          | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
@@ -65,7 +75,7 @@ public class Displayer {
         System.out.println("o===============================================================o");
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     public void PrintWorld(Cell[][] grid) {
         this.screen.ResetScreen();
         printBoard(grid);
@@ -75,8 +85,10 @@ public class Displayer {
         this.screen.PrintScreen();
     }
 
+
     // -- HELPER METHODS --
-    // Written by Sheldon
+
+    // DEVELOPED BY: Sheldon
     private String getRepr(Obj object) {
         if (object instanceof Troop) {
             Troop troop = (Troop) object;
@@ -94,19 +106,19 @@ public class Displayer {
         return " ";
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private void printBoard(Cell[][] grid) {
         screen.AppendLine("     ");
         for (int x = 0; x < grid[0].length; x++)
-            screen.Add2LastItem(String.format(" %2d  ", x));
+            screen.AppendStrToLastLine(String.format(" %2d  ", x));
 
         screen.AppendLine("   _");
-        
+
         for (int x = 0; x < grid[0].length; x++) {
             if (grid[0][x].GetObject() instanceof TileEmpty)
-                screen.Add2LastItem("     ");
+                screen.AppendStrToLastLine("     ");
             else
-                screen.Add2LastItem("_____");
+                screen.AppendStrToLastLine("_____");
         }
 
         for (int y = 0; y < grid.length; y++) {
@@ -137,7 +149,7 @@ public class Displayer {
         screen.AppendLine(lastEdgeBuffer);
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private void renderTroops() {
         for (int i = 0; i < gameRef.GetTroops().length; i++) {
             Troop troop = gameRef.GetTroops()[i];
@@ -146,7 +158,7 @@ public class Displayer {
         }
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private void renderSpells() {
         ObjList spellQueue = gameRef.GetSpells();
 
@@ -157,8 +169,8 @@ public class Displayer {
 
             Pos startingCorner = corners[TOP_LEFT_CORNER];
 
-            int textureID = (spell.GetCooldown() < 0) ? 1 : 0;
-            Texture texture = spell.getTexture(textureID);
+            int textureID = (spell.GetDeployTime() < 0) ? 1 : 0;
+            Texture texture = spell.GetTexture(textureID);
 
             Pos startPos = spell.GetStartPos();
             Pos endPos = spell.GetEndPos();
@@ -180,7 +192,7 @@ public class Displayer {
         }
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private void renderCells() {
         for (int y = 0; y < gameRef.GetGrid().length; y++) {
             for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
@@ -197,23 +209,23 @@ public class Displayer {
                     }
                     else if (object instanceof TileTower) {
                         TileTower towerWall = (TileTower) cell.GetObject();
-                        screen.ImposeImage(towerWall.getTexture(towerWall.getType()), startingCorner);
+                        screen.ImposeImage(towerWall.getTexture(towerWall.GetType()), startingCorner);
                     } 
                     else if (object instanceof TileEmpty) {
                         TileEmpty empty = (TileEmpty) cell.GetObject();
-                        screen.ImposeImage(empty.getTexture(empty.getType()), startingCorner);
+                        screen.ImposeImage(empty.getTexture(empty.GetType()), startingCorner);
                     }
                 }
             }
         }
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private Pos pos2Corner(Pos pos) {
         return (pos.Multiply(5, 2).Add(4, 2));
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private Pos[] getCornersFromTile(Pos pos) {
         Pos[] corners = new Pos[4];
 
@@ -225,33 +237,4 @@ public class Displayer {
         return corners;
     }
 
-    // Written by Sheldon
-    private String generateCellRepr(Cell cell) {
-        char health = ' ';
-        String icon = " ";
-        char prefix = ' ';
-        char suffix = ' ';
-
-        if (cell.GetObject() instanceof Tower) {
-            Tower tower = (Tower) cell.GetObject();
-            health = (char) ((char) tower.getHealth() + '0');
-            icon = "T";
-        }
-
-        if (cell.GetObject() instanceof Troop) {
-            Troop troop = (Troop) cell.GetObject();
-
-            health = (char) (troop.GetHP() + '0');
-            icon = troop.GetNameShort();
-            if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER1_REGION) {
-                prefix = '1';
-            } else if (troop.GetPlayer().GetPlayerNum() == GameSystem.PLAYER2_REGION) {
-                prefix = '2';
-            }
-
-        }
-
-        return " ";
-        //return String.format("%s%s%c%c", prefix, icon, health, suffix);
-    }
 }

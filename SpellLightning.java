@@ -1,4 +1,4 @@
-// Written by Daiki
+// DEVELOPED BY: Daiki
 
 public class SpellLightning extends Spell {
     private static final int MAX_TARGETS = 3;

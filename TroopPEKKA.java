@@ -1,4 +1,4 @@
-// Written by Daiki
+// DEVELOPED BY: Daiki
 
 public class TroopPEKKA extends Troop {
 
@@ -6,10 +6,5 @@ public class TroopPEKKA extends Troop {
         super(startingPos, "pekka", player); // 'pekka' for P.E.K.K.A
         this.SetHP(130); // Example value
         this.SetAttack(30); // Example attack value
-    }
-
-    
-    public void MoveTo(Pos dest) {
-        // Code for moving towards enemies
     }
 }

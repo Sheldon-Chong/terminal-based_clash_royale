@@ -6,6 +6,6 @@ public class TileFloor extends Tile {
     }
     
     public TileFloor (int type) {
-        setType(type);
+        SetType(type);
     }
 }

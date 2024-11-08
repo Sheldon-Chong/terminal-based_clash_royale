@@ -9,7 +9,7 @@ public class TileEmpty extends Tile {
     // -- CONSTRUCTORS -- 
     public TileEmpty(int type) {
         this();
-        this.setType(type);
+        this.SetType(type);
     }
 
     public TileEmpty() {

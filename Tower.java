@@ -10,21 +10,23 @@
 public class Tower extends Obj{
     
     // -- ATTRIBUTES --
+    
     private Pos     pos;
     private Player  parentPlayer;
     private int     health;
 
-    
-    // -- PUBLIC METHODS --
 
-    // CONSTRUCTORS
+    // -- CONSTRUCTORS --
+    
     Tower () { }
 
     Tower (Player player) {
         this.parentPlayer = player;
     }
 
-    // SETTERS AND GETTERS
+
+    // -- SETTERS AND GETTERS --
+
     public void SetPos(Pos pos) { this.pos = pos; }
     public Pos  GetPos()        { return this.pos; }
 
@@ -36,6 +38,9 @@ public class Tower extends Obj{
     public void   SetPlayer(Player parentPlayer) { this.parentPlayer = parentPlayer; }
     public Player GetPlayer() { return this.parentPlayer; }
     
+    /* Checks if the tower is destroyed, if the health is less than or equal to 0
+     * @return - boolean
+     */
     public boolean IsDestroyed() { 
         return this.health <= 0; 
     }

@@ -1,7 +1,8 @@
 
 class Player {
 
-    // ATTRIBUTES
+    // -- ATTRIBUTES --
+
     private Card[]  cardsOnHand;
     private int     region;
     private         TowerKing king;
@@ -9,30 +10,34 @@ class Player {
     private         TowerPrincess princess1;
     private         TowerPrincess princess2;
 
-    
-    // --PUBLIC METHODS --
 
-    // CONSTRUCTORS
-    // Written by Sheldon
+    // -- CONSTRUCTORS -- 
+    
+    // DEVELOPED BY: Sheldon
     public Player(int region) {
         this.cardsOnHand = new Card[4];
         this.SetPlayerNum(region);
     }
 
-    // GETTERS AND SETTERS
-    // Written by Sheldon
+
+    // -- GETTERS AND SETTERS --
+    
+    // DEVELOPED BY: Sheldon
     public int    GetPlayerNum() { return this.region; }
     public void   SetPlayerNum(int region) { this.region = region; }
     
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     public Card[] getCardsOnHand() { return this.cardsOnHand; }
     public void   setCardsOnHand(Card[] cards) { this.cardsOnHand = cards;  }
     
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     public void SetElixir(int amt) { this.elixir = amt; }
     public int  GetElixir() { return this.elixir; }
 
-    // Written by Daiki
+
+    // -- METHODS --
+
+    // DEVELOPED BY: Daiki
     public Tower GetTower(int index) {
         switch (index) {
             case 0:
@@ -46,7 +51,7 @@ class Player {
         }
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     public void DeployCard(int index) {
         if (index >= 0 && index < cardsOnHand.length) {
             Card selectedCard = cardsOnHand[index];

@@ -1,4 +1,4 @@
-// Written by Daiki
+// DEVELOPED BY: Daiki
 
 public class TroopGiant extends Troop {
 
@@ -6,10 +6,5 @@ public class TroopGiant extends Troop {
         super(startingPos, "giant", player); // 'giant' for Giant
         this.SetHP(120); // Example value, modify as needed
         this.SetAttack(25); // Example attack value
-    }
-
-    
-    public void MoveTo(Pos dest) {
-        // Code for moving towards towers
     }
 }

@@ -1,4 +1,4 @@
-// Written by Daiki
+// DEVELOPED BY: Daiki
 
 public class TroopSkeletons extends Troop {
 
@@ -8,8 +8,4 @@ public class TroopSkeletons extends Troop {
         this.SetAttack(5); // Example attack value
     }
 
-    
-    public void MoveTo(Pos dest) {
-        // Code for moving towards enemies
-    }
 }

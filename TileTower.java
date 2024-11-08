@@ -10,17 +10,48 @@
 public class TileTower extends Tile {
 
     // -- ATTRIBUTES --
+    
     private int     type;
     private Tower   parentTower;
+
+
+    // -- CONSTANTS --
 
     public static final int TEXTURE_ALIVE = 0;
     public static final int TEXTURE_DESTROYED = 1;
 
-    // -- PUBLIC METHODS --
 
-    // CONSTRUCTORS
+    // -- CONSTRUCTORS --
 
-    private Texture GetTowerAlive() {
+    public TileTower () {
+        this.AddTextureToSet(new Texture());
+        this.setTextureSet(TEXTURE_ALIVE, this.TextureTowerAlive());
+        this.setTextureSet(TEXTURE_DESTROYED, this.TextureTowerDead());
+    }
+
+    public TileTower (int type) {
+        this();
+        this.SetType(type);
+    }
+    
+    public TileTower (int type, Tower parentTower) {
+        this.SetType(type);
+        this.parentTower = parentTower;
+    }
+
+
+    // -- SETTERS AND  GETTERS --
+
+    public void  SetParent(Tower parentTower) { this.parentTower = parentTower; }
+    public Tower GetParent() { return this.parentTower; }
+
+
+    // -- TEXTURES --
+
+    /* Texture for the tower when it is alive 
+     * @return - Texture
+     */
+    private Texture TextureTowerAlive() {
         Texture towerAlive = new Texture();
 
         towerAlive.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
@@ -67,7 +98,10 @@ public class TileTower extends Tile {
         return towerAlive;
     }
 
-    private Texture GetTowerDead() {
+    /* Texture for the tower when it is dead
+     * @return - Texture
+     */
+    private Texture TextureTowerDead() {
         Texture towerDead = new Texture();
 
         towerDead.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
@@ -114,27 +148,5 @@ public class TileTower extends Tile {
         return towerDead;
     }
 
-    public TileTower () {
-        
-
-        this.addTextureToSet(new Texture());
-        this.setTextureSet(TEXTURE_ALIVE, this.GetTowerAlive());
-        this.setTextureSet(TEXTURE_DESTROYED, this.GetTowerDead());
-    }
-
-    public TileTower (int type) {
-        this();
-        this.setType(type);
-    }
-    
-    public TileTower (int type, Tower parentTower) {
-        this.setType(type);
-        this.parentTower = parentTower;
-    }
-
-
-    // SETTERS AND GETTERS
-    public void  SetParent(Tower parentTower) { this.parentTower = parentTower; }
-    public Tower GetParent() { return this.parentTower; }
 }
     

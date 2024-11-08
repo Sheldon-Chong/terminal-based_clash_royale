@@ -13,18 +13,18 @@ public class Main {
 		//fHandler.print2DCharArr(grid);
 
 		GameSystem gameSys = new GameSystem();
-		gameSys.ConvertChar2DtoTile2D(grid);
+		gameSys.CharGrid2CellGrid(grid);
 		
 
 		Scanner scanner = new Scanner(System.in);
 		String input;
 		Displayer display = new Displayer(gameSys);
 		
-		 // Written by Daiki
+		 // DEVELOPED BY: Daiki
 		 // Display title screen
 		 display.ShowTitleScreen();
 		 
-		 // Written by Daiki
+		 // DEVELOPED BY: Daiki
 		 // Prompt for player names
 		 String dummy = scanner.nextLine(); // Dummy user input
 
@@ -39,12 +39,12 @@ public class Main {
 		 String currentPlayer = player1Name;
 		 int currentPlayerTurn = 1;
 
-		 // Written by Daiki
+		 // DEVELOPED BY: Daiki
 		 // Wait for ENTER to start the game
 		 System.out.println("\nPress ENTER to begin game...");
 		 scanner.nextLine();  // Waits for ENTER input
  
-		 // Written by Daiki
+		 // DEVELOPED BY: Daiki
 		 // Load and display the game board
 		 System.out.println("\nLoading the board...");
 		 display.PrintWorld(gameSys.GetGrid());  // Display the initial board

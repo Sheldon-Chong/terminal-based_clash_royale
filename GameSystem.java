@@ -35,19 +35,17 @@ class GameSystem {
     private int      currentRound = 1; // Trakcs the current round number
     
 
-    // -- PUBLIC METHODS --
-
-    // CONSTRUCTORS
+    // -- CONSTRUCTORS --
     
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     public GameSystem() {
         this.initWorld();
     }
 
     
-    // GETTERS AND SETTERS
+    // -- GETTERS AND SETTERS --
 
-    // written by Sheldon
+    // DEVELOPED BY: Sheldon
     public Player    GetPlayer1() { return this.player1; }
     public Player    GetPlayer2() { return this.player2; }
     public Troop[] GetTroops() {
@@ -69,7 +67,7 @@ class GameSystem {
         
         return this.worldGrid[pos.y][pos.x];
     }
-    private char     getCharTile(int row, int col, char [][]grid) {
+    private char     accessChar(int row, int col, char [][]grid) {
         if (row < 0 || row >= grid.length)
             return 0;
 
@@ -80,55 +78,18 @@ class GameSystem {
     }
 
 
-    // Written by Daiki
+    public boolean isOutOfBounds (Pos pos) {
+        return pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length;
+    }
+
+    // DEVELOPED BY: Daiki
     // Method to get the current round
     public int GetRound() { return this.currentRound; }
     public ObjList GetSpells () {
         return this.spellQueue;
     }
 
-    // Written by Sheldon
-    public Cell[][] ConvertChar2DtoTile2D(char[][] grid) {
-        Cell [][]wGrid = new Cell[grid.length][grid[0].length];
-    
-        for (int row = 0; row < grid.length; row++) {
-            for (int col = 0; col < grid[row].length; col++) {
-                char currentTile = getCharTile(row, col, grid);
-
-                Obj tileContent = new TileFloor();
-
-                char neighbourLeft  = getCharTile(row, col - 1, grid);
-                char neighbourRight = getCharTile(row, col + 1, grid);
-                char neighbourUp    = getCharTile(row - 1, col, grid);
-                char neighbourDown  = getCharTile(row + 1, col, grid);
-                
-                switch (currentTile) {
-                    case P1_TOWER_PRINCESS:
-                        tileContent = new TowerPrincess(this.player1);
-                    break; case P1_TOWER_KING:
-                        tileContent = new TowerKing(this.player1);
-                        
-                    break; case P2_TOWER_PRINCESS:
-                        tileContent = new TowerPrincess(this.player2);
-                    break; case P2_TOWER_KING:
-                        tileContent = new TowerKing(this.player2);
-
-                    break; case SYMBOL_TOWER:
-                        tileContent = new TileTower(GetCellSideType(new char[]{SYMBOL_TOWER, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
-                    break; case SYMBOL_EMPTY:
-                        tileContent = new TileEmpty(GetCellSideType(new char[] {SYMBOL_EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
-                    break; case SYMBOL_FLOOR:
-                        tileContent = new TileFloor();
-                }
-                
-                wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
-            }
-        }
-
-        return wGrid;
-    }
-
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     // Method to shuffle cards in each player's hand
     public void shufflePlayerCards() { 
         System.out.println("Shuffling player cards...");
@@ -137,13 +98,13 @@ class GameSystem {
         shuffleCards(player2);
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     // Method to check if troop/spell is deployed within the board
     public boolean IsWithinBoard(Pos pos) {
         return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     // Method to increment the round count
     public void nextRound() { 
         this.currentRound++;
@@ -151,7 +112,7 @@ class GameSystem {
         shufflePlayerCards();
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     public int GetObjRegion(Obj object) {
         Pos pos = object.GetPos();
 
@@ -161,7 +122,7 @@ class GameSystem {
             return PLAYER2_REGION;
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     public void UpdateWorld() { 
 
         this.updateTroops();
@@ -169,7 +130,7 @@ class GameSystem {
         this.updateSpellQueue();
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     public void destroyTroop(Troop troop) {
         this.troops.Pop(troop);
     }
@@ -177,52 +138,78 @@ class GameSystem {
     
     // -- HELPER METHODS --
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* update the troops in the world grid, by accessing each element of the troops list
+     */
     private void updateTroops() {
         for (int i = 0; i < troops.GetLen(); i++) {
             Troop currentTroop = (Troop)troops.GetItem(i);
+
+            // get the current position of the troop and store it temporarily
             Pos tempPos = currentTroop.GetPos().Copy();
-            currentTroop.Move();
-            GetCell(tempPos).SetObject(new TileFloor());
-            GetCell(currentTroop.GetPos()).SetObject(currentTroop);
+
+            // move the troop
+            currentTroop.Action();
+
+            // replace the previous tile with a floor tile, and the new tile with the refference to the troop
+            this.GetCell(tempPos).SetObject(new TileFloor());
+            this.GetCell(currentTroop.GetPos()).SetObject(currentTroop);
         }
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* update the tiles in the world grid
+     * checks if any towers have been destroyed. If so, replace them with floor tiles
+     */
     private void updateTiles() {
+
+        // iterate through the grid
         for (int y = 0; y < this.GetGrid().length; y ++) {
             for (int x = 0; x < this.GetGrid()[y].length; x++) {
                 
+                // if the object is a tower
                 if (this.GetCell(y, x).GetObject() instanceof Tower) {
                     Tower tower = (Tower) this.GetCell(y, x).GetObject();
 
+                    // if the tower is destroyed
                     if (tower.IsDestroyed())
+                        // replace the tower with a floor tile
                         this.GetCell(y, x).SetObject(new TileFloor());
                 }
 
+                // if the object is a tile tower
                 if (this.GetCell(y, x).GetObject() instanceof TileTower) {
                     TileTower tower = (TileTower) this.GetCell(y, x).GetObject();
 
+                    // if the parent tower is destroyed
                     if (tower.GetParent().IsDestroyed())
+                        // replace the tower with a floor tile
                         this.GetCell(y, x).SetObject(new TileFloor());
                 }
             }
         }
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* update the spell queue by deducting the deploy time of each spell
+     */
     private void updateSpellQueue() {
+        
+        // iterate through the spell queue and deduct the remaining deploy time of each spell
         for (int i = 0; i < this.spellQueue.GetLen(); i++) {
             WorldSpell spell = (WorldSpell)this.spellQueue.GetItem(i);
-            spell.DeductCooldown();
-            if (spell.GetCooldown() * -1 > spell.GetDuration()) {
+
+            spell.DeductDeployTime();
+
+            if (spell.GetDeployTime() * -1 > spell.GetDuration())
                 this.spellQueue.SetItem(i, null);
-            }
-            System.out.print("Spell " + i + " has " + spell.GetCooldown() + " turns left. Duration is " + spell.GetDuration() + "\n");
+            
+            System.out.print("Spell " + i + " has " + spell.GetDeployTime() + " turns left. Duration is " + spell.GetDuration() + "\n");
         }
 
         int index = 0;
         
+        // remove null items from the spell queue
         while(index < this.spellQueue.GetLen()) {
             if (this.spellQueue.GetItem(index) == null)
                 this.spellQueue.Pop(index);
@@ -231,25 +218,39 @@ class GameSystem {
         }
     }
 
-    // Written by Sheldon
-    private Troop str2Troop(String str, Pos pos, Player player) {
-        str = str.toLowerCase();
+    // DEVELOPED BY: Sheldon
+    /* convert a string to a new instance of a troop
+     * @param troopType - the type of troop to be spawned
+     * @param startingPos - the position where the troop will be spawned
+     * @param parent - the player that the troop belongs to
+     * @return - the newly spawned troop
+    */
+    private Troop newTroop(String troopType, Pos startingPos, Player parent) {
+        troopType = troopType.toLowerCase();
         
-        if      (str.equals("barbarian"))   { return new TroopBarbarian(pos, player); }
-        else if (str.equals("elixir golem")){ return new TroopElixirGolem(pos, player); }
-        else if (str.equals("giant"))       { return new TroopGiant(pos, player); }
-        else if (str.equals("goblins"))     { return new TroopGoblins(pos, player); }
-        else if (str.equals("golem"))       { return new TroopGolem(pos, player); }
-        else if (str.equals("hog rider"))   { return new TroopHogRider(pos, player); }
-        else if (str.equals("knight"))      { return new TroopKnight(pos, player); }
-        else if (str.equals("lumberjack"))  { return new TroopLumberjack(pos, player); }
-        else if (str.equals("pekka"))       { return new TroopPEKKA(pos, player); }
-        else if (str.equals("skeletons"))   { return new TroopSkeletons(pos, player); }
-        else
-            return null;
+        Troop newTroop = null;
+
+        if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(startingPos, parent); }
+        else if (troopType.equals("elixir golem")){ newTroop = new TroopElixirGolem(startingPos, parent); }
+        else if (troopType.equals("giant"))       { newTroop = new TroopGiant(startingPos, parent); }
+        else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(startingPos, parent); }
+        else if (troopType.equals("golem"))       { newTroop = new TroopGolem(startingPos, parent); }
+        else if (troopType.equals("hog rider"))   { newTroop = new TroopHogRider(startingPos, parent); }
+        else if (troopType.equals("knight"))      { newTroop = new TroopKnight(startingPos, parent); }
+        else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(startingPos, parent); }
+        else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(startingPos, parent); }
+        else if (troopType.equals("skeletons"))   { newTroop = new TroopSkeletons(startingPos, parent); }
+
+        newTroop.SetGameSysRef(this);
+
+        return newTroop;
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* randomly spawn troops on the game grid, with half of the troops belonging to each player
+     * @param amt - the amount of troops to be spawned
+     * @return - the list of spawned troops
+     */
     private void spawnTroops(int amt) {
         this.troops.ClearList();
 
@@ -264,31 +265,23 @@ class GameSystem {
             while (true) {
                 if (currPlayer.GetPlayerNum() == PLAYER1_REGION)
                     startPos = new Pos((int) (Math.random() * (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
-                
                 else
                     startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
-
                     
                 if (this.GetCell(startPos).GetObject() instanceof TileFloor)
                     break;
             }
 
-            this.troops.append(spawnTroop(startPos, (char) ('A' + i), currPlayer, 9));
+            this.troops.append(newTroop("barbarian", startPos, currPlayer));
         }
     }
 
-    // Written by Sheldon
-    private Troop spawnTroop(Pos startPos, char initial, Player playerRef, int hp) {
-        Troop troop;
-        
-        troop = str2Troop("barbarian", startPos, playerRef);
-        troop.SetHP(9);
-        troop.SetGameSysRef(this);
-
-        return troop;
-    }
-
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* check if a character is in a character array
+     * @param arr - the character array to be checked
+     * @param c - the character to be checked
+     * @return - true if the character is in the array, false otherwise
+     */
     private boolean isInCharArr(char []arr, char c) {
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] == c)
@@ -297,17 +290,17 @@ class GameSystem {
         return false;
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
     private int GetCellSideType(char []subject, 
-                                char neighbourLeft, 
-                                char neighbourRight, 
-                                char neighbourUp, 
-                                char neighbourDown) {
+                                char adjLeft, 
+                                char adjRight, 
+                                char adjUp, 
+                                char adjDown) {
 
-        boolean nLeft   = isInCharArr(subject, neighbourLeft);
-        boolean nRight  = isInCharArr(subject, neighbourRight);
-        boolean nUp     = isInCharArr(subject, neighbourUp);
-        boolean nDown   = isInCharArr(subject, neighbourDown);
+        boolean nLeft   = isInCharArr(subject, adjLeft);
+        boolean nRight  = isInCharArr(subject, adjRight);
+        boolean nUp     = isInCharArr(subject, adjUp);
+        boolean nDown   = isInCharArr(subject, adjDown);
         
         int wallCount = 0;
 
@@ -323,15 +316,17 @@ class GameSystem {
         if ((nLeft && nRight) || (nUp && nDown)) {
 
             if (nLeft && nRight) {
-                if (nUp && !nDown)  return Tile.SIDE_BOTTOM;
-                if (nDown && !nUp)  return Tile.SIDE_TOP;
-                                    return Tile.PIPE_H;
+                if (nUp && !nDown) return Tile.SIDE_BOTTOM;
+                if (nDown && !nUp) return Tile.SIDE_TOP;
+                
+                return Tile.PIPE_H;
             } 
 
             else {
-                if (nLeft && !nRight)   return Tile.SIDE_RIGHT;
-                if (nRight && !nLeft)   return Tile.SIDE_LEFT;
-                                        return Tile.PIPE_V;
+                if (nLeft && !nRight) return Tile.SIDE_RIGHT;
+                if (nRight && !nLeft) return Tile.SIDE_LEFT;
+                
+                return Tile.PIPE_V;
             }
 
         } 
@@ -348,7 +343,7 @@ class GameSystem {
         return Tile.INSIDE;
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     // Helper method to shuffle cards for a given player
     private void shuffleCards(Player player) {
         Random random = new Random();
@@ -356,6 +351,7 @@ class GameSystem {
 
         for (int i = cards.length - 1; i > 0; i--) {
             int j = random.nextInt(i + 1);
+
             Card temp = cards[i];
             cards[i] = cards[j];
             cards[j] = temp;
@@ -364,26 +360,28 @@ class GameSystem {
         player.setCardsOnHand(cards);
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* initialize the game world by creating the grid, players, and troops
+     */
     private void initWorld() {
+
+        // initialize lists
         this.spellQueue = new ObjList();
-        this.spellQueue.append(new WorldSpell(new Pos(3, 6), new Pos(7, 8), 10));
-        this.spellQueue.append(new WorldSpell(new Pos(4, 7), new Pos(10, 15), 10));
-
-        ((WorldSpell)(spellQueue.GetItem(0))).SetDuration(4);
-        ((WorldSpell)(spellQueue.GetItem(1))).SetDuration(4);
-
         this.troops = new ObjList();
 
+        // initialize players
         this.player1 = new Player(PLAYER1_REGION);
         this.player2 = new Player(PLAYER2_REGION);
 
+        // initialize world grid
         FileHandler fHandler = new FileHandler();
-        char [][] grid = fHandler.readFile(FILENAME);
-        
-        this.worldGrid = this.ConvertChar2DtoTile2D(grid);
+        this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile(FILENAME));
 
+        // delete later
         this.spawnTroops(20);
+        this.spellQueue.append(new WorldSpell(new Pos(3, 6), new Pos(7, 8), 10, 4));
+        this.spellQueue.append(new WorldSpell(new Pos(4, 7), new Pos(10, 15), 10, 4));
+
 
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
@@ -415,5 +413,52 @@ class GameSystem {
             }
         }
         this.UpdateWorld();
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* Convert a 2D char array to a 2D Cell array
+     * @param grid - the 2D char array to be converted
+     * @return - the converted 2D Cell array
+     */
+    public Cell[][] CharGrid2CellGrid(char[][] grid) {
+        Cell [][]wGrid = new Cell[grid.length][grid[0].length];
+    
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[row].length; col++) {
+                char currentTile = accessChar(row, col, grid);
+
+                Obj tileContent = new TileFloor();
+
+                // get the neighbouring characters
+                char neighbourLeft  = accessChar(row, col - 1, grid);
+                char neighbourRight = accessChar(row, col + 1, grid);
+                char neighbourUp    = accessChar(row - 1, col, grid);
+                char neighbourDown  = accessChar(row + 1, col, grid);
+                
+                // create the tile content based on the current character
+                switch (currentTile) {
+                    case P1_TOWER_PRINCESS:
+                        tileContent = new TowerPrincess(this.player1);
+                    break; case P1_TOWER_KING:
+                        tileContent = new TowerKing(this.player1);
+                        
+                    break; case P2_TOWER_PRINCESS:
+                        tileContent = new TowerPrincess(this.player2);
+                    break; case P2_TOWER_KING:
+                        tileContent = new TowerKing(this.player2);
+
+                    break; case SYMBOL_TOWER:
+                        tileContent = new TileTower(GetCellSideType(new char[]{SYMBOL_TOWER, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                    break; case SYMBOL_EMPTY:
+                        tileContent = new TileEmpty(GetCellSideType(new char[] {SYMBOL_EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                    break; case SYMBOL_FLOOR:
+                        tileContent = new TileFloor();
+                }
+                
+                wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
+            }
+        }
+
+        return wGrid;
     }
 }

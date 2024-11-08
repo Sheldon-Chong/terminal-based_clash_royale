@@ -10,15 +10,19 @@ public class Screen {
     // -- GETTERS AND SETTERS --
 
     public char[][] GetScreen() { return this.output; }
+    public void     SetScreen(char[][] output) { this.output = output; }
 
-    public void SetPixel(Pos pos, char newChar) {
+    public void     SetPixel(Pos pos, char newChar) {
         if (pos.y < 0 || pos.y >= output.length || pos.x < 0 || pos.x >= output[pos.y].length)
             return;
         output[pos.y][pos.x] = newChar;
     }
-    public void SetScreen(char[][] output) { this.output = output; }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* places the texture on the screen at the given starting position
+     * @param texture - the texture to be placed on the screen
+     * @param startingPos - the position on the screen where the texture will be placed
+     */
     public void ImposeImage(String[] texture, Pos startingPos) {
         if (texture == null) {
             return;
@@ -39,29 +43,40 @@ public class Screen {
         }
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* places the texture on the screen at the given starting position
+     * @param texture - the texture to be placed on the screen
+     * @param startingPos - the position on the screen where the texture will be placed
+     */
     public void ImposeImage(String texture, Pos startingPos) {
         String[] textureArr = {texture};
         this.ImposeImage(textureArr, startingPos);
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* resets the screen
+     */
     public void ResetScreen() {
         this.output = new char[0][];
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* prints the screen to the console
+     */
     public void PrintScreen() {
         
         for (int i = 0; i < output.length; i++)
-        System.out.println(new String(output[i]));
+            System.out.println(new String(output[i]));
         
         System.out.println();
         
     }
     
-    // Written by Sheldon
-    public void Add2LastItem(String value) {
+    // DEVELOPED BY: Sheldon
+    /* appends a string to the last line of the screen
+     * the equivalent of print for terminals
+     */
+    public void AppendStrToLastLine(String value) {
         if (this.output.length == 0) {
             this.output = new char[1][];
             this.output[0] = value.toCharArray();
@@ -76,7 +91,10 @@ public class Screen {
         this.output[this.output.length - 1] = newLine;
     }
 
-    // Written by Sheldon
+    // DEVELOPED BY: Sheldon
+    /* appends a new line to the screen
+     * the equivalent of println for terminals
+     */
     public void AppendLine(String value) {
         
         char[][] newOutput = new char[this.output.length + 1][];

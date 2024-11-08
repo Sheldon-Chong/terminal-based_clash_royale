@@ -1,16 +1,14 @@
 // entire class by Sheldon
 
 /*
- * The tileset class is used to store the textures for the tiles
- * Various static objects in the world typically inherit from this class
- * The textures are stored in a 2D array, with each index representing a different part of the tile
- * Tilesets have 12 different types. The type is determined based on what tiles are adjacent to it
- * These 12 types are represented by constants in the class
+ * The tile class is used to store the textures for the tiles
+ * Various static (non-moving) objects in the world typically inherit from this class
  */
 
 public abstract class Tile extends Obj {
 
-    // CONSTANTS
+    // -- CONSTANTS --
+
     public static final int INSIDE              = 0;
     public static final int CORNER_TOP_LEFT     = 1;
     public static final int CORNER_TOP_RIGHT    = 2;
@@ -27,21 +25,53 @@ public abstract class Tile extends Obj {
     public static final int PIPE_V = 11;
 
 
-    // ATTRIBUTES
-    private int        type;
-    private int         textureState;
-    //private String [][]textures;
-    private Texture []textureSet;
+    // -- ATTRIBUTES --
 
-    // CONSTRUCTORS
+    private int       type;
+    private int       textureState;
+    private Texture []textureSet;
+    private boolean   isSolid;
+
+    
+    // -- CONSTRUCTORS --
+
     public Tile() {
         this.textureSet = new Texture [1];
         for (int i = 0; i < this.textureSet.length; i++)
             this.textureSet[i] = new Texture();
     }
 
+    public Tile(boolean isSolid) {
+        this();
+        this.isSolid = isSolid;
+    }
 
-    public void popTextureFromSet(int textureId) {
+
+    // -- GETTERS & SETTERS --
+    public void SetTextureState(int textureState) { this.textureState = textureState; }
+    public int  GetTextureState() { return this.textureState; }
+
+    public Texture   GetActiveTexture() { return this.textureSet[this.GetTextureState()]; }
+    
+    public void      setTextureSet(int textureSetEntry, Texture texture) { this.textureSet[textureSetEntry] = texture; }
+    
+    public void      setTexture(int textureId, String [] texture) { this.GetActiveTexture().setTexture(textureId, texture); }
+    public String [] getTexture(int textureId) {  return this.GetActiveTexture().getTexture(textureId); }
+    
+    public void setAllTextures(String [] texture) {
+        for (int i = 0; i < this.GetActiveTexture().GetTextures().length; i++)
+            this.setTexture(i, texture);
+    }
+    
+    public void SetType(int type) { this.type = type; }
+    public int  GetType() { return this.type; }
+
+    public void    SetSolid(boolean isSolid) { this.isSolid = isSolid; }
+    public boolean IsSolid() { return this.isSolid; }
+
+    // -- METHODS --
+
+    public void PopTextureFromSet(int textureId) {
         Texture [] newTextureSet = new Texture [this.textureSet.length - 1];
 
         if (textureId < 0)
@@ -55,7 +85,7 @@ public abstract class Tile extends Obj {
         } 
     }
 
-    public void addTextureToSet(Texture texture) {
+    public void AddTextureToSet(Texture texture) {
         Texture [] newTextureSet = new Texture [this.textureSet.length + 1];
 
         for (int i = 0; i < this.textureSet.length; i++)
@@ -65,31 +95,5 @@ public abstract class Tile extends Obj {
         this.textureSet = newTextureSet;
     }
 
-    // GETTERS & SETTERS
-    public void SetTextureState(int textureState) { this.textureState = textureState; }
-    public int  GetTextureState() { return this.textureState; }
-
-    public Texture GetActiveTexture() {
-        return this.textureSet[this.GetTextureState()];
-    }
-
-    public void      setTexture(int textureId, String [] texture) { 
-        this.GetActiveTexture().setTexture(textureId, texture); 
-    }
-
-    public void setTextureSet(int textureSetEntry, Texture texture) {
-        this.textureSet[textureSetEntry] = texture;
-    }
-
-    public String [] getTexture(int textureId) { 
-        return this.GetActiveTexture().getTexture(textureId); 
-    }
     
-    public void setAllTextures(String [] texture) {
-        for (int i = 0; i < this.GetActiveTexture().GetTextures().length; i++)
-            this.setTexture(i, texture);
-    }
-    
-    public void setType(int type) { this.type = type; }
-    public int  getType() { return this.type; }
 }
