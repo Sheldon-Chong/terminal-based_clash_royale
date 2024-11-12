@@ -4,8 +4,12 @@ public class SpellZap extends Spell {
 
     // Constructor to initialize the SpellZap with cost, radius, and damage
     public SpellZap(Pos startingPos) {
-        super(startingPos); // Fixed duration of 1 for instant effect
+        super(startingPos.Add(-1,-1), startingPos.Add(1,1), 1, 1);
     }
+
+    public void ApplyEffect() {
+
+    }    
 
     // Cast method applies the effect of the spell to the surrounding area
     // public void cast(Pos targetPos, GameSystem gameSysRef) {

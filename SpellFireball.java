@@ -3,12 +3,12 @@
 public class SpellFireball extends Spell {
 
     public SpellFireball(Pos startingPos) {
-        super(startingPos);  // Fireball has a fixed duration of 1
+        super(startingPos.Add(-1,-1), startingPos.Add(1,1), 1, 1);
     }
+    
+    public void ApplyEffect() {
 
-    // Implement the required deploy method and pass GameSystem as a parameter
-    
-    
+    }    
 
    
     // public void cast(Pos targetPos, GameSystem gameSysRef) {

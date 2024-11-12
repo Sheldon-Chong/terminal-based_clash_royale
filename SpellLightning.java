@@ -6,12 +6,13 @@ public class SpellLightning extends Spell {
 
     // Constructor for initializing Lightning spell
     public SpellLightning(Pos startingPos) {
-        super(startingPos); // Correctly pass the duration
+        super(startingPos.Add(-1,-1), startingPos.Add(1,1), 1, 1);
     }
-
-
-
     
+    public void ApplyEffect() {
+
+    }    
+
     // public void cast(Pos targetPos, GameSystem gameSysRef) {
     //     Troop[] allTroops = gameSysRef.GetTroops();
     //     int targetsHit = 0;
@@ -28,7 +29,5 @@ public class SpellLightning extends Spell {
     // }
 
     // Since this class does not use duration directly, this method could be omitted unless required elsewhere
-    public int getEffectDuration() {
-        return EFFECT_DURATION;
-    }
+
 }

@@ -1,37 +1,131 @@
-// DEVELOPED BY: Daiki
+
+
+
+
+/*
+ * a world instance of a spell that occupies a position and radius
+ */
 
 public abstract class Spell extends Obj {
     
     // -- ATTRIBUTES --
     
-    private int radius;
-    private int deployTime;
-    private int duration;
+    private Pos         startPos;
+    private Pos         endPos;
+    private Texture     textureDeploy;
+    private Texture     textureInEffect;
+    private int         deployTime;
+    private int         effectDuration;
+    private GameSystem  gameSys;
 
 
-    // -- CONSTRUCTORS --
+    // -- CONSTRUCTOR --
+    
+    public Spell (Pos startingPos, Pos endPos, int deployTime, int effectDuration) {
+        this.effectDuration = effectDuration;
+        this.deployTime = deployTime;
+        this.startPos = startingPos;
+        this.endPos = endPos;
 
-    public Spell() {
-        super();
-        this.radius = 0;
-        this.duration = 0;
+        this.textureDeploy = new Texture();
+
+        this.textureDeploy.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
+            "._____",
+            "|     ",
+            "|     "
+        });
+
+        this.textureDeploy.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
+            "      ",
+            "|     ",
+            "|_____"
+        });
+
+        this.textureDeploy.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
+            "      ",
+            "     |",
+            "_____|"
+        });
+
+        this.textureDeploy.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
+            "_____.",
+            "     |",
+            "     |"
+        });
+
+        
+        this.textureInEffect = new Texture();
+
+        this.textureInEffect.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
+            "/\\/\\/",
+            ">     ",
+            ">     "
+        });
+
+        this.textureInEffect.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
+            "      ",
+            ">     ",
+            "/\\/\\/"
+        });
+
+        this.textureInEffect.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
+            "     <",
+            "     <",
+            "/\\/\\/\\"
+        });
+
+        this.textureInEffect.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
+            "/\\/\\/",
+            "     <",
+            "     <"
+        });
+
+        this.textureInEffect.setTexture(Tile.SIDE_RIGHT, new String [] {
+            "     <",
+            "     <",
+            "     <"
+        });
+
+        this.textureInEffect.setTexture(Tile.SIDE_LEFT, new String [] {
+            ">     ",
+            ">     ",
+            ">     "
+        });
+
+        this.textureInEffect.setTexture(Tile.SIDE_TOP, new String [] {
+            "/\\/\\/",
+        });
+
+        this.textureInEffect.setTexture(Tile.SIDE_BOTTOM, new String [] {
+            "     ",
+            "     ",
+            "/\\/\\/"
+        });
     }
+    
 
-    public Spell(Pos startingPos) {
-        super();
-        this.SetPos(startingPos);
+    // -- GETTER AND SETTER --
+
+    public void SetDuration(int duration) { this.effectDuration = duration; }
+    public int  GetDuration() { return this.effectDuration; }
+
+    public void SetGameRef(GameSystem gameSys) { this.gameSys = gameSys; }
+    public GameSystem GetGameRef() { return this.gameSys; }
+
+    public Pos GetStartPos() { return this.startPos; }
+    public Pos GetEndPos() { return this.endPos; }
+    
+    public void DeductDeployTime() { this.deployTime--; }
+    public int  GetDeployTime() { return this.deployTime; }
+
+    abstract public void ApplyEffect();
+
+    public Texture GetTexture(int num) {
+        if (num == 0)
+            return this.textureDeploy;
+            
+        else
+            return this.textureInEffect;
     }
-
-
-    // -- GETTERS AND SETTERS --
-
-    public int  GetRadius() { return radius; }
-    public void SetRadius (int radius) { this.radius = radius; }
-
-    public int  GetDuration() { return duration; }
-    public void SetDuration (int duration) { this.duration = duration; }
-
-    public int  GetDeployTime() { return deployTime; }
-    public void SetDeployTime (int deployTime) { this.deployTime = deployTime; }
 
 }

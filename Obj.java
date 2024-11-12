@@ -20,6 +20,10 @@ public abstract class Obj {
         
     }
 
+    public Obj (Pos startPos) {
+        pos = startPos;
+    }
+
     
     // -- GETTERS AND SETTERS --
 

@@ -1,4 +1,3 @@
-import java.util.Random;
 
 /*
  * The GameSystem class is responsible for managing the game world and its entities
@@ -127,15 +126,6 @@ class GameSystem {
     public boolean isOutOfBounds (Pos pos) {
         return pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length;
     }
-
-    // DEVELOPED BY : DAIKI
-    // Assuming you have a method to deploy spells
-    public void deploySpell(Spell spell, Pos position) {
-        if (spell instanceof SpellLightning) {
-            ((SpellLightning) spell).deploy(position, this);
-        }
-    }
-
 
     // DEVELOPED BY: Daiki
     // Method to check if troop/spell is deployed within the board
@@ -267,7 +257,7 @@ class GameSystem {
         
         // iterate through the spell queue and deduct the remaining deploy time of each spell
         for (int i = 0; i < this.spellQueue.GetLen(); i++) {
-            ObjSpell spell = (ObjSpell)this.spellQueue.GetItem(i);
+            Spell spell = (Spell)this.spellQueue.GetItem(i);
 
             spell.DeductDeployTime();
 
@@ -289,7 +279,19 @@ class GameSystem {
     }
 
     public void summonSpell(String name, Pos targetPos) {
-        this.spellQueue.append(new ObjSpell(targetPos.Add(-1,-1), targetPos.Add(1,1), 1, 2));
+
+        Spell spell;
+
+        if (name.toLowerCase().equals("lightning"))
+            spell = new SpellLightning(targetPos);
+        else if (name.toLowerCase().equals("fireball"))
+            spell = new SpellFireball(targetPos);
+        else if (name.toLowerCase().equals("zap"))
+            spell = new SpellZap(targetPos);
+        else
+            return;
+
+        this.spellQueue.append(spell);
     }
 
     public int DeployCard(int index, Pos pos) {
@@ -353,35 +355,7 @@ class GameSystem {
         return newTroop;
     }
 
-    // DEVELOPED BY: Sheldon
-    /* randomly spawn troops on the game grid, with half of the troops belonging to each player
-     * @param amt - the amount of troops to be spawned
-     * @return - the list of spawned troops
-     */
-    private void spawnTroops(int amt) {
-        this.troops.ClearList();
-
-        for (int i = 0; i < amt; i++) {
-            Player currPlayer = player1;
-            
-            if (i > (amt / 2))
-                currPlayer = player2;
-
-            Pos startPos;
-            
-            while (true) {
-                if (currPlayer.GetPlayerNum() == PLAYER1_REGION)
-                    startPos = new Pos((int) (Math.random() * (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
-                else
-                    startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
-                    
-                if (this.GetCell(startPos).GetObject() instanceof TileFloor)
-                    break;
-            }
-
-            this.troops.append(newTroop("barbarian", startPos, currPlayer));
-        }
-    }
+    
 
     // DEVELOPED BY: Sheldon
     /* check if a character is in a character array
@@ -448,30 +422,6 @@ class GameSystem {
 
         // inside
         return Tile.INSIDE;
-    }
-
-    // DEVELOPED BY: Daiki
-    // Helper method to shuffle cards for a given player
-    private void shuffleCards(Player player) {
-        Random random = new Random();
-        Card[] cards = player.getCardsOnHand();
-
-        for (int i = cards.length - 1; i > 0; i--) {
-            int j = random.nextInt(i + 1);
-
-            Card temp = cards[i];
-            cards[i] = cards[j];
-            cards[j] = temp;
-        }
-
-        player.setCardsOnHand(cards);
-    }
-
-
-    // DEVELOPED BY: DAIKI
-    // In GameSystem.java, the spawnSpell method:
-    public void spawnSpell(Spell spell) {
-        this.spellQueue.append(spell);
     }
 
 
@@ -611,3 +561,33 @@ class GameSystem {
 
 
 }
+
+// // DEVELOPED BY: Sheldon
+    // /* randomly spawn troops on the game grid, with half of the troops belonging to each player
+    //  * @param amt - the amount of troops to be spawned
+    //  * @return - the list of spawned troops
+    //  */
+    // private void spawnTroops(int amt) {
+    //     this.troops.ClearList();
+
+    //     for (int i = 0; i < amt; i++) {
+    //         Player currPlayer = player1;
+            
+    //         if (i > (amt / 2))
+    //             currPlayer = player2;
+
+    //         Pos startPos;
+            
+    //         while (true) {
+    //             if (currPlayer.GetPlayerNum() == PLAYER1_REGION)
+    //                 startPos = new Pos((int) (Math.random() * (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
+    //             else
+    //                 startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
+                    
+    //             if (this.GetCell(startPos).GetObject() instanceof TileFloor)
+    //                 break;
+    //         }
+
+    //         this.troops.append(newTroop("barbarian", startPos, currPlayer));
+    //     }
+    // }
