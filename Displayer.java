@@ -3,7 +3,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Random;
 import java.util.Scanner;
 
 /*
@@ -231,71 +230,63 @@ public class Displayer {
         return corners;
     }
 
-    // Randomly select a card from a predefined set of cards
-    private Card getRandomCard(Player player) {
-    // List of available cards (change Troop classes to Card if necessary)
-        Card[] availableCards = new Card[] {
-            new CardTroop("Barbarian", new Pos(0, 0), player),
-            new CardTroop("Skeletons", new Pos(0, 0), player),
-            new CardTroop("Golem", new Pos(0, 0), player),
-            new CardTroop("Knight", new Pos(0, 0), player)
-            // Add more card classes as needed
-        };
-
-    // Pick a random card
-    Random rand = new Random();
-    return availableCards[rand.nextInt(availableCards.length)];
-    }
-
-
    // DEVELOPED BY: Daiki
     public void DisplayCardDeck(Player player) {
 
-        final String patternCardName   = "**";
-        final String patternElixirCost = ">>";
-        final String patternElixir     = "//";
-
-        
         this.CardScreen = new Screen();
+
+        // render base
         this.CardScreen.AppendLine(" ^^                                                               ");
-        this.CardScreen.AppendLine("o================================================================o");
+        this.CardScreen.AppendLine("o=======================#1=========#2=========#3=========#4======o");
         this.CardScreen.AppendLine("|  Next:______     | **       | **       | **       | **       | |");
-        this.CardScreen.AppendLine("|  | **       |    |          |          |          |          | |");
+        this.CardScreen.AppendLine("|  | %%       |    |          |          |          |          | |");
         this.CardScreen.AppendLine("|  |          |    |          |          |          |          | |");
         this.CardScreen.AppendLine("|  |          |    |___[>>]___|___[>>]___|___[>>]___|___[>>]___| |");
-        this.CardScreen.AppendLine("|  |___[>>]___|       ________________________________________   |");
-        this.CardScreen.AppendLine("|              Elixir:&&                                      |< |");
+        this.CardScreen.AppendLine("|  |___[<<]___|       ________________________________________   |");
+        this.CardScreen.AppendLine("|              Elixir:&&                                      |$ |");
         this.CardScreen.AppendLine("o================================================================o");
 
 
-        Card []cards = new Card[4];
-        cards[0] = new CardTroop("Skeleasdsdadton", new Pos(0, 0), player);
-        cards[1] = new CardTroop("Skeleton", new Pos(0, 0), player);
-        cards[2] = new CardTroop("Skeleton", new Pos(0, 0), player);
-        cards[3] = new CardTroop("Skeleton", new Pos(0, 0), player);
+        Player currentPlayer = gameRef.GetCurrentPlayer();
+
+        // RENDER CARDS
+        Card []cards = currentPlayer.getCardsOnHand();
         
-        this.CardScreen.ImposeImage(this.gameRef.GetCurrentPlayer().GetName(), "^^");
+        this.CardScreen.ImposeImage(currentPlayer.GetName(), "^^");
         
         for (int i = 0; i < 4; i ++) {
-            String name = cards[i].GetName();
-
-            if (name.length() > 8)
-                name = name.substring(0, 8);
-
+            String name, elixirCost;
+            
+            if (cards[i] != null) {
+                name = cards[i].GetName();
+    
+                if (name.length() > 9)
+                    name = name.substring(0, 9);
+                
+                elixirCost = String.format("%2s", "" + cards[i].GetElixirCost());
+            }
+            else {
+                name = " ";
+                elixirCost = " ";
+            }
+                
             this.CardScreen.ImposeImage(name, "**");
-
-            String elixirCost = String.format("%2s", "" + cards[i].GetElixirCost());
             this.CardScreen.ImposeImage(elixirCost, ">>");
         }
 
+        // render elixir bar
         String elixirBuffer = "";
-
-        for (int i = 0; i < gameRef.GetCurrentPlayer().GetElixir(); i++) {
-            elixirBuffer += "//";
+        for (int i = 0; i < currentPlayer.GetElixir(); i++) {
+            elixirBuffer += " /";
         }
 
+        // render elixir
         this.CardScreen.ImposeImage(elixirBuffer, "&&");
-        this.CardScreen.ImposeImage(gameRef.GetCurrentPlayer().GetElixir() + "", "<");
+        
+        this.CardScreen.ImposeImage(String.format("%2d", currentPlayer.getUpcomingCard().GetElixirCost()), "<<");
+        this.CardScreen.ImposeImage(currentPlayer.getUpcomingCard().GetName() + "", "%%");
+
+        this.CardScreen.ImposeImage(currentPlayer.GetElixir() + "", "$");
 
         this.CardScreen.PrintScreen();
     }

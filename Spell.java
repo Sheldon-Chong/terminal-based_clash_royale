@@ -1,33 +1,37 @@
 // DEVELOPED BY: Daiki
 
 public abstract class Spell extends Obj {
-    private int radius;
-    private int damage;
-    private int duration;
-    private int elixirCost;
-
-    // Constructor for initializing basic spell attributes
-    public Spell(int elixirCost, int radius, int damage, int duration) {
-        super();
-        this.radius = radius;
-        this.damage = damage;
-        this.duration = duration;
-        this.elixirCost = elixirCost;
-    }
-
-    // Abstract cast method to be overridden by each specific spell type
-    public abstract void cast(Pos targetPos, GameSystem gameSysRef);
     
-    // Getters for accessing spell properties if needed
-    public int GetRadius() {
-        return radius;
+    // -- ATTRIBUTES --
+    
+    private int radius;
+    private int deployTime;
+    private int duration;
+
+
+    // -- CONSTRUCTORS --
+
+    public Spell() {
+        super();
+        this.radius = 0;
+        this.duration = 0;
     }
 
-    public int GetDamage() {
-        return damage;
+    public Spell(Pos startingPos) {
+        super();
+        this.SetPos(startingPos);
     }
 
-    public int GetDuration() {
-        return duration;
-    }
+
+    // -- GETTERS AND SETTERS --
+
+    public int  GetRadius() { return radius; }
+    public void SetRadius (int radius) { this.radius = radius; }
+
+    public int  GetDuration() { return duration; }
+    public void SetDuration (int duration) { this.duration = duration; }
+
+    public int  GetDeployTime() { return deployTime; }
+    public void SetDeployTime (int deployTime) { this.deployTime = deployTime; }
+
 }

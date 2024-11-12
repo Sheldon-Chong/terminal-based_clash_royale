@@ -36,6 +36,38 @@ class FileHandler {
         return dimensions;
     }
 
+    public int GetRowCount(String fileName) {
+        return getFileDimensions(fileName)[0];
+    }
+
+    public String [] readFileLine(String fileName) {
+        File file = new File(fileName);
+        
+        int []dimensions = getFileDimensions(fileName);
+
+        int rows = dimensions[0];
+        int cols = dimensions[1];
+
+        String [] stringArray = new String[rows];
+
+        // Second pass to populate
+
+        try {
+            Scanner input = new Scanner(file);
+            int row = 0;
+            while (input.hasNextLine()) {
+                String line = input.nextLine();
+                stringArray[row] = line;
+                row++;
+            }
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return stringArray;
+    }
+
     // DEVELOPED BY: Sheldon
     public char[][] readFile(String fileName) {
         File file = new File(fileName);

@@ -9,6 +9,7 @@ import java.util.Random;
 class GameSystem {
 
     // -- CONSTANTS --
+
     public final static String  FILENAME = "game_grid.txt";
 
     public final static char    SYMBOL_TOWER = 'T';
@@ -25,8 +26,26 @@ class GameSystem {
     public final static int     PLAYER1_REGION = 1;
     public final static int     PLAYER2_REGION = 2;
     
-    
+    public final static String [] CARDS = {
+        "barbarian",
+        "elixir golem",
+        "giant",
+        "goblins",
+        "golem",
+        "hog rider",
+        "knight",
+        "lumberjack",
+        "pekka",
+        "skeletons",
+
+        "lightning",
+        "fireball",
+        "zap"
+    };
+
+
     // -- ATTRIBUTES --
+    
     private ObjList  troops;
     private Cell[][] worldGrid;
     private ObjList  spellQueue;
@@ -34,7 +53,7 @@ class GameSystem {
     private          Player player2;
     private int      currentRound = 1; // Trakcs the current round number
     private Player   currentPlayer;
-    
+    private Card []cards;
 
     // -- CONSTRUCTORS --
     
@@ -45,7 +64,6 @@ class GameSystem {
 
     
     // -- GETTERS AND SETTERS --
-
 
     public boolean  IsEndGame() {
         return false;
@@ -127,20 +145,16 @@ class GameSystem {
 
     // DEVELOPED BY: Daiki
     // Method to get the current round
-    public int GetRound() { 
-        return this.currentRound;
-     }
-    public ObjList GetSpells () {
-        return this.spellQueue;
-    }
+    public int     GetRound() { return this.currentRound; }
+    public ObjList GetSpells () { return this.spellQueue; }
 
     // DEVELOPED BY: Daiki
     // Method to shuffle cards in each player's hand
     public void shufflePlayerCards() { 
         System.out.println("Shuffling player cards...");
         
-        shuffleCards(player1);
-        shuffleCards(player2);
+        player1.ShuffleCards();
+        player2.ShuffleCards();
     }
 
     // DEVELOPED BY: Daiki
@@ -274,6 +288,41 @@ class GameSystem {
         }
     }
 
+    public void summonSpell(String name, Pos targetPos) {
+        this.spellQueue.append(new ObjSpell(targetPos.Add(-1,-1), targetPos.Add(1,1), 1, 2));
+    }
+
+    public int DeployCard(int index, Pos pos) {
+        Card card = this.GetCurrentPlayer().GetCard(index);
+
+        if (this.GetCurrentPlayer().GetElixir() < card.GetElixirCost())
+            return -1;
+        
+        if (index < 0 || index >= 4)
+            return -2;
+
+        this.GetCurrentPlayer().DeductElixir(card.GetElixirCost());
+
+        if (card.GetType() == Card.SPELL) {
+            this.summonSpell(card.GetName(), pos);
+            this.GetCurrentPlayer().RemoveCard(index);
+            return 1;
+        }
+        else {
+            this.SpawnTroop(card.GetName(), pos);
+        }
+
+        this.GetCurrentPlayer().RemoveCard(index);
+
+        return 1;
+    }    
+
+    public int SpawnTroop(String troopName, Pos pos) {
+        this.troops.append(newTroop(troopName.toLowerCase(), pos, this.GetCurrentPlayer()));
+
+        return 1;
+    }
+
     // DEVELOPED BY: Sheldon
     /* convert a string to a new instance of a troop
      * @param troopType - the type of troop to be spawned
@@ -287,15 +336,17 @@ class GameSystem {
         Troop newTroop = null;
 
         if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(startingPos, parent); }
-        else if (troopType.equals("elixir golem")){ newTroop = new TroopElixirGolem(startingPos, parent); }
+        else if (troopType.equals("elixirgolem")){ newTroop = new TroopElixirGolem(startingPos, parent); }
         else if (troopType.equals("giant"))       { newTroop = new TroopGiant(startingPos, parent); }
         else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(startingPos, parent); }
         else if (troopType.equals("golem"))       { newTroop = new TroopGolem(startingPos, parent); }
-        else if (troopType.equals("hog rider"))   { newTroop = new TroopHogRider(startingPos, parent); }
+        else if (troopType.equals("hogrider"))   { newTroop = new TroopHogRider(startingPos, parent); }
         else if (troopType.equals("knight"))      { newTroop = new TroopKnight(startingPos, parent); }
         else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(startingPos, parent); }
         else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(startingPos, parent); }
-        else if (troopType.equals("skeletons"))   { newTroop = new TroopSkeletons(startingPos, parent); }
+        else if (troopType.equals("skeleton"))   { newTroop = new TroopSkeletons(startingPos, parent); }
+        else
+            return null;
 
         newTroop.SetGameSysRef(this);
 
@@ -424,22 +475,53 @@ class GameSystem {
     }
 
 
+    public Card []getCards() {
+        return this.cards;
+    }
+
     // DEVELOPED BY: Sheldon
     /* initialize the game world by creating the grid, players, and troops
      */
     private void initWorld() {
+
+        FileHandler fHandler = new FileHandler(); 
+
+        String [] cardsRaw = fHandler.readFileLine("cards.csv");
+
+        this.cards = new Card[cardsRaw.length];
+        for (int i = 0; i < cardsRaw.length; i++) {
+            
+            String [] contentsSplitted = cardsRaw[i].split(",");
+
+            String  cardName = contentsSplitted[0];
+            int     elixirCost = Integer.valueOf(contentsSplitted[1]);
+            String rawType = contentsSplitted[2];
+
+            int type = Card.TROOP;
+
+            if (rawType.equals("troop")) {
+                type = Card.TROOP;
+            } 
+            else if (rawType.equals("spell")) {
+                type = Card.SPELL;
+            }
+
+            this.cards[i] = new Card(cardName, elixirCost, type);
+            System.out.println(cards[i].GetRepr());
+        }
 
         // initialize lists
         this.spellQueue = new ObjList();
         this.troops = new ObjList();
 
         // initialize players
-        this.player1 = new Player("Player1", 1);
-        this.player2 = new Player("Player2", 2);
+        this.player1 = new Player("Player1", 1, this);
+        this.player2 = new Player("Player2", 2, this);
         
+        this.SetCurrentPlayer(this.GetPlayer1());
+        this.shufflePlayerCards();
 
         // initialize world grid
-        FileHandler fHandler = new FileHandler();
         this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile(FILENAME));
 
         // delete later

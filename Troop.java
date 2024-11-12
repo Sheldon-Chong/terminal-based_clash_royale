@@ -19,7 +19,7 @@ class Troop extends Obj {
     public static final int ACTION_ATTACK = 0;
     public static final int ACTION_MOVE   = 1;
 
-
+    
     // -- ATTRIBUTES --
 
     private Pos         Dest;

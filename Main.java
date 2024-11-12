@@ -6,7 +6,7 @@ import java.util.Scanner;
  * Main class is the entry point of the program
  */
 
- public class Main {
+public class Main {
 
     public static void main(String[] args) {
 
@@ -29,6 +29,7 @@ import java.util.Scanner;
         // Get the current player
         System.out.print("Enter Player 1 name: ");
         String player1Name = input.nextLine();  // Collect Player 1's name
+        
         System.out.print("Enter Player 2 name: ");
         String player2Name = input.nextLine();  // Collect Player 2's name
 
@@ -44,53 +45,49 @@ import java.util.Scanner;
         System.out.println("\nLoading the board...");
         display.PrintWorld(gameSys.GetGrid());  // Display the initial board
 
-        // Start the game loop
-
-        
-        gameSys.SetCurrentPlayer(gameSys.GetPlayer1());
-
         while (true) {
+            
             // Show the game board
             display.PrintWorld(gameSys.GetGrid());
-            
-            // Refresh and display current player's deck
             display.DisplayCardDeck(gameSys.GetCurrentPlayer());  
-
-            // Ask player to deploy a card or skip
             System.out.println("Choose a card to deploy by number (1-4), or press ENTER to skip.");
             String userInput = input.nextLine();
-    
+            for (int i = 0; i < 4; i++)
+                System.out.printf("Card %d: %s\n", i+1, gameSys.GetCurrentPlayer().GetCard(i));
+            
             // Handle card deployment
             if (!userInput.isEmpty()) {
-                
-                int cardIndex = Integer.parseInt(userInput) - 1;
-                
-                if (cardIndex >= 0 && cardIndex < 4) {
-                    Player currentPlayer = gameSys.GetCurrentPlayer();
+                int     cardIndex = Integer.parseInt(userInput) - 1;
 
-                    Card selectedCard = currentPlayer.GetCard(cardIndex);
-                    // if (currentPlayer.GetElixir() >= selectedCard.GetElixirCost())
-                    //     deployCard(currentPlayer, selectedCard, cardIndex);
-                    // else
-                    //     System.out.println("Not enough elixir to deploy this card.");
-                } 
-                else
-                    System.out.println("Invalid card number.");
-            } 
+                System.out.println("Enter a deploy position: ");
+
+                String  positionRaw = input.nextLine();
+                Pos     deployPos = new Pos(0, 0); // TO CHANGE
+
+                Player  currentPlayer = gameSys.GetCurrentPlayer();
+                Card    selectedCard = currentPlayer.GetCard(cardIndex);
+                
+                int status = gameSys.DeployCard(cardIndex, deployPos);
+                
+                // ERROR HANDLING
+                switch(status) {
+                    case -1:
+                        System.out.printf("Not enough elixir to deploy %s: %d/%d", selectedCard.GetName(), currentPlayer.GetElixir(), selectedCard.GetElixirCost());
+                    break; case 1:
+                        System.out.printf("%s deployed at (%d, %d). Press ENTER to continue", selectedCard.GetName(), deployPos.x, deployPos.y);
+                    break; case 2:
+                        System.out.println("Invalid card index.");
+                }
+            }
             else
                 System.out.println("Press ENTER to end your turn");
-                
+
+            // update game
             gameSys.UpdateWorld();
+            gameSys.RegenerateElixir();
                 
             if (gameSys.IsEndGame())
                 break;
-
-            // Regenerate elixir and shuffle cards
-            gameSys.RegenerateElixir();
-            gameSys.shufflePlayerCards();
-    
-            input.nextLine(); // Wait for user to press ENTER to skip their turn
-            System.out.println("Skipping turn.....");
     
             gameSys.AlternatePlayer();
         }
