@@ -1,73 +1,100 @@
+// DEVELOPED BY : DAIKI
+
 import java.util.Scanner;
 
 /* 
  * Main class is the entry point of the program
  */
 
-public class Main {
+ public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		FileHandler fHandler = new FileHandler();
-		char [][] grid = fHandler.readFile("game_grid.txt");
-		//fHandler.print2DCharArr(grid);
+        FileHandler fHandler = new FileHandler();
+        char[][] grid = fHandler.readFile("game_grid.txt");
+        // fHandler.print2DCharArr(grid);
 
-		GameSystem gameSys = new GameSystem();
-		gameSys.CharGrid2CellGrid(grid);
-		
+        GameSystem gameSys = new GameSystem();
+        gameSys.CharGrid2CellGrid(grid);
 
-		Scanner scanner = new Scanner(System.in);
-		String input;
-		Displayer display = new Displayer(gameSys);
-		
-		 // DEVELOPED BY: Daiki
-		 // Display title screen
-		 display.ShowTitleScreen();
-		 
-		 // DEVELOPED BY: Daiki
-		 // Prompt for player names
-		 String dummy = scanner.nextLine(); // Dummy user input
+        Scanner input = new Scanner(System.in);
+        Displayer display = new Displayer(gameSys);
 
-		 System.out.print("Enter Player 1 name: ");
-		 String player1Name = display.GetPlayerName(1);
-		 System.out.print("Enter Player 2 name: ");
-		 String player2Name = display.GetPlayerName(2);
- 
-		 System.out.println("Welcome " + player1Name + " and " + player2Name + "!");
+        // Display title screen
+        display.ShowTitleScreen();
 
-		 // Initialize current player
-		 String currentPlayer = player1Name;
-		 int currentPlayerTurn = 1;
+        // Prompt for player 3
+		input.nextLine(); 
+        
+        // Get the current player
+        System.out.print("Enter Player 1 name: ");
+        String player1Name = input.nextLine();  // Collect Player 1's name
+        System.out.print("Enter Player 2 name: ");
+        String player2Name = input.nextLine();  // Collect Player 2's name
 
-		 // DEVELOPED BY: Daiki
-		 // Wait for ENTER to start the game
-		 System.out.println("\nPress ENTER to begin game...");
-		 scanner.nextLine();  // Waits for ENTER input
- 
-		 // DEVELOPED BY: Daiki
-		 // Load and display the game board
-		 System.out.println("\nLoading the board...");
-		 display.PrintWorld(gameSys.GetGrid());  // Display the initial board
+        System.out.println("Welcome " + player1Name + " and " + player2Name + "!");
+        gameSys.GetPlayer1().SetName(player1Name);  // Set Player 1's name in GameSystem
+        gameSys.GetPlayer2().SetName(player2Name);  // Set Player 2's name in GameSystem
 
-		
-		while (true) {
-			//gameSys.PrintWorldGridRaw(gameSys.GetGrid());
-			gameSys.UpdateWorld();
-			display.PrintWorld(gameSys.GetGrid()); // Dispalys the board
-			System.out.println(currentPlayer + "");
-			display.ShowGameInfo(gameSys.GetPlayer1()); // Display Player 1 info right below the board
-			System.out.println("Enter 'q' to quit or any other key to simulate a move: ");
-			input = scanner.nextLine();
+        // Wait for ENTER to start the game
+        System.out.println("\nPress ENTER to begin game...");
+        input.nextLine();  // Waits for ENTER input
 
-			if (input.equals("q"))
-				break;
+        // Load and display the game board
+        System.out.println("\nLoading the board...");
+        display.PrintWorld(gameSys.GetGrid());  // Display the initial board
 
-		}
-		scanner.close();
-	}
+        // Start the game loop
+
+        
+        gameSys.SetCurrentPlayer(gameSys.GetPlayer1());
+
+        while (true) {
+            // Show the game board
+            display.PrintWorld(gameSys.GetGrid());
+            
+            // Refresh and display current player's deck
+            display.DisplayCardDeck(gameSys.GetCurrentPlayer());  
+
+            // Ask player to deploy a card or skip
+            System.out.println("Choose a card to deploy by number (1-4), or press ENTER to skip.");
+            String userInput = input.nextLine();
+    
+            // Handle card deployment
+            if (!userInput.isEmpty()) {
+                
+                int cardIndex = Integer.parseInt(userInput) - 1;
+                
+                if (cardIndex >= 0 && cardIndex < 4) {
+                    Player currentPlayer = gameSys.GetCurrentPlayer();
+
+                    Card selectedCard = currentPlayer.GetCard(cardIndex);
+                    // if (currentPlayer.GetElixir() >= selectedCard.GetElixirCost())
+                    //     deployCard(currentPlayer, selectedCard, cardIndex);
+                    // else
+                    //     System.out.println("Not enough elixir to deploy this card.");
+                } 
+                else
+                    System.out.println("Invalid card number.");
+            } 
+            else
+                System.out.println("Press ENTER to end your turn");
+                
+            gameSys.UpdateWorld();
+                
+            if (gameSys.IsEndGame())
+                break;
+
+            // Regenerate elixir and shuffle cards
+            gameSys.RegenerateElixir();
+            gameSys.shufflePlayerCards();
+    
+            input.nextLine(); // Wait for user to press ENTER to skip their turn
+            System.out.println("Skipping turn.....");
+    
+            gameSys.AlternatePlayer();
+        }
+
+        input.close();
+    }
 }
-
-
-
-// System.out.print(String.format("\033[%dA",count)); // Move up
-// System.out.print("\033[2K"); // Erase line content

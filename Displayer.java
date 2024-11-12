@@ -1,6 +1,9 @@
+
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Random;
 import java.util.Scanner;
 
 /*
@@ -21,6 +24,7 @@ public class Displayer {
     private GameSystem gameRef;
     private Scanner input;
     private Screen screen;
+    private Screen CardScreen;
 
 
     // -- CONSTRUCTORS --
@@ -31,7 +35,6 @@ public class Displayer {
         this.input = new Scanner(System.in);
     }
 
-
     // -- SETTER AND GETTER --
 
     // DEVELOPED BY: Daiki
@@ -39,9 +42,6 @@ public class Displayer {
         return input.nextLine();
     }
 
-
-    // -- METHODS --
-    
     // DEVELOPED BY: Daiki
     // Display ASCII Title Screen
     public void ShowTitleScreen() {
@@ -58,22 +58,7 @@ public class Displayer {
         }
     }
 
-    // DEVELOPED BY: Daiki
-    public void ShowGameInfo(Player player) {
-        System.out.println("o===============================================================o");
-        System.out.printf("|  Next:          | %s | %s | %s | %s       |\n", "Skeleton", "Knight", "Golem", "Fireball"); // Sample names
-        System.out.printf("|  |   %s   |   |         |         |         |                |\n", "Zap");
-        System.out.println("|  |           |  |         |         |         |                |");
-        System.out.printf("|  |           |  |___[%d]___|___[%d]___|___[%d]___|___[%d]___       |\n", 3, 5, 8, 4); // Sample elixir costs
-        System.out.println("|  |___[3]___|      _______________________________________     |");
-        System.out.print("|              Elixir: ");
-        for (int i = 1; i <= 10; i++) {
-            System.out.print("|" + i + " ");
-        }
-        System.out.println("|");
-        System.out.println("|                      |__|___|___|___|___|___|___|___|___|____| |");
-        System.out.println("o===============================================================o");
-    }
+    
 
     // DEVELOPED BY: Sheldon
     public void PrintWorld(Cell[][] grid) {
@@ -85,8 +70,6 @@ public class Displayer {
         this.screen.PrintScreen();
     }
 
-
-    // -- HELPER METHODS --
 
     // DEVELOPED BY: Sheldon
     private String getRepr(Obj object) {
@@ -151,6 +134,9 @@ public class Displayer {
 
     // DEVELOPED BY: Sheldon
     private void renderTroops() {
+        if (gameRef.GetTroops() == null)
+            return;
+
         for (int i = 0; i < gameRef.GetTroops().length; i++) {
             Troop troop = gameRef.GetTroops()[i];
             Pos pos = this.pos2Corner((troop.GetPos())).Add(2, 1);
@@ -192,33 +178,41 @@ public class Displayer {
         }
     }
 
-    // DEVELOPED BY: Sheldon
+    // DEVELOPED BY: Sheldon and Daiki
     private void renderCells() {
+        // Iterate through the grid
         for (int y = 0; y < gameRef.GetGrid().length; y++) {
             for (int x = 0; x < gameRef.GetGrid()[0].length; x++) {
+                // Get the cell at the current position
                 Cell cell = gameRef.GetCell(new Pos(x, y));
-                Pos[] cornersPositions = getCornersFromTile(new Pos(x, y));
-                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];
+                Pos[] cornersPositions = getCornersFromTile(new Pos(x, y));  // Get the corner positions for the tile
+                Pos startingCorner = cornersPositions[TOP_LEFT_CORNER];  // Get the top left corner position
 
+                // If the cell is not null, proceed to check its object type
                 if (cell != null) {
-                    Obj object = cell.GetObject();
+                    Obj object = cell.GetObject();  // Get the object within the cell
 
+                    // If the object is a Tower (either Player's King or Princess Tower), render it
                     if (object instanceof Tower) {
-                        Tower tower = (Tower) cell.GetObject();
-                        screen.ImposeImage(this.getRepr(tower), startingCorner.Add(2, 1));
+                        Tower tower = (Tower) object;  // Cast the object to a Tower
+                        screen.ImposeImage(this.getRepr(tower), startingCorner.Add(2, 1));  // Display the tower
                     }
+                    // If the object is a TileTower (e.g., a wall or structure related to the tower), render it
                     else if (object instanceof TileTower) {
-                        TileTower towerWall = (TileTower) cell.GetObject();
-                        screen.ImposeImage(towerWall.getTexture(towerWall.GetType()), startingCorner);
+                        TileTower towerWall = (TileTower) object;  // Cast the object to a TileTower
+                        screen.ImposeImage(towerWall.getTexture(towerWall.GetType()), startingCorner);  // Display the tower wall
                     } 
+                    // If the object is a TileEmpty (empty space on the board), render it
                     else if (object instanceof TileEmpty) {
-                        TileEmpty empty = (TileEmpty) cell.GetObject();
-                        screen.ImposeImage(empty.getTexture(empty.GetType()), startingCorner);
+                        TileEmpty empty = (TileEmpty) object;  // Cast the object to a TileEmpty
+                        screen.ImposeImage(empty.getTexture(empty.GetType()), startingCorner);  // Display the empty space
                     }
+                    // Additional object types can be added here if needed (e.g., spells, troops, etc.)
                 }
             }
         }
     }
+
 
     // DEVELOPED BY: Sheldon
     private Pos pos2Corner(Pos pos) {
@@ -237,4 +231,72 @@ public class Displayer {
         return corners;
     }
 
+    // Randomly select a card from a predefined set of cards
+    private Card getRandomCard(Player player) {
+    // List of available cards (change Troop classes to Card if necessary)
+        Card[] availableCards = new Card[] {
+            new CardTroop("Barbarian", new Pos(0, 0), player),
+            new CardTroop("Skeletons", new Pos(0, 0), player),
+            new CardTroop("Golem", new Pos(0, 0), player),
+            new CardTroop("Knight", new Pos(0, 0), player)
+            // Add more card classes as needed
+        };
+
+    // Pick a random card
+    Random rand = new Random();
+    return availableCards[rand.nextInt(availableCards.length)];
+    }
+
+
+   // DEVELOPED BY: Daiki
+    public void DisplayCardDeck(Player player) {
+
+        final String patternCardName   = "**";
+        final String patternElixirCost = ">>";
+        final String patternElixir     = "//";
+
+        
+        this.CardScreen = new Screen();
+        this.CardScreen.AppendLine(" ^^                                                               ");
+        this.CardScreen.AppendLine("o================================================================o");
+        this.CardScreen.AppendLine("|  Next:______     | **       | **       | **       | **       | |");
+        this.CardScreen.AppendLine("|  | **       |    |          |          |          |          | |");
+        this.CardScreen.AppendLine("|  |          |    |          |          |          |          | |");
+        this.CardScreen.AppendLine("|  |          |    |___[>>]___|___[>>]___|___[>>]___|___[>>]___| |");
+        this.CardScreen.AppendLine("|  |___[>>]___|       ________________________________________   |");
+        this.CardScreen.AppendLine("|              Elixir:&&                                      |< |");
+        this.CardScreen.AppendLine("o================================================================o");
+
+
+        Card []cards = new Card[4];
+        cards[0] = new CardTroop("Skeleasdsdadton", new Pos(0, 0), player);
+        cards[1] = new CardTroop("Skeleton", new Pos(0, 0), player);
+        cards[2] = new CardTroop("Skeleton", new Pos(0, 0), player);
+        cards[3] = new CardTroop("Skeleton", new Pos(0, 0), player);
+        
+        this.CardScreen.ImposeImage(this.gameRef.GetCurrentPlayer().GetName(), "^^");
+        
+        for (int i = 0; i < 4; i ++) {
+            String name = cards[i].GetName();
+
+            if (name.length() > 8)
+                name = name.substring(0, 8);
+
+            this.CardScreen.ImposeImage(name, "**");
+
+            String elixirCost = String.format("%2s", "" + cards[i].GetElixirCost());
+            this.CardScreen.ImposeImage(elixirCost, ">>");
+        }
+
+        String elixirBuffer = "";
+
+        for (int i = 0; i < gameRef.GetCurrentPlayer().GetElixir(); i++) {
+            elixirBuffer += "//";
+        }
+
+        this.CardScreen.ImposeImage(elixirBuffer, "&&");
+        this.CardScreen.ImposeImage(gameRef.GetCurrentPlayer().GetElixir() + "", "<");
+
+        this.CardScreen.PrintScreen();
+    }
 }

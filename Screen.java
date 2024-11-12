@@ -36,6 +36,10 @@ public class Screen {
      * @param startingPos - the position on the screen where the texture will be placed
      */
     public void ImposeImage(String[] texture, Pos startingPos) {
+        this.ImposeImage(texture, startingPos, false);
+    }
+
+    public void ImposeImage(String[] texture, Pos startingPos, boolean overwrite) {
         if (texture == null) {
             return;
         }
@@ -47,13 +51,14 @@ public class Screen {
                     // skip if out of bounds
                 } 
                 else if (texture[y].charAt(x) == ' ') {
-                    // skip if empty
+                    if (overwrite)
+                        this.SetPixel(pos, ' ');
                 } 
                 else
                     this.SetPixel(pos, texture[y].charAt(x));
             }
         }
-    }
+    }    
 
     // DEVELOPED BY: Sheldon
     /* places the texture on the screen at the given starting position
@@ -63,6 +68,52 @@ public class Screen {
     public void ImposeImage(String texture, Pos startingPos) {
         String[] textureArr = {texture};
         this.ImposeImage(textureArr, startingPos);
+    }
+
+    public void ImposeImage(String texture, Pos startingPos, boolean overwrite) {
+        String[] textureArr = {texture};
+        this.ImposeImage(textureArr, startingPos, overwrite);
+    }
+
+    public String GetLine(int index) {
+        if (index < 0 || index >= output.length) {
+            return null;
+        }
+
+        return new String(output[index]);
+    }
+
+    public Pos FindPattern(String s) {
+        for (int y = 0; y < output.length; y++) {
+            for (int x = 0; x < output[y].length; x++) {
+                
+                if (output[y][x] == s.charAt(0)) {
+                    boolean found = true;
+
+                    for (int i = 1; i < s.length(); i++) {
+                        if (x + i >= output[y].length || output[y][x + i] != s.charAt(i)) {
+                            found = false;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        return new Pos(x, y);
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    public void ImposeImage(String texture, String pattern) {
+        Pos startingPos = FindPattern(pattern);
+        if (startingPos == null) {
+            return;
+        }
+        
+        String[] textureArr = {texture};
+        this.ImposeImage(textureArr, startingPos, true);
     }
 
     // DEVELOPED BY: Sheldon

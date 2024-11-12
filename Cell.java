@@ -62,10 +62,10 @@ public class Cell {
 
         return neighbours;
     }
-
+    // Written by Daiki
     public Cell CopySelf() {
-        Cell cell = new Cell(this.object, this.gridRef, this.pos);
-        
-        return cell;
+        // Deep copy the object if needed, e.g., by creating a new instance of the object
+        Obj clonedObject = this.object; // Replace with deep copy if necessary
+        return new Cell(clonedObject, this.gridRef, this.pos);
     }
 }

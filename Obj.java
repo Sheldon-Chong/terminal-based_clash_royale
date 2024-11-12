@@ -16,7 +16,9 @@ public abstract class Obj {
     
     // -- CONSTRUCTOR --
 
-    public Obj () { }
+    public Obj () { 
+        
+    }
 
     
     // -- GETTERS AND SETTERS --

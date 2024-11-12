@@ -33,6 +33,7 @@ class GameSystem {
     private          Player player1;
     private          Player player2;
     private int      currentRound = 1; // Trakcs the current round number
+    private Player   currentPlayer;
     
 
     // -- CONSTRUCTORS --
@@ -45,22 +46,55 @@ class GameSystem {
     
     // -- GETTERS AND SETTERS --
 
+
+    public boolean  IsEndGame() {
+        return false;
+    }
+
+    public void RegenerateElixir() {
+        this.player1.RegenerateElixir();
+        this.player2.RegenerateElixir();
+    }
+
+    public void   SetCurrentPlayer(Player player) { this.currentPlayer = player; }
+    public Player GetCurrentPlayer() { return this.currentPlayer; }
+
+    public void AlternatePlayer() {
+        if (this.currentPlayer == this.player1)
+            this.currentPlayer = this.player2;
+        else
+            this.currentPlayer = this.player1;
+    }
+
     // DEVELOPED BY: Sheldon
-    public Player    GetPlayer1() { return this.player1; }
+    public Player    GetPlayer1() {  return this.player1; }
     public Player    GetPlayer2() { return this.player2; }
+
     public Troop[] GetTroops() {
+        
         Obj[] objArray = this.troops.GetList();
+
+        if (objArray == null)
+            return null;
+
         Troop[] troopArray = new Troop[objArray.length];
-        for (int i = 0; i < objArray.length; i++) {
+        
+        for (int i = 0; i < objArray.length; i++)
             troopArray[i] = (Troop) objArray[i];
-        }
+
         return troopArray;
     }
  
-    public Cell [][] GetGrid()    { return this.worldGrid; }
+    public Cell [][] GetGrid()    {
+         return this.worldGrid; 
+        }
 
-    public void      SetCell(int row, int col, Cell cell) { this.worldGrid[row][col] = cell; }
-    public Cell      GetCell(int row, int col) { return this.worldGrid[row][col]; }
+    public void      SetCell(int row, int col, Cell cell) {
+         this.worldGrid[row][col] = cell;
+     }
+    public Cell      GetCell(int row, int col) { 
+        return this.worldGrid[row][col]; 
+    }
     public Cell      GetCell(Pos pos) {
         if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
             return null;
@@ -76,6 +110,15 @@ class GameSystem {
         return pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length;
     }
 
+    // DEVELOPED BY : DAIKI
+    // Assuming you have a method to deploy spells
+    public void deploySpell(Spell spell, Pos position) {
+        if (spell instanceof SpellLightning) {
+            ((SpellLightning) spell).deploy(position, this);
+        }
+    }
+
+
     // DEVELOPED BY: Daiki
     // Method to check if troop/spell is deployed within the board
     public boolean IsWithinBoard(Pos pos) {
@@ -84,7 +127,9 @@ class GameSystem {
 
     // DEVELOPED BY: Daiki
     // Method to get the current round
-    public int GetRound() { return this.currentRound; }
+    public int GetRound() { 
+        return this.currentRound;
+     }
     public ObjList GetSpells () {
         return this.spellQueue;
     }
@@ -371,6 +416,14 @@ class GameSystem {
         player.setCardsOnHand(cards);
     }
 
+
+    // DEVELOPED BY: DAIKI
+    // In GameSystem.java, the spawnSpell method:
+    public void spawnSpell(Spell spell) {
+        this.spellQueue.append(spell);
+    }
+
+
     // DEVELOPED BY: Sheldon
     /* initialize the game world by creating the grid, players, and troops
      */
@@ -381,17 +434,18 @@ class GameSystem {
         this.troops = new ObjList();
 
         // initialize players
-        this.player1 = new Player(PLAYER1_REGION);
-        this.player2 = new Player(PLAYER2_REGION);
+        this.player1 = new Player("Player1", 1);
+        this.player2 = new Player("Player2", 2);
+        
 
         // initialize world grid
         FileHandler fHandler = new FileHandler();
         this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile(FILENAME));
 
         // delete later
-        this.spawnTroops(20);
-        this.spellQueue.append(new ObjSpell(new Pos(3, 6), new Pos(7, 8), 10, 4));
-        this.spellQueue.append(new ObjSpell(new Pos(4, 7), new Pos(10, 15), 10, 4));
+        // this.spawnTroops(20);
+        // this.spellQueue.append(new ObjSpell(new Pos(3, 6), new Pos(7, 8), 10, 4));
+        // this.spellQueue.append(new ObjSpell(new Pos(4, 7), new Pos(10, 15), 10, 4));
 
 
         for (int y = 0; y < this.worldGrid.length; y++) {
@@ -472,4 +526,6 @@ class GameSystem {
 
         return wGrid;
     }
+
+
 }
