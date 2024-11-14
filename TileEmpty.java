@@ -7,12 +7,18 @@
 public class TileEmpty extends Tile {
 
     // -- CONSTRUCTORS -- 
+    
+    // DEVELOPED BY: Sheldon
+    /* Constructor for TileEmpty 
+     * @param type: the type of the tile
+    */
     public TileEmpty(int type) {
         this();
         this.SetType(type);
     }
 
     // DEVELOPED BY: Sheldon
+    /* Constructor for TileEmpty */
     public TileEmpty() {
         this.GetTexture().setTexture(Texture.CORNER_TOP_LEFT, new String [] {
             ".____.",

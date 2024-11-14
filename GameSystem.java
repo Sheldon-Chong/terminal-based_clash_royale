@@ -54,6 +54,7 @@ class GameSystem {
     private Player   currentPlayer;
     private Card     []cards;
 
+
     // -- CONSTRUCTORS --
     
     // DEVELOPED BY: Sheldon
@@ -64,6 +65,11 @@ class GameSystem {
 
     
     // -- GETTERS AND SETTERS --
+
+    // DEVELOPED BY: Daiki
+    public Card []getCards() {
+        return this.cards;
+    }
 
     // DEVELOPED BY: Daiki
     public boolean  IsEndGame() {
@@ -168,6 +174,7 @@ class GameSystem {
         return this.currentRound;
     }
 
+    // DEVELOPED BY: Daiki
     public ObjList GetSpells() {
         return this.spellQueue;
     }
@@ -217,22 +224,6 @@ class GameSystem {
     // -- HELPER METHODS --
 
     // DEVELOPED BY: Sheldon
-    /* get the character at a given position in the grid
-     * @param row - the row of the position
-     * @param col - the column of the position
-     * @param grid - the grid to be accessed
-     * @return - the character at the given position */
-    private char     accessChar(int row, int col, char [][]grid) {
-        if (row < 0 || row >= grid.length)
-            return 0;
-
-        if (col < 0 || col >= grid[row].length)
-            return 0;
-
-        return grid[row][col];
-    }
-
-    // DEVELOPED BY: Sheldon
     /* update the troops in the world grid, by accessing each element of the troops list*/
     private void updateTroops() {
         for (int i = 0; i < troops.GetLen(); i++) {
@@ -252,8 +243,7 @@ class GameSystem {
 
     // DEVELOPED BY: Sheldon
     /* update the tiles in the world grid
-     * checks if any towers have been destroyed. If so, replace them with floor tiles
-     */
+     * checks if any towers have been destroyed. If so, replace them with floor tiles */
     private void updateTiles() {
 
         // iterate through the grid
@@ -284,8 +274,7 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
-    /* update the spell queue by deducting the deploy time of each spell
-     */
+    /* update the spell queue by deducting the deploy time of each spell */
     private void updateSpellQueue() {
         
         // iterate through the spell queue and deduct the remaining deploy time of each spell
@@ -297,6 +286,9 @@ class GameSystem {
             if (spell.GetDeployTime() * -1 > spell.GetDuration())
                 this.spellQueue.SetItem(i, null);
             
+            if (spell.GetDeployTime() < 0)
+                spell.ApplyEffect(spell.GetPos(), this);
+
             System.out.print("Spell " + i + " has " + spell.GetDeployTime() + " turns left. Duration is " + spell.GetDuration() + "\n");
         }
 
@@ -311,6 +303,10 @@ class GameSystem {
         }
     }
 
+    // DEVELOPED BY: Sheldon
+    /* summon a spell by adding it to the spell queue
+     * @param name - the name of the spell to be summoned
+     * @param targetPos - the position where the spell will be summoned */
     public void summonSpell(String name, Pos targetPos) {
 
         Spell spell;
@@ -327,6 +323,11 @@ class GameSystem {
         this.spellQueue.append(spell);
     }
 
+    // DEVELOPED BY: Sheldon
+    /* deploy a card by spawning a troop or summoning a spell
+     * @param index - the index of the card to be deployed
+     * @param pos - the position where the card will be deployed
+     * @return - 1 if the card was deployed successfully, -1 if the player does not have enough elixir, -2 if the index is out of bounds */
     public int DeployCard(int index, Pos pos) {
         Card card = this.GetCurrentPlayer().GetCard(index);
 
@@ -352,6 +353,11 @@ class GameSystem {
         return 1;
     }    
 
+    // DEVELOPED BY: Sheldon
+    /* spawn a troop on the game grid
+     * @param troopName - the name of the troop to be spawned
+     * @param pos - the position where the troop will be spawned
+     * @return - 1 if the troop was spawned successfully */
     public int SpawnTroop(String troopName, Pos pos) {
         this.troops.append(newTroop(troopName.toLowerCase(), pos, this.GetCurrentPlayer()));
 
@@ -363,8 +369,7 @@ class GameSystem {
      * @param troopType - the type of troop to be spawned
      * @param startingPos - the position where the troop will be spawned
      * @param parent - the player that the troop belongs to
-     * @return - the newly spawned troop
-    */
+     * @return - the newly spawned troop */
     private Troop newTroop(String troopType, Pos startingPos, Player parent) {
         troopType = troopType.toLowerCase();
         
@@ -388,14 +393,11 @@ class GameSystem {
         return newTroop;
     }
 
-    
-
     // DEVELOPED BY: Sheldon
     /* check if a character is in a character array
      * @param arr - the character array to be checked
      * @param c - the character to be checked
-     * @return - true if the character is in the array, false otherwise
-     */
+     * @return - true if the character is in the array, false otherwise */
     private boolean isInCharArr(char []arr, char c) {
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] == c)
@@ -405,6 +407,13 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
+    /* get the type of the cell based on the surrounding characters
+     * @param subject - the character array to be checked
+     * @param adjLeft - the character to the left of the subject
+     * @param adjRight - the character to the right of the subject
+     * @param adjUp - the character above the subject
+     * @param adjDown - the character below the subject
+     * @return - the type of the cell */
     private int GetCellSideType(char []subject, 
                                 char adjLeft, 
                                 char adjRight, 
@@ -458,9 +467,7 @@ class GameSystem {
     }
 
 
-    public Card []getCards() {
-        return this.cards;
-    }
+    
 
 
     // DEVELOPED BY : DAIKI
@@ -492,8 +499,7 @@ class GameSystem {
     
 
     // DEVELOPED BY: Sheldon
-    /* initialize the game world by creating the grid, players, and troops
-     */
+    /* initialize the game world by creating the grid, players, and troops */
     private void initWorld() {
 
         FileHandler fHandler = new FileHandler(); 
@@ -572,6 +578,22 @@ class GameSystem {
             }
         }
         this.UpdateWorld();
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* get the character at a given position in the grid
+     * @param row - the row of the position
+     * @param col - the column of the position
+     * @param grid - the grid to be accessed
+     * @return - the character at the given position */
+    private char     accessChar(int row, int col, char [][]grid) {
+        if (row < 0 || row >= grid.length)
+            return 0;
+
+        if (col < 0 || col >= grid[row].length)
+            return 0;
+
+        return grid[row][col];
     }
 
     // DEVELOPED BY: Sheldon

@@ -9,12 +9,11 @@ public class SpellLightning extends Spell {
      * @param startingPos: the starting position of the spell */
     public SpellLightning(Pos startingPos) {
         super(startingPos.Add(-1,-1), startingPos.Add(1,1), 1, 1);
+        this.SetPos(startingPos);
     }
     
     // DEVELOPED BY: Daiki
-    public void ApplyEffect() {
-
-    }    
+    
 
     // public void cast(Pos targetPos, GameSystem gameSysRef) {
     //     Troop[] allTroops = gameSysRef.GetTroops();

@@ -49,35 +49,76 @@ class Troop extends Obj {
 
     // -- GETTER AND SETTERS --
 
-    public void SetRegion(int region) { this.region = region; }
-    public int  GetRegion() { return this.region; }
+    public void SetRegion(int region) {
+        this.region = region;
+    }
 
-    public int  GetAction() { return this.currentAction; }
-    public void SetAction(int action) { this.currentAction = action; }
+    public int GetRegion() {
+        return this.region;
+    }
 
-    public int  GetHP() { return this.hp; }
-    public void SetHP(int hp) { this.hp = hp; }
-    public void IncreaseHP(int hp) { this.hp += hp; }
-    public void DecreaseHP(int hp) { 
+    public int GetAction() {
+        return this.currentAction;
+    }
+
+    public void SetAction(int action) {
+        this.currentAction = action;
+    }
+
+    public int GetHP() {
+        return this.hp;
+    }
+
+    public void SetHP(int hp) {
+        this.hp = hp;
+    }
+
+    public void IncreaseHP(int hp) {
+        this.hp += hp;
+    }
+
+    public void DecreaseHP(int hp) {
         this.hp -= hp;
-        
+
         if (this.hp <= 0)
             gameSysRef.destroyTroop(this);
     }
 
-    public void SetAttack(int atk) { this.atk = atk; }
-    public int  GetAttack() { return this.atk; }
+    public void SetAttack(int atk) {
+        this.atk = atk;
+    }
 
-    public Player GetPlayer() { return this.player; }
-    public void   SetPlayer(Player player) { this.player = player; }
+    public int GetAttack() {
+        return this.atk;
+    }
 
-    public Pos  GetDest() { return this.Dest; }
-    public void SetDest(Pos dest) { this.Dest = dest; }
+    public Player GetPlayer() {
+        return this.player;
+    }
 
-    public char   GetNameInitial() { return this.name.charAt(0); }
-    public String GetNameShort() { return this.name.substring(0, 2); }
+    public void SetPlayer(Player player) {
+        this.player = player;
+    }
 
-    public void SetGameSysRef(GameSystem gameSysRef) { this.gameSysRef = gameSysRef; }
+    public Pos GetDest() {
+        return this.Dest;
+    }
+
+    public void SetDest(Pos dest) {
+        this.Dest = dest;
+    }
+
+    public char GetNameInitial() {
+        return this.name.charAt(0);
+    }
+
+    public String GetNameShort() {
+        return this.name.substring(0, 2);
+    }
+
+    public void SetGameSysRef(GameSystem gameSysRef) {
+        this.gameSysRef = gameSysRef;
+    }
     
 
     // -- METHODS --

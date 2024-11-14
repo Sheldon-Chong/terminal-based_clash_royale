@@ -17,6 +17,7 @@ public abstract class Spell extends Obj {
     private int         deployTime;
     private int         effectDuration;
     private GameSystem  gameSys;
+    private int         radius;
 
 
     // -- CONSTRUCTOR --
@@ -106,6 +107,14 @@ public abstract class Spell extends Obj {
 
     // -- GETTER AND SETTER --
 
+    public void SetRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public int GetRadius() {
+        return this.radius;
+    }
+
     public void SetDuration(int duration) {
         this.effectDuration = duration;
     }
@@ -138,7 +147,22 @@ public abstract class Spell extends Obj {
         return this.deployTime;
     }
 
-    abstract public void ApplyEffect();
+    public void ApplyEffect(Pos targetPos, GameSystem gameSysRef) {
+        System.out.println("Fireball spell effect applied");
+        
+        for (int y = -this.GetRadius(); y <= this.GetRadius(); y++) {
+            for (int x = -this.GetRadius(); x <= this.GetRadius(); x++) {
+                Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
+                if (gameSysRef.IsWithinBoard(impactPos)) {
+                    Obj obj = gameSysRef.GetCell(impactPos).GetObject();
+                    if (obj instanceof Troop) {
+                        System.out.println("Fireball hit " + ((Troop) obj).GetNameShort() + " at position " + impactPos.x + ", " + impactPos.y);
+                        ((Troop) obj).DecreaseHP(1);
+                    }
+                }
+            }
+        }
+    }
 
     public Texture GetTexture(int num) {
         if (num == 0)

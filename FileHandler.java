@@ -36,10 +36,6 @@ class FileHandler {
         return dimensions;
     }
 
-    public int GetRowCount(String fileName) {
-        return getFileDimensions(fileName)[0];
-    }
-
     public String [] readFileLine(String fileName) {
         File file = new File(fileName);
         

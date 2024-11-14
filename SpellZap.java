@@ -1,18 +1,26 @@
 // DEVELOPED BY: Daiki
 
 public class SpellZap extends Spell {
+    
+    // -- CONSTRUCTORS --
 
+    // DEVELOPED BY: Daiki
+    /* Constructor for SpellZap */
+    public SpellZap() {
+        super(new Pos(0,0), new Pos(0,0), 1, 1);
+    }
+    
     // DEVELOPED BY: Daiki
     /* Constructor to initialize the SpellZap with cost, radius, and damage */
     public SpellZap(Pos startingPos) {
         super(startingPos.Add(-1,-1), startingPos.Add(1,1), 1, 1);
+        this.SetPos(startingPos);
     }
 
     // DEVELOPED BY: Daiki
-    public void ApplyEffect() {
 
-    }    
 
+    
     // Cast method applies the effect of the spell to the surrounding area
     // public void cast(Pos targetPos, GameSystem gameSysRef) {
     //     if (gameSysRef.IsWithinBoard(targetPos)) {

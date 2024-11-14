@@ -18,29 +18,57 @@ public class Tower extends Obj{
 
     // -- CONSTRUCTORS --
     
-    Tower () { }
+    // DEVELOPED BY: Daiki
+    Tower () { 
 
+    }
+
+    // DEVELOPED BY: Daiki
     Tower (Player player) {
         this.parentPlayer = player;
     }
 
 
     // -- SETTERS AND GETTERS --
-
-    public void SetPos(Pos pos) { this.pos = pos; }
-    public Pos  GetPos()        { return this.pos; }
-
-    public void setHealth(int health) { this.health = health; }
-    public void subtractHealth(int health) { this.health -= health; }
-    public int  getHealth() { return this.health; }
-
     
-    public void   SetPlayer(Player parentPlayer) { this.parentPlayer = parentPlayer; }
-    public Player GetPlayer() { return this.parentPlayer; }
+    // DEVELOPED BY: Daiki
+    public void SetPos(Pos pos) {
+        this.pos = pos;
+    }
+
+    // DEVELOPED BY: Daiki
+    public Pos GetPos() {
+        return this.pos;
+    }
+
+    // DEVELOPED BY: Daiki
+    public void setHealth(int health) {
+        this.health = health;
+    }
     
+    // DEVELOPED BY: Daiki
+    public void subtractHealth(int health) {
+        this.health -= health;
+    }
+    
+    // DEVELOPED BY: Daiki
+    public int getHealth() {
+        return this.health;
+    }
+
+    // DEVELOPED BY: Daiki
+    public void SetPlayer(Player parentPlayer) {
+        this.parentPlayer = parentPlayer;
+    }
+
+    // DEVELOPED BY: Daiki
+    public Player GetPlayer() {
+        return this.parentPlayer;
+    }
+    
+    // DEVELOPED BY: Daiki
     /* Checks if the tower is destroyed, if the health is less than or equal to 0
-     * @return - boolean
-     */
+     * @return - if the tower's HP is under 0*/
     public boolean IsDestroyed() { 
         return this.health <= 0; 
     }
