@@ -92,7 +92,7 @@ public class Displayer {
     private void printBoard(Cell[][] grid) {
         screen.AppendLine("     ");
         for (int x = 0; x < grid[0].length; x++)
-            screen.AppendStrToLastLine(String.format(" %2d  ", x));
+            screen.AppendStrToLastLine(String.format(" %2d  ", x + 1));
 
         screen.AppendLine("   _");
 

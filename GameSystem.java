@@ -429,6 +429,35 @@ class GameSystem {
         return this.cards;
     }
 
+
+    // DEVELOPED BY : DAIKI
+    // Convert a user's input string, which represents a position on the game grid (ex: A25)
+    public Pos parsePosition(String input) {
+        input = input.trim().toUpperCase();
+        if (input.isEmpty() || !Character.isLetter(input.charAt(0)) || input.length() < 2) {
+            return null;  // Improper format
+        }
+    
+        char rowChar = input.charAt(0);
+        int row = rowChar - 'A';  // Convert column character to zero-based index
+        int column;
+        int maxRow = 17;    // Maximum index for rows (0-27)
+        int maxCol = 28;    // Maximum index for columns (A-Q, 0-12)
+    
+        try {
+            column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
+        } catch (NumberFormatException e) {
+            return null;  // Handle non-integer row input
+        }
+    
+        if (column < 0 || column >= maxCol || row < 0 || row >= maxRow) {  // Check if the position is out of the game grid bounds
+            return null;
+        }
+    
+        return new Pos(column, row);
+    }
+    
+
     // DEVELOPED BY: Sheldon
     /* initialize the game world by creating the grid, players, and troops
      */
