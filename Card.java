@@ -19,8 +19,21 @@ public class Card {
     private int     elixirCost;  // Cost to play this card
     private int     type; // Type of card (spell or troop)
     
+
     // -- CONSTRUCTOR --
 
+    // DEVELOPED BY: Daiki
+    public Card() {
+        this.name = "Card";
+        this.elixirCost = 0;
+        this.type = 0;
+    }
+    
+    // DEVELOPED BY: Sheldon
+    /* Constructor for Card
+     * @param - name: the name of the card
+     * @param - elixirCost: the elixir cost of the card
+     * @param - type: the type of the card */
     public Card(String name, int elixirCost, int type) { 
         this.name = name;
         this.elixirCost = elixirCost; 
@@ -30,12 +43,30 @@ public class Card {
 
     // -- GETTERS AND SETTERS --
 
-    public int  GetElixirCost() { return elixirCost; }
-    public void SetElixirCost(int elixirCost) { this.elixirCost = elixirCost;  }
- 
-    public String GetName() { return name; }
-    public void SetName()   { this.name = name; }
-
+    // DEVELOPED BY: Daiki
+    public int GetElixirCost() {
+        return elixirCost;
+    }
+    
+    public void SetElixirCost(int elixirCost) {
+        this.elixirCost = elixirCost;
+    }
+    
+    // DEVELOPED BY: Daiki
+    public String GetName() {
+        return name;
+    }
+    
+    // DEVELOPED BY: Daiki
+    /* SetName sets the name of the card
+     * @param - name: the new name of the card */
+    public void SetName() {
+        this.name = name;
+    }
+    
+    // DEVELOPED BY: Sheldon
+    /* CopySelf creates a new card with the same attributes as the current card
+     * @return - Card */
     public Card CopySelf() {
         Card newCard = new Card(this.name, this.elixirCost, this.type);
         
@@ -47,11 +78,12 @@ public class Card {
 
     }
 
-
+    // DEVELOPED BY: Daiki
     public int GetType() {
         return this.type;
     }
     
+
     // -- METHODS --
 
     public String GetRepr() {

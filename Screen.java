@@ -14,6 +14,8 @@ public class Screen {
 
     // -- CONSTRUCTORS --
 
+    // DEVELOPED BY: Sheldon
+    /* Constructor for Screen */
     public Screen() {
         this.output = new char[0][];
     }
@@ -21,8 +23,19 @@ public class Screen {
 
     // -- GETTERS AND SETTERS --
 
-    public char[][] GetScreen() { return this.output; }
-    public void     SetScreen(char[][] output) { this.output = output; }
+    // DEVELOPED BY: Sheldon
+    /* GetScreen returns the screen as a 2D array of characters
+     * @return - the screen */
+    public char[][] GetScreen() {
+        return this.output;
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* SetScreen sets the screen to a new 2D array of characters
+     * @param output - the new screen */
+    public void SetScreen(char[][] output) {
+        this.output = output;
+    }
 
     public void     SetPixel(Pos pos, char newChar) {
         if (pos.y < 0 || pos.y >= output.length || pos.x < 0 || pos.x >= output[pos.y].length)
@@ -39,6 +52,10 @@ public class Screen {
         this.ImposeImage(texture, startingPos, false);
     }
 
+    // DEVELOPED BY: Sheldon
+    /* places the texture on the screen at the given starting position
+     * @param texture - the texture to be placed on the screen
+     * @param startingPos - the position on the screen where the texture will be placed */
     public void ImposeImage(String[] texture, Pos startingPos, boolean overwrite) {
         if (texture == null) {
             return;
@@ -70,11 +87,21 @@ public class Screen {
         this.ImposeImage(textureArr, startingPos);
     }
 
+
+    // DEVELOPED BY: Sheldon
+    /* places the texture on the screen at the given starting position
+     * @param texture - the texture to be placed on the screen
+     * @param startingPos - the position on the screen where the texture will be placed
+     * @param overwrite - whether to overwrite the existing characters on the screen */
     public void ImposeImage(String texture, Pos startingPos, boolean overwrite) {
         String[] textureArr = {texture};
         this.ImposeImage(textureArr, startingPos, overwrite);
     }
 
+    // DEVELOPED BY: Sheldon
+    /* places the texture on the screen at the given starting position
+     * @param texture - the texture to be placed on the screen
+     * @param startingPos - the position on the screen where the texture will be placed */
     public String GetLine(int index) {
         if (index < 0 || index >= output.length) {
             return null;
@@ -83,6 +110,10 @@ public class Screen {
         return new String(output[index]);
     }
 
+    // DEVELOPED BY: Sheldon
+    /* places the texture on the screen at the given starting position
+     * @param texture - the texture to be placed on the screen
+     * @param startingPos - the position on the screen where the texture will be placed */
     public Pos FindPattern(String s) {
         for (int y = 0; y < output.length; y++) {
             for (int x = 0; x < output[y].length; x++) {
@@ -106,6 +137,10 @@ public class Screen {
         return null;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* places the texture on the screen at the given starting position
+     * @param texture - the texture to be placed on the screen
+     * @param startingPos - the position on the screen where the texture will be placed */
     public void ImposeImage(String texture, String pattern) {
         Pos startingPos = FindPattern(pattern);
         if (startingPos == null) {
@@ -117,15 +152,13 @@ public class Screen {
     }
 
     // DEVELOPED BY: Sheldon
-    /* resets the screen
-     */
+    /* resets the screen */
     public void ResetScreen() {
         this.output = new char[0][];
     }
 
     // DEVELOPED BY: Sheldon
-    /* prints the screen to the console
-     */
+    /* prints the screen to the console */
     public void PrintScreen() {
         
         for (int i = 0; i < output.length; i++)
@@ -137,8 +170,7 @@ public class Screen {
     
     // DEVELOPED BY: Sheldon
     /* appends a string to the last line of the screen
-     * the equivalent of print for terminals
-     */
+     * the equivalent of print for terminals */
     public void AppendStrToLastLine(String value) {
         if (this.output.length == 0) {
             this.output = new char[1][];
@@ -156,16 +188,16 @@ public class Screen {
 
     // DEVELOPED BY: Sheldon
     /* appends a new line to the screen
-     * the equivalent of println for terminals
-     */
-    public void AppendLine(String value) {
+     * the equivalent of println for terminals 
+     * @param line - the line to append*/
+    public void AppendLine(String line) {
         
         char[][] newOutput = new char[this.output.length + 1][];
 
         for (int i = 0; i < output.length; i++)
             newOutput[i] = this.output[i];
         
-        newOutput[this.output.length] = value.toCharArray(); // Convert string to char array
+        newOutput[this.output.length] = line.toCharArray(); // Convert string to char array
         this.output = newOutput;
 
     }

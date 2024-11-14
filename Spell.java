@@ -106,17 +106,37 @@ public abstract class Spell extends Obj {
 
     // -- GETTER AND SETTER --
 
-    public void SetDuration(int duration) { this.effectDuration = duration; }
-    public int  GetDuration() { return this.effectDuration; }
+    public void SetDuration(int duration) {
+        this.effectDuration = duration;
+    }
 
-    public void SetGameRef(GameSystem gameSys) { this.gameSys = gameSys; }
-    public GameSystem GetGameRef() { return this.gameSys; }
+    public int GetDuration() {
+        return this.effectDuration;
+    }
 
-    public Pos GetStartPos() { return this.startPos; }
-    public Pos GetEndPos() { return this.endPos; }
-    
-    public void DeductDeployTime() { this.deployTime--; }
-    public int  GetDeployTime() { return this.deployTime; }
+    public void SetGameRef(GameSystem gameSys) {
+        this.gameSys = gameSys;
+    }
+
+    public GameSystem GetGameRef() {
+        return this.gameSys;
+    }
+
+    public Pos GetStartPos() {
+        return this.startPos;
+    }
+
+    public Pos GetEndPos() {
+        return this.endPos;
+    }
+
+    public void DeductDeployTime() {
+        this.deployTime--;
+    }
+
+    public int GetDeployTime() {
+        return this.deployTime;
+    }
 
     abstract public void ApplyEffect();
 

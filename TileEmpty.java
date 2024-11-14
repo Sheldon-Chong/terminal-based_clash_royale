@@ -12,6 +12,7 @@ public class TileEmpty extends Tile {
         this.SetType(type);
     }
 
+    // DEVELOPED BY: Sheldon
     public TileEmpty() {
         this.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
             ".____.",

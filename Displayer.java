@@ -56,7 +56,6 @@ public class Displayer {
             e.printStackTrace();
         }
     }
-
     
 
     // DEVELOPED BY: Sheldon
@@ -199,12 +198,12 @@ public class Displayer {
                     // If the object is a TileTower (e.g., a wall or structure related to the tower), render it
                     else if (object instanceof TileTower) {
                         TileTower towerWall = (TileTower) object;  // Cast the object to a TileTower
-                        screen.ImposeImage(towerWall.getTexture(towerWall.GetType()), startingCorner);  // Display the tower wall
+                        screen.ImposeImage(towerWall.getTexture().getTexture(towerWall.GetType()), startingCorner);  // Display the tower wall
                     } 
                     // If the object is a TileEmpty (empty space on the board), render it
                     else if (object instanceof TileEmpty) {
                         TileEmpty empty = (TileEmpty) object;  // Cast the object to a TileEmpty
-                        screen.ImposeImage(empty.getTexture(empty.GetType()), startingCorner);  // Display the empty space
+                        screen.ImposeImage(empty.getTexture().getTexture(empty.GetType()), startingCorner);  // Display the empty space
                     }
                     // Additional object types can be added here if needed (e.g., spells, troops, etc.)
                 }

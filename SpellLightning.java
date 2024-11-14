@@ -4,11 +4,14 @@ public class SpellLightning extends Spell {
     private static final int MAX_TARGETS = 3;
     private static final int EFFECT_DURATION = 1; // Duration for the lightning spell
 
-    // Constructor for initializing Lightning spell
+    // DEVELOPED BY: Daiki
+    /* Constructor for initializing Lightning spell 
+     * @param startingPos: the starting position of the spell */
     public SpellLightning(Pos startingPos) {
         super(startingPos.Add(-1,-1), startingPos.Add(1,1), 1, 1);
     }
     
+    // DEVELOPED BY: Daiki
     public void ApplyEffect() {
 
     }    

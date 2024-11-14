@@ -52,11 +52,12 @@ class GameSystem {
     private          Player player2;
     private int      currentRound = 1; // Trakcs the current round number
     private Player   currentPlayer;
-    private Card []cards;
+    private Card     []cards;
 
     // -- CONSTRUCTORS --
     
     // DEVELOPED BY: Sheldon
+    /* default constructor for GameSystem */
     public GameSystem() {
         this.initWorld();
     }
@@ -64,18 +65,31 @@ class GameSystem {
     
     // -- GETTERS AND SETTERS --
 
+    // DEVELOPED BY: Daiki
     public boolean  IsEndGame() {
+
+        // to change
         return false;
     }
 
+    // DEVELOPED BY: Daiki
     public void RegenerateElixir() {
         this.player1.RegenerateElixir();
         this.player2.RegenerateElixir();
     }
 
-    public void   SetCurrentPlayer(Player player) { this.currentPlayer = player; }
-    public Player GetCurrentPlayer() { return this.currentPlayer; }
+    // DEVELOPED BY: Daiki
+    public void SetCurrentPlayer(Player player) {
+        this.currentPlayer = player;
+    }
+    
+    // DEVELOPED BY: Daiki
+    public Player GetCurrentPlayer() {
+        return this.currentPlayer;
+    }
 
+    // DEVELOPED BY: Sheldon
+    /* Get the player that is not the current player */
     public void AlternatePlayer() {
         if (this.currentPlayer == this.player1)
             this.currentPlayer = this.player2;
@@ -83,10 +97,19 @@ class GameSystem {
             this.currentPlayer = this.player1;
     }
 
-    // DEVELOPED BY: Sheldon
-    public Player    GetPlayer1() {  return this.player1; }
-    public Player    GetPlayer2() { return this.player2; }
+    // DEVELOPED BY: Daiki
+    public Player GetPlayer1() {
+        return this.player1;
+    }
+    
+    // DEVELOPED BY: Daiki
+    public Player GetPlayer2() {
+        return this.player2;
+    }
 
+    // DEVELOPED BY: Sheldon
+    /* Get the troops in the game world
+     * @return - the list of troops in the game world */
     public Troop[] GetTroops() {
         
         Obj[] objArray = this.troops.GetList();
@@ -102,16 +125,22 @@ class GameSystem {
         return troopArray;
     }
  
-    public Cell [][] GetGrid()    {
-         return this.worldGrid; 
-        }
+    // DEVELOPED BY: Daiki
+    public Cell [][] GetGrid() {
+        return this.worldGrid; 
+    }
 
+    // DEVELOPED BY: Daiki
     public void      SetCell(int row, int col, Cell cell) {
          this.worldGrid[row][col] = cell;
-     }
+    }
+
+    // DEVELOPED BY: Daiki
     public Cell      GetCell(int row, int col) { 
         return this.worldGrid[row][col]; 
     }
+
+    // DEVELOPED BY: Daiki
     public Cell      GetCell(Pos pos) {
         if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
             return null;
@@ -119,10 +148,10 @@ class GameSystem {
         return this.worldGrid[pos.y][pos.x];
     }
 
+    // DEVELOPED BY: Daiki
     /* checks if a position is out of bounds
      * @param pos - the position to be checked
-     * @return - true if the position is out of bounds, false otherwise
-     */
+     * @return - true if the position is out of bounds, false otherwise*/
     public boolean isOutOfBounds (Pos pos) {
         return pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length;
     }
@@ -135,8 +164,13 @@ class GameSystem {
 
     // DEVELOPED BY: Daiki
     // Method to get the current round
-    public int     GetRound() { return this.currentRound; }
-    public ObjList GetSpells () { return this.spellQueue; }
+    public int GetRound() {
+        return this.currentRound;
+    }
+
+    public ObjList GetSpells() {
+        return this.spellQueue;
+    }
 
     // DEVELOPED BY: Daiki
     // Method to shuffle cards in each player's hand
@@ -199,8 +233,7 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
-    /* update the troops in the world grid, by accessing each element of the troops list
-     */
+    /* update the troops in the world grid, by accessing each element of the troops list*/
     private void updateTroops() {
         for (int i = 0; i < troops.GetLen(); i++) {
             Troop currentTroop = (Troop)troops.GetItem(i);

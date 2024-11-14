@@ -23,17 +23,24 @@ public class TileTower extends Tile {
 
     // -- CONSTRUCTORS --
 
+    // DEVELOPED BY: Sheldon
+    /* Constructor for TileTower */
     public TileTower () {
-        this.AddTextureToSet(new Texture());
-        this.setTextureSet(TEXTURE_ALIVE, this.TextureTowerAlive());
-        this.setTextureSet(TEXTURE_DESTROYED, this.TextureTowerDead());
+        this.setTextureRef(this.TextureTowerAlive());
     }
 
+    // DEVELOPED BY: Sheldon
+    /* Constructor for TileTower
+     * @param - type: the type of the tower */
     public TileTower (int type) {
         this();
         this.SetType(type);
     }
     
+    // DEVELOPED BY: Sheldon
+    /* Constructor for TileTower
+     * @param - type: the type of the tower
+     * @param - parentTower: the tower that this tile belongs to */
     public TileTower (int type, Tower parentTower) {
         this.SetType(type);
         this.parentTower = parentTower;
@@ -42,15 +49,25 @@ public class TileTower extends Tile {
 
     // -- SETTERS AND  GETTERS --
 
-    public void  SetParent(Tower parentTower) { this.parentTower = parentTower; }
-    public Tower GetParent() { return this.parentTower; }
+    // DEVELOPED BY: Sheldon
+    /* SetType sets the type of the tower
+     * @param - type: the type of the tower */
+    public void  SetParent(Tower parentTower) { 
+        this.parentTower = parentTower;
+    }
+    
+    // DEVELOPED BY: Sheldon
+    /* GetType returns the type of the tower
+     * @return - int */
+    public Tower GetParent() {
+        return this.parentTower; 
+    }
 
 
     // -- TEXTURES --
 
     /* Texture for the tower when it is alive 
-     * @return - Texture
-     */
+     * @return - Texture for the tower*/
     private Texture TextureTowerAlive() {
         Texture towerAlive = new Texture();
 
@@ -97,56 +114,55 @@ public class TileTower extends Tile {
         });
         return towerAlive;
     }
-
-    /* Texture for the tower when it is dead
-     * @return - Texture
-     */
-    private Texture TextureTowerDead() {
-        Texture towerDead = new Texture();
-
-        towerDead.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
-            "._____",
-            "|     ",
-            "|     "
-        });
-
-        towerDead.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
-            "_____.",
-            "     |",
-            "     |"
-        });
-        towerDead.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
-            "      ",
-            "|     ",
-            "|_____"
-        });
-        towerDead.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
-            "      ",
-            "     |",
-            "_____|"
-        });
-        towerDead.setTexture(Tile.SIDE_LEFT, new String [] {
-            " ",
-            "|",
-            "| "
-        });
-        towerDead.setTexture(Tile.SIDE_RIGHT, new String [] {
-            "      ",
-            "     |",
-            "     |"
-        });
-        towerDead.setTexture(Tile.SIDE_BOTTOM, new String [] {
-            "      ",
-            "      ",
-            "_____ "
-        });
-        towerDead.setTexture(Tile.SIDE_TOP, new String [] {
-            "_____ ",
-            "      ",
-            "      "
-        });
-        return towerDead;
-    }
-
 }
+
+// /* Texture for the tower when it is dead
+    //  * @return - Texture
+    //  */
+    // private Texture TextureTowerDead() {
+    //     Texture towerDead = new Texture();
+
+    //     towerDead.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
+    //         "._____",
+    //         "|     ",
+    //         "|     "
+    //     });
+
+    //     towerDead.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
+    //         "_____.",
+    //         "     |",
+    //         "     |"
+    //     });
+    //     towerDead.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
+    //         "      ",
+    //         "|     ",
+    //         "|_____"
+    //     });
+    //     towerDead.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
+    //         "      ",
+    //         "     |",
+    //         "_____|"
+    //     });
+    //     towerDead.setTexture(Tile.SIDE_LEFT, new String [] {
+    //         " ",
+    //         "|",
+    //         "| "
+    //     });
+    //     towerDead.setTexture(Tile.SIDE_RIGHT, new String [] {
+    //         "      ",
+    //         "     |",
+    //         "     |"
+    //     });
+    //     towerDead.setTexture(Tile.SIDE_BOTTOM, new String [] {
+    //         "      ",
+    //         "      ",
+    //         "_____ "
+    //     });
+    //     towerDead.setTexture(Tile.SIDE_TOP, new String [] {
+    //         "_____ ",
+    //         "      ",
+    //         "      "
+    //     });
+    //     return towerDead;
+    // }
     

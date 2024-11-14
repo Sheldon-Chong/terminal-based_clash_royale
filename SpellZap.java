@@ -2,11 +2,13 @@
 
 public class SpellZap extends Spell {
 
-    // Constructor to initialize the SpellZap with cost, radius, and damage
+    // DEVELOPED BY: Daiki
+    /* Constructor to initialize the SpellZap with cost, radius, and damage */
     public SpellZap(Pos startingPos) {
         super(startingPos.Add(-1,-1), startingPos.Add(1,1), 1, 1);
     }
 
+    // DEVELOPED BY: Daiki
     public void ApplyEffect() {
 
     }    
