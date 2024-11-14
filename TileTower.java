@@ -26,7 +26,7 @@ public class TileTower extends Tile {
     // DEVELOPED BY: Sheldon
     /* Constructor for TileTower */
     public TileTower () {
-        this.setTextureRef(this.TextureTowerAlive());
+        this.SetTextureRef(this.TextureTowerAlive());
     }
 
     // DEVELOPED BY: Sheldon
@@ -71,43 +71,43 @@ public class TileTower extends Tile {
     private Texture TextureTowerAlive() {
         Texture towerAlive = new Texture();
 
-        towerAlive.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
+        towerAlive.setTexture(Texture.CORNER_TOP_LEFT, new String [] {
             ".____.",
             "|  __|",
             "|_|   "
         });
 
-        towerAlive.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
+        towerAlive.setTexture(Texture.CORNER_TOP_RIGHT, new String [] {
             ".____.",
             "|__  |",
             "   |_|"
         });
-        towerAlive.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
+        towerAlive.setTexture(Texture.CORNER_BOTTOM_LEFT, new String [] {
             ".     ",
             "| |__ ",
             "|____|"
         });
-        towerAlive.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
+        towerAlive.setTexture(Texture.CORNER_BOTTOM_RIGHT, new String [] {
             "     .",
             " __| | ",
             "|____|"
         });
-        towerAlive.setTexture(Tile.SIDE_LEFT, new String [] {
+        towerAlive.setTexture(Texture.SIDE_LEFT, new String [] {
             "  ",
             " :",
             " : "
         });
-        towerAlive.setTexture(Tile.SIDE_RIGHT, new String [] {
+        towerAlive.setTexture(Texture.SIDE_RIGHT, new String [] {
             "     ",
             "    :",
             "    :"
         });
-        towerAlive.setTexture(Tile.SIDE_BOTTOM, new String [] {
+        towerAlive.setTexture(Texture.SIDE_BOTTOM, new String [] {
             "     ",
             "     ",
             " ----"
         });
-        towerAlive.setTexture(Tile.SIDE_TOP, new String [] {
+        towerAlive.setTexture(Texture.SIDE_TOP, new String [] {
             "     ",
             " ----",
             "     "

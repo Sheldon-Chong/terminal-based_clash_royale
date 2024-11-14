@@ -1,4 +1,7 @@
 public abstract class Tileset extends Obj {
+
+    // -- CONSTANTS  --
+
     public static final int INSIDE = 0;
     public static final int CORNER_TOP_LEFT = 1;
     public static final int CORNER_TOP_RIGHT = 2;
@@ -14,31 +17,42 @@ public abstract class Tileset extends Obj {
     public static final int PIPE_H = 10;
     public static final int PIPE_V = 11;
 
-    private int type;
+    // -- ATTRIBUTES --
 
+    private int type;
     private String [][]textures;
+
+
+    // -- CONSTRUCTORS --
 
     public Tileset() {
         this.textures = new String [12][];
     }
 
+
+    // -- GETTERS AND SETTERS --
+    
+    // DEVELOPED BY: Sheldon
     public void setTexture(int textureId, String [] texture) {
         this.textures[textureId] = texture;
     }
 
+    // DEVELOPED BY: Sheldon
     public void setAllTextures(String [] texture) {
         for (int i = 0; i < this.textures.length; i++)
             this.textures[i] = texture;
     }
 
+    // DEVELOPED BY: Sheldon
     public String [] getTexture(int textureId) {
         return this.textures[textureId];
     }
 
+    // DEVELOPED BY: Sheldon
     public void setType(int type) {
         this.type = type;
     }
-    
+    // DEVELOPED BY: Sheldon
     public int getType() {
         return this.type;
     }

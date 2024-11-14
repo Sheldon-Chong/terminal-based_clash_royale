@@ -29,25 +29,25 @@ public abstract class Spell extends Obj {
 
         this.textureDeploy = new Texture();
 
-        this.textureDeploy.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
+        this.textureDeploy.setTexture(Texture.CORNER_TOP_LEFT, new String [] {
             "._____",
             "|     ",
             "|     "
         });
 
-        this.textureDeploy.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
+        this.textureDeploy.setTexture(Texture.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             "|     ",
             "|_____"
         });
 
-        this.textureDeploy.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
+        this.textureDeploy.setTexture(Texture.CORNER_BOTTOM_RIGHT, new String [] {
             "      ",
             "     |",
             "_____|"
         });
 
-        this.textureDeploy.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
+        this.textureDeploy.setTexture(Texture.CORNER_TOP_RIGHT, new String [] {
             "_____.",
             "     |",
             "     |"
@@ -56,47 +56,47 @@ public abstract class Spell extends Obj {
         
         this.textureInEffect = new Texture();
 
-        this.textureInEffect.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
+        this.textureInEffect.setTexture(Texture.CORNER_TOP_LEFT, new String [] {
             "/\\/\\/",
             ">     ",
             ">     "
         });
 
-        this.textureInEffect.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
+        this.textureInEffect.setTexture(Texture.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             ">     ",
             "/\\/\\/"
         });
 
-        this.textureInEffect.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
+        this.textureInEffect.setTexture(Texture.CORNER_BOTTOM_RIGHT, new String [] {
             "     <",
             "     <",
             "/\\/\\/\\"
         });
 
-        this.textureInEffect.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
+        this.textureInEffect.setTexture(Texture.CORNER_TOP_RIGHT, new String [] {
             "/\\/\\/",
             "     <",
             "     <"
         });
 
-        this.textureInEffect.setTexture(Tile.SIDE_RIGHT, new String [] {
+        this.textureInEffect.setTexture(Texture.SIDE_RIGHT, new String [] {
             "     <",
             "     <",
             "     <"
         });
 
-        this.textureInEffect.setTexture(Tile.SIDE_LEFT, new String [] {
+        this.textureInEffect.setTexture(Texture.SIDE_LEFT, new String [] {
             ">     ",
             ">     ",
             ">     "
         });
 
-        this.textureInEffect.setTexture(Tile.SIDE_TOP, new String [] {
+        this.textureInEffect.setTexture(Texture.SIDE_TOP, new String [] {
             "/\\/\\/",
         });
 
-        this.textureInEffect.setTexture(Tile.SIDE_BOTTOM, new String [] {
+        this.textureInEffect.setTexture(Texture.SIDE_BOTTOM, new String [] {
             "     ",
             "     ",
             "/\\/\\/"

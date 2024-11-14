@@ -423,38 +423,38 @@ class GameSystem {
         if (nUp)    wallCount++;
         if (nDown)  wallCount++;
 
-        if (wallCount == 0) return Tile.INDEPENDANT;
-        if (wallCount == 4) return Tile.INSIDE;
+        if (wallCount == 0) return Texture.INDEPENDANT;
+        if (wallCount == 4) return Texture.INSIDE;
 
         // sides
         if ((nLeft && nRight) || (nUp && nDown)) {
 
             if (nLeft && nRight) {
-                if (nUp && !nDown) return Tile.SIDE_BOTTOM;
-                if (nDown && !nUp) return Tile.SIDE_TOP;
+                if (nUp && !nDown) return Texture.SIDE_BOTTOM;
+                if (nDown && !nUp) return Texture.SIDE_TOP;
                 
-                return Tile.PIPE_H;
+                return Texture.PIPE_H;
             } 
 
             else {
-                if (nLeft && !nRight) return Tile.SIDE_RIGHT;
-                if (nRight && !nLeft) return Tile.SIDE_LEFT;
+                if (nLeft && !nRight) return Texture.SIDE_RIGHT;
+                if (nRight && !nLeft) return Texture.SIDE_LEFT;
                 
-                return Tile.PIPE_V;
+                return Texture.PIPE_V;
             }
 
         } 
         
         // corners
         else {
-            if (nRight && nDown) return Tile.CORNER_TOP_LEFT;
-            if (nLeft && nDown)  return Tile.CORNER_TOP_RIGHT;
-            if (nRight && nUp)   return Tile.CORNER_BOTTOM_LEFT;
-            if (nLeft && nUp)    return Tile.CORNER_BOTTOM_RIGHT;
+            if (nRight && nDown) return Texture.CORNER_TOP_LEFT;
+            if (nLeft && nDown)  return Texture.CORNER_TOP_RIGHT;
+            if (nRight && nUp)   return Texture.CORNER_BOTTOM_LEFT;
+            if (nLeft && nUp)    return Texture.CORNER_BOTTOM_RIGHT;
         }
 
         // inside
-        return Tile.INSIDE;
+        return Texture.INSIDE;
     }
 
 

@@ -37,6 +37,10 @@ public class Screen {
         this.output = output;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* GetPixel returns the character at the given position
+     * @param pos - the position of the pixel
+     * @return - the character at the given position */
     public void     SetPixel(Pos pos, char newChar) {
         if (pos.y < 0 || pos.y >= output.length || pos.x < 0 || pos.x >= output[pos.y].length)
             return;

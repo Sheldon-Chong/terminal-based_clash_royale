@@ -1,23 +1,4 @@
 public abstract class Tile extends Obj {
-
-    // -- CONSTANTS --
-
-    public static final int INSIDE = 0;
-    public static final int CORNER_TOP_LEFT = 1;
-    public static final int CORNER_TOP_RIGHT = 2;
-    public static final int CORNER_BOTTOM_LEFT = 3;
-    public static final int CORNER_BOTTOM_RIGHT = 4;
-
-    public static final int SIDE_RIGHT = 5;
-    public static final int SIDE_LEFT = 6;
-    public static final int SIDE_TOP = 7;
-    public static final int SIDE_BOTTOM = 8;
-    public static final int INDEPENDANT = 9;
-
-    public static final int PIPE_H = 10;
-    public static final int PIPE_V = 11;
-
-
     // -- ATTRIBUTES --
 
     private int type;
@@ -43,23 +24,18 @@ public abstract class Tile extends Obj {
     }
 
     
-    // -- GETTERS & SETTERS --
+    // -- GETTERS and SETTERS --
 
     // DEVELOPED BY: Sheldon
     /* SetTextureRef sets the texture reference of the tile
      * @param - texture: the texture reference */
 
-    public void setTextureRef(Texture texture) {
+    public void SetTextureRef(Texture texture) {
         this.texture = texture;
     }
 
     // DEVELOPED BY: Sheldon
-    public void setTexture(int textureID, String[] texture) {
-        this.texture.setTexture(textureID, texture);
-    }
-
-    // DEVELOPED BY: Sheldon
-    public Texture getTexture() {
+    public Texture GetTexture() {
         return this.texture;
     }
 
@@ -81,7 +57,6 @@ public abstract class Tile extends Obj {
     public void SetSolid(boolean isSolid) {
         this.isSolid = isSolid;
     }
-
 
     // DEVELOPED BY: Sheldon
     /* IsSolid returns whether the tile is solid or not

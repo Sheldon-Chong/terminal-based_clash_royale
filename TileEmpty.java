@@ -14,33 +14,33 @@ public class TileEmpty extends Tile {
 
     // DEVELOPED BY: Sheldon
     public TileEmpty() {
-        this.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
+        this.GetTexture().setTexture(Texture.CORNER_TOP_LEFT, new String [] {
             ".____.",
             "|     ",
             "|     "
         });
 
-        this.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
+        this.GetTexture().setTexture(Texture.CORNER_TOP_RIGHT, new String [] {
             ".____.",
             "     |",
             "     |"
         });
-        this.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
+        this.GetTexture().setTexture(Texture.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             "|     ",
             "|____."
         });
-        this.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
+        this.GetTexture().setTexture(Texture.CORNER_BOTTOM_RIGHT, new String [] {
             "      ",
             "     | ",
             ".____|"
         });
-        this.setTexture(Tile.SIDE_LEFT, new String [] {
+        this.GetTexture().setTexture(Texture.SIDE_LEFT, new String [] {
             "|     ",
             "|     ",
             "|     "
         });
-        this.setTexture(Tile.SIDE_RIGHT, new String [] {
+        this.GetTexture().setTexture(Texture.SIDE_RIGHT, new String [] {
             "     |",
             "     |",
             "     |"
