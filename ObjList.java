@@ -31,9 +31,17 @@ public class ObjList {
 
     }
 
+    // -- CONSTRUCTORS --
+
     public ObjList() {
         this.list = null;
     }
+
+    public ObjList(Obj[] list) {
+        this.list = list;
+    }
+
+    // -- PUBLIC METHODS --
 
     public Obj []SelfCopy() {
         Obj []newList = new Obj[list.length];

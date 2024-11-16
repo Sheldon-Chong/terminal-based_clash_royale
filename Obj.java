@@ -12,6 +12,7 @@ public abstract class Obj {
     // -- ATTRIBUTES --
 
     private Pos pos;
+    private String type;
 
     
     // -- CONSTRUCTOR --
@@ -31,6 +32,14 @@ public abstract class Obj {
 
     
     // -- GETTERS AND SETTERS --
+
+    public String GetStrType() {
+        return type;
+    }
+
+    public void SetType(String type) {
+        this.type = type;
+    }
 
     // DEVELOPED BY: Sheldon
     /* GetPos returns the position of the object
@@ -63,5 +72,14 @@ public abstract class Obj {
      * @return - the distance between the two objects */
     public double CalcDistance (Obj obj) {
         return pos.CalcDistance(obj.GetPos());
+    }
+
+    public boolean isInObjArr(String[] objects) {
+    
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i].equals(this.GetStrType()))
+                return true;
+        }
+        return false;
     }
 }

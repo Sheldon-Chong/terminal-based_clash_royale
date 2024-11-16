@@ -428,65 +428,54 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
-    /* get the type of the cell based on the surrounding characters
-     * @param subject - the character array to be checked
-     * @param adjLeft - the character to the left of the subject
-     * @param adjRight - the character to the right of the subject
-     * @param adjUp - the character above the subject
-     * @param adjDown - the character below the subject
-     * @return - the type of the cell */
-    private int GetCellSideType(char []subject, 
-                                char adjLeft, 
-                                char adjRight, 
-                                char adjUp, 
-                                char adjDown) {
-
-        boolean nLeft   = isInCharArr(subject, adjLeft);
-        boolean nRight  = isInCharArr(subject, adjRight);
-        boolean nUp     = isInCharArr(subject, adjUp);
-        boolean nDown   = isInCharArr(subject, adjDown);
-        
+    /* get the type of the tile based on the surrounding tiles
+     * @param cell - the cell to be checked
+     * @param subjects - the array of objects to be checked
+     * @return - the type of the tile */
+    private int GetCellSideType(Cell cell, String[] subjects) {
+        Cell[] neighbours = cell.GetNeighbours();
+    
+        boolean nLeft = neighbours[Cell.NEIGHBOUR_LEFT] != null  && neighbours[Cell.NEIGHBOUR_LEFT].GetObject().isInObjArr(subjects);
+        boolean nRight= neighbours[Cell.NEIGHBOUR_RIGHT] != null && neighbours[Cell.NEIGHBOUR_RIGHT].GetObject().isInObjArr(subjects);
+        boolean nUp   = neighbours[Cell.NEIGHBOUR_UP] != null    && neighbours[Cell.NEIGHBOUR_UP].GetObject().isInObjArr(subjects);
+        boolean nDown = neighbours[Cell.NEIGHBOUR_DOWN] != null  && neighbours[Cell.NEIGHBOUR_DOWN].GetObject().isInObjArr(subjects);
+    
         int wallCount = 0;
-
-        if (nLeft)  wallCount++;
+    
+        if (nLeft) wallCount++;
         if (nRight) wallCount++;
-        if (nUp)    wallCount++;
-        if (nDown)  wallCount++;
-
+        if (nUp) wallCount++;
+        if (nDown) wallCount++;
+    
         if (wallCount == 0) return Texture.INDEPENDANT;
         if (wallCount == 4) return Texture.INSIDE;
-
+    
         // sides
         if ((nLeft && nRight) || (nUp && nDown)) {
-
             if (nLeft && nRight) {
                 if (nUp && !nDown) return Texture.SIDE_BOTTOM;
                 if (nDown && !nUp) return Texture.SIDE_TOP;
-                
+    
                 return Texture.PIPE_H;
             } 
-
             else {
                 if (nLeft && !nRight) return Texture.SIDE_RIGHT;
                 if (nRight && !nLeft) return Texture.SIDE_LEFT;
-                
+    
                 return Texture.PIPE_V;
             }
-
         } 
-        
         // corners
         else {
             if (nRight && nDown) return Texture.CORNER_TOP_LEFT;
-            if (nLeft && nDown)  return Texture.CORNER_TOP_RIGHT;
-            if (nRight && nUp)   return Texture.CORNER_BOTTOM_LEFT;
-            if (nLeft && nUp)    return Texture.CORNER_BOTTOM_RIGHT;
+            if (nLeft && nDown) return Texture.CORNER_TOP_RIGHT;
+            if (nRight && nUp) return Texture.CORNER_BOTTOM_LEFT;
+            if (nLeft && nUp) return Texture.CORNER_BOTTOM_RIGHT;
         }
-
+    
         // inside
         return Texture.INSIDE;
     }
-
     
     public int ValidatePositionString(String input) {
         if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q')) {
@@ -585,32 +574,40 @@ class GameSystem {
         // Setup towers and neighbors in the grid
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
+                
                 if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
-                    Cell[] neighbours = this.GetCell(new Pos(x, y)).GetNeighbours();
+
+                    Cell[] neighbours = this.GetCell(new Pos(x, y)).GetAllNeighbours();
                     Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
 
-                    for (int i = 0; i < 4; i++) {
-                        if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
-                            TileTower wall = (TileTower) neighbours[i].GetObject();
-                            wall.SetParent(parent);
-                        }
-                    }
-
-                    Pos[] diagonalPositions = {
-                        new Pos(x, y).Add(1, 1),
-                        new Pos(x, y).Add(-1, 1),
-                        new Pos(x, y).Add(1, -1),
-                        new Pos(x, y).Add(-1, -1)
-                    };
-
-                    for (int i = 0; i < diagonalPositions.length; i++) {
-                        Cell cell = this.GetCell(diagonalPositions[i]);
-                        if (cell != null && cell.GetObject() instanceof TileTower)
-                            ((TileTower) cell.GetObject()).SetParent(parent);
+                    for (int i = 0; i < 8; i++) {
+                        if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
+                            ((TileTower) neighbours[i].GetObject()).SetParent(parent);
                     }
                 }
             }
         }
+        
+        // UPDATE TILE APPEARANCE 
+        for (int y = 0; y < this.worldGrid.length; y++) {
+            for (int x = 0; x < this.worldGrid[y].length; x++) {
+                Obj object = this.GetCell(new Pos(x, y)).GetObject();
+                Cell currentCell = this.GetCell(new Pos(x, y));
+
+                if (object instanceof Tile) {
+                    if (object instanceof TileTower) {
+                        TileTower tower = (TileTower) object;
+                        tower.SetType(this.GetCellSideType(currentCell, new String[] {"TileTower", "Tower"}));
+                    }
+
+                    if (object instanceof TileEmpty) {
+                        TileEmpty empty = (TileEmpty) object;
+                        empty.SetType(this.GetCellSideType(currentCell, new String[] {"TileEmpty"}));
+                    }
+                }
+            }
+        }
+
         this.UpdateWorld();
     }
 
@@ -674,6 +671,8 @@ class GameSystem {
                 wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
             }
         }
+
+        
 
         return wGrid;
     }

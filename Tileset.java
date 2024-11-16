@@ -27,6 +27,7 @@ public abstract class Tileset extends Obj {
 
     public Tileset() {
         this.textures = new String [12][];
+        this.SetType("Tileset");
     }
 
 

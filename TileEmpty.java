@@ -15,11 +15,13 @@ public class TileEmpty extends Tile {
     public TileEmpty(int type) {
         this();
         this.SetType(type);
+        this.SetType("TileEmpty");
     }
 
     // DEVELOPED BY: Sheldon
     /* Constructor for TileEmpty */
     public TileEmpty() {
+        this.SetType("TileEmpty");
         this.GetTexture().setTexture(Texture.CORNER_TOP_LEFT, new String [] {
             ".____.",
             "|     ",

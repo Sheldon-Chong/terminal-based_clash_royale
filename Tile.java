@@ -12,6 +12,7 @@ public abstract class Tile extends Obj {
     /* Default constructor for the Tile class */
     public Tile() {
         this.texture = new Texture();
+        this.SetType("Tile");
     }
 
     
@@ -21,6 +22,7 @@ public abstract class Tile extends Obj {
     public Tile(boolean isSolid) {
         this();
         this.isSolid = isSolid;
+        this.SetType("Tile");
     }
 
     
