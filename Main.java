@@ -1,120 +1,146 @@
 // DEVELOPED BY : DAIKI
 
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /* 
  * Main class is the entry point of the program
  */
-
 public class Main {
-
-    
-
     public static void main(String[] args) {
-
-        
-
         FileHandler fHandler = new FileHandler();
-        char[][] grid = fHandler.readFile("game_grid.txt");
-        // fHandler.print2DCharArr(grid);
+        
+        char[][] grid;
+
+        try {
+            grid = fHandler.readFile("game_grid.txt");
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: game_grid.txt file not found.");
+            e.printStackTrace();
+            return; // Exit the program if the file is not found
+        }
 
         GameSystem gameSys = new GameSystem();
         gameSys.CharGrid2CellGrid(grid);
 
-        Scanner input = new Scanner(System.in);
+        Scanner input     = new Scanner(System.in);
         Displayer display = new Displayer(gameSys);
 
         // Display title screen
         display.ShowTitleScreen();
 
-        // Prompt for player 3
-		input.nextLine(); 
-        
-        // Get the current player
+        input.nextLine();
+
+        // Get the players
         System.out.print("Enter Player 1 name: ");
-        String player1Name = input.nextLine();  // Collect Player 1's name
+        String player1Name = input.nextLine(); 
         
         System.out.print("Enter Player 2 name: ");
-        String player2Name = input.nextLine();  // Collect Player 2's name
-
+        String player2Name = input.nextLine();
+        
+        gameSys.GetPlayer1().SetName(player1Name);
+        gameSys.GetPlayer2().SetName(player2Name);
+        
         System.out.println("Welcome " + player1Name + " and " + player2Name + "!");
-        gameSys.GetPlayer1().SetName(player1Name);  // Set Player 1's name in GameSystem
-        gameSys.GetPlayer2().SetName(player2Name);  // Set Player 2's name in GameSystem
-
+        
         // Wait for ENTER to start the game
         System.out.println("\nPress ENTER to begin game...");
-        input.nextLine();  // Waits for ENTER input
+        input.nextLine(); // Waits for ENTER input
 
         // Load and display the game board
         System.out.println("\nLoading the board...");
-        display.PrintWorld(gameSys.GetGrid());  // Display the initial board
+        display.PrintWorld(gameSys.GetGrid()); // Display the initial board
 
+
+        // GAME LOOP
+        
         while (true) {
+            boolean skipTurn = false;
+
             display.PrintWorld(gameSys.GetGrid());
             display.DisplayCardDeck(gameSys.GetCurrentPlayer());  
-            System.out.println("Choose a card to deploy by number (1-4), or press ENTER to skip.");
-            String userInput = input.nextLine();
-            for (int i = 0; i < 4; i++)
-                System.out.printf("Card %d: %s\n", i+1, gameSys.GetCurrentPlayer().GetCard(i));
 
-            // Handle card deployment
-            if (!userInput.isEmpty()) {
-                try {
-                    int cardIndex = Integer.parseInt(userInput) - 1;
-                    if (cardIndex < 0 || cardIndex >= 4) {
-                        System.out.println("Invalid card number. Please select a number between 1 and 4.");
-                        continue; // Skip further processing and re-ask for input
-                    }
+            String userInput;
 
-                    System.out.println("Enter a deploy position (e.g., A5): ");
-                    String positionRaw = input.nextLine();
-                    Pos deployPos = gameSys.parsePosition(positionRaw); // Assuming there's a method to convert user input into position
+            while (true) { 
 
-                    while (deployPos == null) {
-                        System.out.println("Invalid position. Please enter a valid position (e.g., A5): ");
-                        positionRaw = input.nextLine();
-                        deployPos = gameSys.parsePosition(positionRaw);
-                    }
+                System.out.print("Choose a card to deploy (1-4), or press ENTER to skip:");
+                userInput = input.nextLine();
 
-                    Player currentPlayer = gameSys.GetCurrentPlayer();
-                    Card selectedCard = currentPlayer.GetCard(cardIndex);
-
-                    if (selectedCard.GetElixirCost() > currentPlayer.GetElixir()) {
-                        System.out.printf("Not enough elixir to deploy %s. Required: %d, Available: %d\n", 
-                                        selectedCard.GetName(), selectedCard.GetElixirCost(), currentPlayer.GetElixir());
-                        continue; // Skip further processing and re-ask for input
-                    }
-
-                    int status = gameSys.DeployCard(cardIndex, deployPos);
-
-                    // Response based on deployment status
-                    if (status == 1) {
-                        System.out.printf("%s deployed at (%d, %d). Press ENTER to continue.\n", 
-                                        selectedCard.GetName(), deployPos.x, deployPos.y);
-                        display.PrintWorld(gameSys.GetGrid());
-                        System.out.print("Press ENTER to continue...");
-                        input.nextLine();
-                    } else {
-                        System.out.println("Failed to deploy the card. Please try again.");
-                    }
-
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a valid card number.");
+                if (userInput.length() == 0) { // if the input is empty
+                    System.out.println("Skipping turn...");
+                    skipTurn = true;
+                    break;
                 }
-            } else {
-                System.out.println("Press ENTER to end your turn");
+                if (userInput.length() != 1) // if the input is not a single character
+                    System.out.println("Invalid input. Please enter a valid card number.");
+
+                else if (userInput.charAt(0) < '1' || userInput.charAt(0) > '4') // if the input is not a number between 1 and 4
+                    System.out.println("Invalid card number. Please select a number between 1 and 4.");
+                
+                else if (gameSys.ValidateDeploymentOfCard(Integer.parseInt(userInput) - 1) == -1) {
+                    Card selectedCard = gameSys.GetCurrentPlayer().GetCard(Integer.parseInt(userInput) - 1);
+                    System.out.printf("Not enough elixir to deploy %s. Required: %d, Available: %d\n", 
+                        selectedCard.GetName(), 
+                        selectedCard.GetElixirCost(), 
+                        gameSys.GetCurrentPlayer().GetElixir());
+                }
+                else {
+                    break;
+                }
             }
 
-            // Update the game
+            int cardIndex = Integer.parseInt(userInput) - 1;
+
+            String positionRaw = "";
+
+            while (true && !skipTurn) {
+                System.out.print("Enter a deploy position (e.g., A5): ");
+                positionRaw = input.nextLine();
+                int parseStatus = gameSys.ValidatePositionString(positionRaw);
+
+                if (parseStatus == -1)
+                    System.out.println("ERROR: Invalid format ");
+                    
+                else if (parseStatus == -2)
+                    System.out.println("ERROR: Invalid position");
+                    
+                else if (parseStatus == -3)
+                    System.out.println("ERROR: Invalid position");
+                    
+                else if (parseStatus == -4)
+                    System.out.println("ERROR: Out of bounds");
+                
+                else if (parseStatus == -5)
+                    System.out.println("ERROR: You cannot place your troop in the enemy region");
+
+                else if (parseStatus == -6)
+                    System.out.println("ERROR: Position already occupied");
+
+                else if (parseStatus == 1)
+                    break;
+            }
+
+            Pos deployPos = gameSys.parsePosition(positionRaw); // Assuming there's a method to convert user input into position
+
+            gameSys.DeployCard(cardIndex, deployPos);
+            display.PrintWorld(gameSys.GetGrid());
+            
+            System.out.printf("successfully deployed %s at (%d, %d)\n", gameSys.GetCurrentPlayer().GetCard(cardIndex).GetName(), deployPos.x, deployPos.y); 
+
+            System.out.print("Press ENTER to continue...");
+            input.nextLine();
+            
             gameSys.UpdateWorld();
             gameSys.RegenerateElixir();
-
-            if (gameSys.IsEndGame())
+    
+            if (gameSys.IsEndGame() || gameSys.isGameOver())
                 break;
-
+    
             gameSys.AlternatePlayer();
         }
 
         input.close();
     }
 }
+

@@ -1,4 +1,4 @@
-// Entire class by Sheldon
+// Entire class by DAIKI
 
 /*
  * The tower object.
@@ -14,6 +14,7 @@ public class Tower extends Obj{
     private Pos     pos;
     private Player  parentPlayer;
     private int     health;
+    private boolean isKingTower;
 
 
     // -- CONSTRUCTORS --
@@ -71,5 +72,9 @@ public class Tower extends Obj{
      * @return - if the tower's HP is under 0*/
     public boolean IsDestroyed() { 
         return this.health <= 0; 
+    }
+
+    public boolean isKingTower() {
+        return isKingTower;
     }
 }

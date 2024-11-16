@@ -352,18 +352,20 @@ class Troop extends Obj {
         return false;
     }
 
+
+    // WRITTEN BY : DAIKI
     /*
      * 
      */
     private void attack(Obj object) {
-        if (object == null)
-            return;
-
         if (object instanceof Troop && isEnemy(object)) {
-            Troop enemy = (Troop)object;
-            enemy.DecreaseHP(1);
+            Troop enemy = (Troop) object;
+            enemy.DecreaseHP(this.GetAttack());  // Use this troop's specific attack value
+        } else if (object instanceof Tower && isEnemy(object)) {
+            Tower enemyTower = (Tower) object;
+            enemyTower.subtractHealth(this.GetAttack());  // Apply attack to the tower
         }
-
         this.SetAction(ACTION_ATTACK);
     }
+    
 }

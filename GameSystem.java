@@ -5,6 +5,8 @@
  * contains methods to spawn troops, shuffle player cards, and update the world
  */
 
+import java.io.FileNotFoundException;
+
 class GameSystem {
 
     // -- CONSTANTS --
@@ -53,6 +55,12 @@ class GameSystem {
     private int      currentRound = 1; // Trakcs the current round number
     private Player   currentPlayer;
     private Card     []cards;
+    private boolean gameEnded = false;
+    private Player winner;
+
+    private final int maxRow = 17;    // Maximum index for rows (0-27)
+    private final int maxCol = 28;    // Maximum index for columns (A-Q, 0-12)
+    
 
 
     // -- CONSTRUCTORS --
@@ -323,35 +331,44 @@ class GameSystem {
         this.spellQueue.append(spell);
     }
 
-    // DEVELOPED BY: Sheldon
+
+    public int ValidateDeploymentOfCard(int index) {
+        Card card = this.GetCurrentPlayer().GetCard(index);
+
+        if (currentPlayer.GetElixir() < card.GetElixirCost()) {
+            return -1;  // Not enough elixir
+        }
+
+        return 1;  // Valid deployment
+    }
+
+
+    // DEVELOPED BY: Sheldon & DAIKI
     /* deploy a card by spawning a troop or summoning a spell
      * @param index - the index of the card to be deployed
      * @param pos - the position where the card will be deployed
      * @return - 1 if the card was deployed successfully, -1 if the player does not have enough elixir, -2 if the index is out of bounds */
     public int DeployCard(int index, Pos pos) {
+        // Check if the card index is valid
+    
         Card card = this.GetCurrentPlayer().GetCard(index);
-
-        if (this.GetCurrentPlayer().GetElixir() < card.GetElixirCost())
-            return -1;
-        
-        if (index < 0 || index >= 4)
-            return -2;
-
-        this.GetCurrentPlayer().DeductElixir(card.GetElixirCost());
-
-        if (card.GetType() == Card.SPELL) {
+        Player currentPlayer = this.GetCurrentPlayer();
+    
+        // Deduct elixir cost
+        currentPlayer.DeductElixir(card.GetElixirCost());
+    
+        // Check if card is a spell or troop and deploy accordingly
+        if (card.GetType() == Card.SPELL)
             this.summonSpell(card.GetName(), pos);
-            this.GetCurrentPlayer().RemoveCard(index);
-            return 1;
-        }
-        else {
+        else
             this.SpawnTroop(card.GetName(), pos);
-        }
+    
+        // Remove the deployed card from the player's hand
+        currentPlayer.RemoveCard(index);
 
-        this.GetCurrentPlayer().RemoveCard(index);
-
-        return 1;
-    }    
+        return 1;  // Successfully deployed
+    }
+    
 
     // DEVELOPED BY: Sheldon
     /* spawn a troop on the game grid
@@ -466,119 +483,141 @@ class GameSystem {
         return Texture.INSIDE;
     }
 
+    public int ValidatePositionString(String input) {
+        if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q')) {
+            return -1;
+        }
+        input = input.toUpperCase();
 
-    
+        if (input.charAt(0) < 'A' || input.charAt(0) > 'Q') {
+            return -2; //invalid row coordinate
+        }
 
+        if (input.charAt(1) < '0' || input.charAt(1) > '9') {
+            return -3; //invalid column coordinate
+        }
+
+        if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9')) {
+            return -3; //invalid column coordinate
+        }
+
+        Pos pos = parsePosition(input);
+
+        if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow) {
+            return -4; //out of bounds
+        }
+
+        if ((currentPlayer.GetPlayerNum() == GameSystem.PLAYER1_REGION && (pos.x < 0 || pos.x > 14)) ||
+            (currentPlayer.GetPlayerNum() == GameSystem.PLAYER2_REGION && (pos.x < 15 || pos.x > 28))) {
+                return -5; //invalid deployment area
+        }
+
+        Obj obj = this.GetCell(pos).GetObject();
+
+        if (!(obj instanceof TileFloor)) {
+            return -6; //invalid deployment area
+        }
+
+        return 1;
+
+    }
 
     // DEVELOPED BY : DAIKI
-    // Convert a user's input string, which represents a position on the game grid (ex: A25)
+    /* Convert a user's input string, which represents a position on the game grid (ex: A25) */
     public Pos parsePosition(String input) {
-        input = input.trim().toUpperCase();
-        if (input.isEmpty() || !Character.isLetter(input.charAt(0)) || input.length() < 2) {
-            return null;  // Improper format
-        }
-    
-        char rowChar = input.charAt(0);
-        int row = rowChar - 'A';  // Convert column character to zero-based index
-        int column;
-        int maxRow = 17;    // Maximum index for rows (0-27)
-        int maxCol = 28;    // Maximum index for columns (A-Q, 0-12)
-    
-        try {
-            column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
-        } catch (NumberFormatException e) {
-            return null;  // Handle non-integer row input
-        }
-    
-        if (column < 0 || column >= maxCol || row < 0 || row >= maxRow) {  // Check if the position is out of the game grid bounds
-            return null;
-        }
-    
+
+        int  row    = input.charAt(0) - 'A';  // Convert column character to an integer
+        int  column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
+
         return new Pos(column, row);
     }
     
 
     // DEVELOPED BY: Sheldon
-    /* initialize the game world by creating the grid, players, and troops */
-    private void initWorld() {
+/* initialize the game world by creating the grid, players, and troops */
+private void initWorld() {
+    FileHandler fHandler = new FileHandler();
+    
+    // Initialize cards array from the cards file with error handling
+    String[] cardsRaw = null;
+    try {
+        cardsRaw = fHandler.readFileLine("cards.csv");
+    } catch (FileNotFoundException e) {
+        System.out.println("Error: cards.csv file not found.");
+        e.printStackTrace();
+        return; // Exit the method if the file is not found
+    }
 
-        FileHandler fHandler = new FileHandler(); 
+    this.cards = new Card[cardsRaw.length];
+    for (int i = 0; i < cardsRaw.length; i++) {
+        String[] contentsSplitted = cardsRaw[i].split(",");
+        String cardName = contentsSplitted[0];
+        int elixirCost = Integer.valueOf(contentsSplitted[1]);
+        String rawType = contentsSplitted[2];
 
-        String [] cardsRaw = fHandler.readFileLine("cards.csv");
-
-        this.cards = new Card[cardsRaw.length];
-        for (int i = 0; i < cardsRaw.length; i++) {
-            
-            String [] contentsSplitted = cardsRaw[i].split(",");
-
-            String  cardName = contentsSplitted[0];
-            int     elixirCost = Integer.valueOf(contentsSplitted[1]);
-            String rawType = contentsSplitted[2];
-
-            int type = Card.TROOP;
-
-            if (rawType.equals("troop")) {
-                type = Card.TROOP;
-            } 
-            else if (rawType.equals("spell")) {
-                type = Card.SPELL;
-            }
-
-            this.cards[i] = new Card(cardName, elixirCost, type);
-            System.out.println(cards[i].GetRepr());
+        int type = Card.TROOP;
+        if (rawType.equals("troop")) {
+            type = Card.TROOP;
+        } else if (rawType.equals("spell")) {
+            type = Card.SPELL;
         }
 
-        // initialize lists
-        this.spellQueue = new ObjList();
-        this.troops = new ObjList();
+        this.cards[i] = new Card(cardName, elixirCost, type);
+        System.out.println(cards[i].GetRepr());
+    }
 
-        // initialize players
-        this.player1 = new Player("Player1", 1, this);
-        this.player2 = new Player("Player2", 2, this);
-        
-        this.SetCurrentPlayer(this.GetPlayer1());
-        this.shufflePlayerCards();
+    // Initialize lists
+    this.spellQueue = new ObjList();
+    this.troops = new ObjList();
 
-        // initialize world grid
+    // Initialize players
+    this.player1 = new Player("Player1", 1, this);
+    this.player2 = new Player("Player2", 2, this);
+
+    this.SetCurrentPlayer(this.GetPlayer1());
+    this.shufflePlayerCards();
+
+    // Initialize world grid with error handling for the main game grid file
+    try {
         this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile(FILENAME));
+    } catch (FileNotFoundException e) {
+        System.out.println("Error: " + FILENAME + " file not found.");
+        e.printStackTrace();
+        return; // Exit the method if the file is not found
+    }
 
-        // delete later
-        // this.spawnTroops(20);
-        // this.spellQueue.append(new ObjSpell(new Pos(3, 6), new Pos(7, 8), 10, 4));
-        // this.spellQueue.append(new ObjSpell(new Pos(4, 7), new Pos(10, 15), 10, 4));
+    // Setup towers and neighbors in the grid
+    for (int y = 0; y < this.worldGrid.length; y++) {
+        for (int x = 0; x < this.worldGrid[y].length; x++) {
+            if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
+                Cell[] neighbours = this.GetCell(new Pos(x, y)).GetNeighbours();
+                Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
 
-
-        for (int y = 0; y < this.worldGrid.length; y++) {
-            for (int x = 0; x < this.worldGrid[y].length; x++) {
-                if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
-                    Cell []neighbours = this.GetCell(new Pos(x, y)).GetNeighbours();
-                    Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
-
-                    for (int i = 0; i < 4; i++) {
-                        if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
-                            TileTower wall = (TileTower) neighbours[i].GetObject();
-                            wall.SetParent(parent);
-                        }
+                for (int i = 0; i < 4; i++) {
+                    if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
+                        TileTower wall = (TileTower) neighbours[i].GetObject();
+                        wall.SetParent(parent);
                     }
-                    
-                    Pos[] diagonalPositions = {
-                        new Pos(x, y).Add(1, 1),
-                        new Pos(x, y).Add(-1, 1),
-                        new Pos(x, y).Add(1, -1),
-                        new Pos(x, y).Add(-1, -1)
-                    };
+                }
 
-                    for (int i = 0; i < diagonalPositions.length; i++) {
-                        Cell cell = this.GetCell(diagonalPositions[i]);
+                Pos[] diagonalPositions = {
+                    new Pos(x, y).Add(1, 1),
+                    new Pos(x, y).Add(-1, 1),
+                    new Pos(x, y).Add(1, -1),
+                    new Pos(x, y).Add(-1, -1)
+                };
 
-                        if (cell != null && cell.GetObject() instanceof TileTower)
-                            ((TileTower) cell.GetObject()).SetParent(parent);
-                    }
+                for (int i = 0; i < diagonalPositions.length; i++) {
+                    Cell cell = this.GetCell(diagonalPositions[i]);
+                    if (cell != null && cell.GetObject() instanceof TileTower)
+                        ((TileTower) cell.GetObject()).SetParent(parent);
                 }
             }
         }
-        this.UpdateWorld();
     }
+    this.UpdateWorld();
+}
+
 
     // DEVELOPED BY: Sheldon
     /* get the character at a given position in the grid
@@ -642,6 +681,39 @@ class GameSystem {
 
         return wGrid;
     }
+
+
+   
+    // DEVELOPED BY : DAIKI
+    // Check if the game is over
+    public boolean isGameOver() {
+        if (player1.GetKingTower().getHealth() <= 0) {
+            gameEnded = true;
+            winner = player2;
+        } else if (player2.GetKingTower().getHealth() <= 0) {
+            gameEnded = true;
+            winner = player1;
+        }
+        return gameEnded;
+    }
+
+    // DEVELOPED BY : DAIKI
+    // Gets the winning player
+    public Player GetWinner() {
+        if (player1.GetKingTower().getHealth() <= 0) {
+            return player2;  // Player 2 wins if Player 1's King Tower is destroyed
+        } else if (player2.GetKingTower().getHealth() <= 0) {
+            return player1;  // Player 1 wins if Player 2's King Tower is destroyed
+        }
+        return null;  // No winner yet
+    }
+
+
+   
+
+    
+
+    
 
 
 }

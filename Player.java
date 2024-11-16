@@ -93,6 +93,11 @@ public class Player {
         }
     }
 
+     // Getter for King Tower
+     public Tower GetKingTower() {
+        return this.king;
+    }
+
     // DEVELOPED BY: Daiki
     public int RemoveCard (int index) {
         this.cardsOnHand[index] = null;

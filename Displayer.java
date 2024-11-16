@@ -289,4 +289,16 @@ public class Displayer {
 
         this.CardScreen.PrintScreen();
     }
+
+    
+
+    // Winning screen
+    public void ShowWinningScreen(String winner) {
+        System.out.println("\n\n=========================");
+        System.out.println("       GAME OVER");
+        System.out.println("=========================");
+        System.out.printf("Congratulations %s! You have won the game!\n", winner);
+        System.out.println("Thank you for playing!");
+        System.out.println("=========================\n");
+    }
 }
