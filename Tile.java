@@ -4,6 +4,7 @@ public abstract class Tile extends Obj {
     private int type;
     private Texture texture;
     private boolean isSolid;
+    private GameSystem gameSysRef;
 
 
     // -- CONSTRUCTORS --
@@ -65,5 +66,13 @@ public abstract class Tile extends Obj {
      * @return - boolean */
     public boolean IsSolid() {
         return this.isSolid;
+    }
+
+    public void SetGameSysRef(GameSystem gameSysRef) {
+        this.gameSysRef = gameSysRef;
+    }
+
+    public Cell GetCell() {
+        return this.gameSysRef.GetCell(this.GetPos());
     }
 }

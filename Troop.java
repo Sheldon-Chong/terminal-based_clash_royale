@@ -108,10 +108,6 @@
         this.Dest = dest;
     }
 
-    public char GetNameInitial() {
-        return this.name.charAt(0);
-    }
-
     public String GetNameShort() {
         return this.name.substring(0, 2);
     }
@@ -125,8 +121,7 @@
 
     /* moves the troop towards a specified position
      * @param dest - the position to move towards
-     * @return boolean - true if the troop has moved, false otherwise
-     */
+     * @return boolean - true if the troop has moved, false otherwise */
     private boolean moveTowards(Pos dest) {
         Pos moveVector = new Pos(0, 0);
         Pos currentPos = this.GetPos().Copy();
@@ -186,7 +181,7 @@
 
     /* recalculates the destination of the troop */
     public void  RecalcDest() {
-        Pos closestTowerWall = null;
+        Pos destination = null;
 
         Cell [] p1EntryPoints = {
             gameSysRef.GetCell(new Pos(16, 3)), 
@@ -199,13 +194,13 @@
         };
 
         int playerNum = this.player.GetPlayerNum(); 
-        int currRegion = this.GetRegion();
+        int currentRegion = this.GetRegion();
 
-        if (playerNum == GameSystem.PLAYER1_REGION && currRegion == GameSystem.PLAYER1_REGION)
-            closestTowerWall = findNearestAccessPoint(p1EntryPoints);
+        if (playerNum == GameSystem.PLAYER1_REGION && currentRegion == GameSystem.PLAYER1_REGION)
+            destination = findNearestAccessPoint(p1EntryPoints);
 
-        else if (playerNum == GameSystem.PLAYER2_REGION && currRegion == GameSystem.PLAYER2_REGION)
-            closestTowerWall = findNearestAccessPoint(p2EntryPoints);
+        else if (playerNum == GameSystem.PLAYER2_REGION && currentRegion == GameSystem.PLAYER2_REGION)
+            destination = findNearestAccessPoint(p2EntryPoints);
 
         else {
             Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
@@ -214,15 +209,14 @@
                 if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
                     return;
             }
-            closestTowerWall = findNearestAccessPoint(findAllTowerTiles());
+            destination = findNearestAccessPoint(gameSysRef.FindAllCellContaining("TileTower"));
         }
         
-        this.SetDest(closestTowerWall);
+        this.SetDest(destination);
     }
 
     /* checks if the troop is adjacent to a tower
-     * @return Cell - the tower tile that the troop is adjacent to
-     */
+     * @return Cell - the tower tile that the troop is adjacent to */
     public Cell IsAdjTower() {
         Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
 
@@ -263,16 +257,15 @@
 
     // -- HELPER METHODS --
 
-    /* locate available adjacent cells that allow the troop to reach a specified position, that isn't blocked by walls
-     */
+    /* locate available adjacent cells that allow the troop to reach a specified position, that isn't blocked by walls */
     private Cell []findAccessPoint(Pos pos) {
+        
         Cell []neighbours = this.gameSysRef.GetCell(pos).GetNeighbours();
 
         int accessPointsLen = 0;
         
         for (int i = 0; i < 4; i++) {
-            if ( neighbours[i] != null 
-                && neighbours[i].GetObject() instanceof TileFloor)
+            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileFloor)
                     accessPointsLen ++;
         }
         
@@ -280,16 +273,14 @@
         
         accessPointsLen = 0;
         for (int i = 0; i < 4; i++) {
-            if ( neighbours[i] != null 
-                && neighbours[i].GetObject() instanceof TileFloor)
+            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileFloor)
                     accessPoints[accessPointsLen++] = neighbours[i];
         }
 
         return accessPoints;
     }
 
-    /* locate the closest position to the troop that allows it to reach the specified position
-     */
+    /* locate the closest position to the troop that allows it to reach the specified position */
     private Pos findNearestAccessPoint(Cell []cells) {
         Pos closestPoint = null;
 
@@ -308,37 +299,8 @@
         return closestPoint;
     }
 
-    /* gets a list to a refferrence of all the tower tiles on the grid
-     * @return Cell[] - an array of all the tower tiles on the grid
-     */
-    private Cell []findAllTowerTiles() {
-        int towersLen = 0;
-        
-        for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
-            for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
-                if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetCell(new Pos (x, y)).GetObject() instanceof TileTower)
-                    towersLen++;
-            }
-        }
-
-        Cell[] towersWalls = new Cell[towersLen];
-        int index = 0;
-
-        for (int y = 0; y < this.gameSysRef.GetGrid().length; y++) {
-            for (int x = 0; x < this.gameSysRef.GetGrid()[0].length; x++) {   
-                if (this.gameSysRef.GetCell(new Pos (x, y)) != null &&
-                    this.gameSysRef.GetCell(new Pos (x, y)).GetObject() instanceof TileTower)
-                    towersWalls[index++] = this.gameSysRef.GetCell(new Pos (x, y));
-            }
-        }
-
-        return towersWalls;
-    }
-
     /* checks if an object belongs to an enemy
-     * @param object - the object to be checked
-     */    
+     * @param object - the object to be checked */
     private boolean isEnemy(Obj object) {
         if (object == null)
             return false;

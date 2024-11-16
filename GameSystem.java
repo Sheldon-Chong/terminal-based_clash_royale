@@ -11,25 +11,24 @@ class GameSystem {
 
     public final static String  FILENAME = "game_grid.txt";
 
-    private final static char    SYMBOL_TOWER       = 'T';
-    private final static char    SYMBOL_FLOOR       = '.';
-    private final static char    SYMBOL_EMPTY       = ' ';
-    private final static char    SYMBOL_P1_PRINCESS = 'P';
-    private final static char    SYMBOL_P1_KING     = 'K';
-    private final static char    SYMBOL_P2_PRINCESS = 'p';
-    private final static char    SYMBOL_P2_KING     = 'k';
+    private final static char  SYMBOL_TOWER       = 'T';
+    private final static char  SYMBOL_FLOOR       = '.';
+    private final static char  SYMBOL_EMPTY       = ' ';
+    private final static char  SYMBOL_P1_PRINCESS = 'P';
+    private final static char  SYMBOL_P1_KING     = 'K';
+    private final static char  SYMBOL_P2_PRINCESS = 'p';
+    private final static char  SYMBOL_P2_KING     = 'k';
 
-    public final static int     NO_REGION      = 0;
-    public final static int     PLAYER1_REGION = 1;
-    public final static int     PLAYER2_REGION = 2;
+    public final static int  NO_REGION      = 0;
+    public final static int  PLAYER1_REGION = 1;
+    public final static int  PLAYER2_REGION = 2;
 
-    public final int ERR_INVALID_FORMAT = -1;
-    public final int ERR_INVALID_ROW    = -2;
-    public final int ERR_INVALID_COL    = -3;
-    public final int ERR_OUT_OF_BOUNDS  = -4;
-    public final int ERR_INVALID_DEPLOY_REGION = -5;
-    public final int ERR_OCCUPIED_SPACE = -6;
-
+    public final static int  ERR_INVALID_FORMAT = -1;
+    public final static int  ERR_INVALID_ROW    = -2;
+    public final static int  ERR_INVALID_COL    = -3;
+    public final static int  ERR_OUT_OF_BOUNDS  = -4;
+    public final static int  ERR_INVALID_DEPLOY_REGION = -5;
+    public final static int  ERR_OCCUPIED_SPACE = -6;
     
     public final static String [] CARDS = {
         "barbarian",
@@ -51,20 +50,21 @@ class GameSystem {
 
     // -- ATTRIBUTES --
     
-    private ObjList  troops;
-    private Cell[][] worldGrid;
-    private ObjList  spellQueue;
-    private          Player player1;
-    private          Player player2;
-    private int      currentRound = 1; // Trakcs the current round number
-    private Player   currentPlayer;
-    private Card     []cards;
-    private Player winner;
+    private ObjList   troops;
+    private Cell[][]  worldGrid;
+    private ObjList   spellQueue;
+    private           Player player1;
+    private           Player player2;
+    private int       currentRound = 1; // Trakcs the current round number
+    private Player    currentPlayer;
+    private Card      []cards;
+    private Player    winner;
+
+    private ObjList   p1TravelPoints;
+    private ObjList   p2TravelPoints;
 
     private final int maxRow = 17;    // Maximum index for rows (0-27)
     private final int maxCol = 28;    // Maximum index for columns (A-Q, 0-12)
-    
-
 
     // -- CONSTRUCTORS --
     
@@ -88,13 +88,6 @@ class GameSystem {
         return this.cards;
     }
 
-
-    // DEVELOPED BY: Daiki
-    public void RegenerateElixir() {
-        this.player1.RegenerateElixir();
-        this.player2.RegenerateElixir();
-    }
-
     // DEVELOPED BY: Daiki
     public void SetCurrentPlayer(Player player) {
         this.currentPlayer = player;
@@ -103,15 +96,6 @@ class GameSystem {
     // DEVELOPED BY: Daiki
     public Player GetCurrentPlayer() {
         return this.currentPlayer;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* Get the player that is not the current player */
-    public void AlternatePlayer() {
-        if (this.currentPlayer == this.player1)
-            this.currentPlayer = this.player2;
-        else
-            this.currentPlayer = this.player1;
     }
 
     // DEVELOPED BY: Daiki
@@ -154,7 +138,7 @@ class GameSystem {
 
     // DEVELOPED BY: Daiki
     public Cell      GetCell(int row, int col) { 
-        return this.worldGrid[row][col]; 
+        return this.worldGrid[row][col];
     }
 
     // DEVELOPED BY: Daiki
@@ -235,6 +219,23 @@ class GameSystem {
         this.RegenerateElixir();
     }
 
+    
+    // DEVELOPED BY: Daiki
+    public void RegenerateElixir() {
+        this.player1.RegenerateElixir();
+        this.player2.RegenerateElixir();
+    }
+
+
+    // DEVELOPED BY: Sheldon
+    /* Get the player that is not the current player */
+    public void AlternatePlayer() {
+        if (this.currentPlayer == this.player1)
+            this.currentPlayer = this.player2;
+        else
+            this.currentPlayer = this.player1;
+    }
+
     public int ValidateDeploymentOfCard(int index) {
         Card card = this.GetCurrentPlayer().GetCard(index);
 
@@ -246,30 +247,31 @@ class GameSystem {
 
     public int ValidatePositionString(String input) {
         if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q'))
-            return -1;
+            return ERR_INVALID_FORMAT; //invalid format
             
         input = input.toUpperCase();
 
         if (input.charAt(0) < 'A' || input.charAt(0) > 'Q')
-            return -2; //invalid row coordinate
+            return ERR_INVALID_ROW;
         if (input.charAt(1) < '0' || input.charAt(1) > '9')
-            return -3; //invalid column coordinate
-        if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9')) 
-            return -3; //invalid column coordinate
+            return ERR_INVALID_COL;
+        if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9'))
+            return ERR_INVALID_COL;
 
         Pos pos = parsePosition(input);
 
         if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow)
-            return -4; //out of bounds
+            return ERR_OUT_OF_BOUNDS;
+            
         if ((currentPlayer.GetPlayerNum() == GameSystem.PLAYER1_REGION && (pos.x < 0 || pos.x > 14)) ||
             (currentPlayer.GetPlayerNum() == GameSystem.PLAYER2_REGION && (pos.x < 15 || pos.x > 28))) {
-                return -5; //invalid deployment area
+            return ERR_INVALID_DEPLOY_REGION;
         }
 
         Obj obj = this.GetCell(pos).GetObject();
 
         if (!(obj instanceof TileFloor))
-            return -6; //invalid deployment area
+            return ERR_OCCUPIED_SPACE;
 
         return 1;
     }
@@ -497,6 +499,9 @@ class GameSystem {
     // DEVELOPED BY: Sheldon
     /* initialize the game world by creating the grid, players, and troops */
     private void initWorld() {
+        this.p1TravelPoints = new ObjList();
+        this.p2TravelPoints = new ObjList();
+
         FileHandler fHandler = new FileHandler();
         
         // Initialize cards array from the cards file with error handling
@@ -515,6 +520,7 @@ class GameSystem {
             String rawType = contentsSplitted[2];
 
             int type = Card.TROOP;
+
             if (rawType.equals("troop"))
                 type = Card.TROOP;
             else if (rawType.equals("spell"))
@@ -558,6 +564,7 @@ class GameSystem {
         // UPDATE TILE APPEARANCE 
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
+
                 Obj object = this.GetCell(new Pos(x, y)).GetObject();
                 Cell currentCell = this.GetCell(new Pos(x, y));
 
@@ -610,25 +617,46 @@ class GameSystem {
                         tileContent = new TileEmpty(Texture.CORNER_BOTTOM_LEFT);
                     break; case SYMBOL_FLOOR:
                         tileContent = new TileFloor();
+                    break; default:
+                        tileContent = new TileFloor();
                 }
                 
-                wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
+                
+                if (currentTile == 'e') {
+                    this.p1TravelPoints.append(new Obj(new Pos(col, row)));
+                }
+                else if (currentTile == 'E') {
+                    this.p2TravelPoints.append(new Obj(new Pos(col, row)));
+                }
+                
+                else {
+                    ((Tile)(tileContent)).SetGameSysRef(this);
+                    wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
+                }
             }
         }
 
         return wGrid;
     }
 
+    public Obj [] GetP1AccessPoints () {
+        return this.p1TravelPoints.GetList();
+    }
+
+    public Obj [] GetP2AccessPoints () {
+        return this.p2TravelPoints.GetList();
+    }
+
     // DEVELOPED BY : DAIKI
     // Check if the game is over
     public boolean isGameOver() {
 
-        if (player1.GetKingTower().IsDestroyed()) {
+        if (player1.GetKingTower() == null || player1.GetKingTower().IsDestroyed()) {
             winner = player2;
             return true;
         }
 
-        else if (player2.GetKingTower().IsDestroyed()) {
+        else if (player2.GetKingTower() == null || player2.GetKingTower().IsDestroyed()) {
             winner = player1;
             return true;
         }
@@ -636,5 +664,26 @@ class GameSystem {
         return false;
     }
 
-    
+    public Cell []FindAllCellContaining(String objType) {
+        int len = 0;
+        
+        for (int y = 0; y < this.worldGrid.length; y++) {
+            for (int x = 0; x < this.worldGrid[y].length; x++) {
+                if ((this.GetCell(new Pos(x, y)).GetObject() != null) 
+                    && (this.GetCell(new Pos(x, y)).GetObject().GetStrType().equals(objType)))
+                    len++;
+            }
+        }
+
+        Cell [] cellArr = new Cell[len];
+        for (int y = 0; y < this.worldGrid.length; y++) {
+            for (int x = 0; x < this.worldGrid[y].length; x++) {
+                if ((this.GetCell(new Pos(x, y)).GetObject() != null) 
+                    && (this.GetCell(new Pos(x, y)).GetObject().GetStrType().equals(objType)))
+                    cellArr[--len] = this.GetCell(new Pos(x, y));
+            }
+        }
+
+        return cellArr;
+    }
 }

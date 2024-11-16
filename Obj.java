@@ -7,7 +7,7 @@
  * It contains a position, which is used to determine where the object is in the world
  */
 
-public abstract class Obj {
+public class Obj {
     
     // -- ATTRIBUTES --
 
