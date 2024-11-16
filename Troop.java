@@ -5,7 +5,7 @@
  * Troops are the main units in the game. They utilize specific algorithms to move towards the enemy's tower
  */
 
-class Troop extends Obj {
+ class Troop extends Obj {
 
     // -- CONSTANTS --
 

@@ -59,7 +59,6 @@ class GameSystem {
     private int      currentRound = 1; // Trakcs the current round number
     private Player   currentPlayer;
     private Card     []cards;
-    private boolean gameEnded = false;
     private Player winner;
 
     private final int maxRow = 17;    // Maximum index for rows (0-27)
@@ -78,17 +77,17 @@ class GameSystem {
     
     // -- GETTERS AND SETTERS --
 
+    // DEVELOPED BY : DAIKI
+    // Gets the winning player
+    public Player GetWinner() {
+        return winner;
+    }
+
     // DEVELOPED BY: Daiki
     public Card []getCards() {
         return this.cards;
     }
 
-    // DEVELOPED BY: Daiki
-    public boolean  IsEndGame() {
-
-        // to change
-        return false;
-    }
 
     // DEVELOPED BY: Daiki
     public void RegenerateElixir() {
@@ -218,21 +217,151 @@ class GameSystem {
             return PLAYER2_REGION;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* destroy the troop given a refference, by popping the item of the troop array */
+    public void destroyTroop(Troop troop) {
+        this.troops.Pop(troop);
+    }
+
+
+    // -- PUBLIC METHODS --
+
     // DEVELOPED BY: Daiki
     public void UpdateWorld() { 
 
         this.updateTroops();
         this.updateTiles();
         this.updateSpellQueue();
+        this.RegenerateElixir();
+    }
+
+    public int ValidateDeploymentOfCard(int index) {
+        Card card = this.GetCurrentPlayer().GetCard(index);
+
+        if (currentPlayer.GetElixir() < card.GetElixirCost())
+            return -1;  // Not enough elixir
+
+        return 1;  // Valid deployment
+    }
+
+    public int ValidatePositionString(String input) {
+        if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q'))
+            return -1;
+            
+        input = input.toUpperCase();
+
+        if (input.charAt(0) < 'A' || input.charAt(0) > 'Q')
+            return -2; //invalid row coordinate
+        if (input.charAt(1) < '0' || input.charAt(1) > '9')
+            return -3; //invalid column coordinate
+        if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9')) 
+            return -3; //invalid column coordinate
+
+        Pos pos = parsePosition(input);
+
+        if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow)
+            return -4; //out of bounds
+        if ((currentPlayer.GetPlayerNum() == GameSystem.PLAYER1_REGION && (pos.x < 0 || pos.x > 14)) ||
+            (currentPlayer.GetPlayerNum() == GameSystem.PLAYER2_REGION && (pos.x < 15 || pos.x > 28))) {
+                return -5; //invalid deployment area
+        }
+
+        Obj obj = this.GetCell(pos).GetObject();
+
+        if (!(obj instanceof TileFloor))
+            return -6; //invalid deployment area
+
+        return 1;
+    }
+
+    // DEVELOPED BY : DAIKI
+    /* Convert a user's input string, which represents a position on the game grid (ex: A25) */
+    public Pos parsePosition(String input) {
+
+        int  row    = input.charAt(0) - 'A';  // Convert column character to an integer
+        int  column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
+
+        return new Pos(column, row);
+    }
+
+
+    // DEVELOPED BY: Sheldon & DAIKI
+    /* deploy a card by spawning a troop or summoning a spell
+     * @param index - the index of the card to be deployed
+     * @param pos - the position where the card will be deployed
+     * @return - 1 if the card was deployed successfully, -1 if the player does not have enough elixir, -2 if the index is out of bounds */
+    public int DeployCard(int index, Pos pos) {
+        // Check if the card index is valid
+    
+        Card card = this.GetCurrentPlayer().GetCard(index);
+        Player currentPlayer = this.GetCurrentPlayer();
+    
+        // Deduct elixir cost
+        currentPlayer.DeductElixir(card.GetElixirCost());
+    
+        if (card.GetType() == Card.SPELL)
+            this.SpawnSpell(card.GetName(), pos);
+        else
+            this.SpawnTroop(card.GetName(), pos);
+    
+        currentPlayer.RemoveCard(index);
+
+        return 1;
+    }
+    
+
+        // DEVELOPED BY: Sheldon
+    /* spawn a troop on the game grid
+     * @param troopType - the type of troop to be spawned
+     * @param startingPos - the position where the troop will be spawned
+     * @return - 1 if the troop was spawned successfully, 0 otherwise */
+    public int SpawnTroop(String troopType, Pos startingPos) {
+        Player parent = this.GetCurrentPlayer();
+
+        troopType = troopType.toLowerCase();
+        
+        Troop newTroop = null;
+    
+        if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(startingPos, parent); }
+        else if (troopType.equals("elixirgolem")) { newTroop = new TroopElixirGolem(startingPos, parent); }
+        else if (troopType.equals("giant"))       { newTroop = new TroopGiant(startingPos, parent); }
+        else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(startingPos, parent); }
+        else if (troopType.equals("golem"))       { newTroop = new TroopGolem(startingPos, parent); }
+        else if (troopType.equals("hogrider"))    { newTroop = new TroopHogRider(startingPos, parent); }
+        else if (troopType.equals("knight"))      { newTroop = new TroopKnight(startingPos, parent); }
+        else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(startingPos, parent); }
+        else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(startingPos, parent); }
+        else if (troopType.equals("skeleton"))    { newTroop = new TroopSkeletons(startingPos, parent); }
+        else
+            return 0;
+    
+        newTroop.SetGameSysRef(this);
+        this.troops.append(newTroop);
+    
+        return 1;
     }
 
     // DEVELOPED BY: Sheldon
-    /* destroy the troop given a refference, by popping the item of the troop array */
-    public void destroyTroop(Troop troop) {
-        this.troops.Pop(troop);
+    /* summon a spell by adding it to the spell queue
+     * @param name - the name of the spell to be summoned
+     * @param targetPos - the position where the spell will be summoned */
+    public void SpawnSpell(String name, Pos targetPos) {
+
+        Spell spell;
+
+        if (name.toLowerCase().equals("lightning"))
+            spell = new SpellLightning(targetPos);
+        else if (name.toLowerCase().equals("fireball"))
+            spell = new SpellFireball(targetPos);
+        else if (name.toLowerCase().equals("zap"))
+            spell = new SpellZap(targetPos);
+        else
+            return;
+
+        this.spellQueue.append(spell);
     }
-    
-    
+
+
     // -- HELPER METHODS --
 
     // DEVELOPED BY: Sheldon
@@ -316,123 +445,11 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
-    /* summon a spell by adding it to the spell queue
-     * @param name - the name of the spell to be summoned
-     * @param targetPos - the position where the spell will be summoned */
-    public void summonSpell(String name, Pos targetPos) {
-
-        Spell spell;
-
-        if (name.toLowerCase().equals("lightning"))
-            spell = new SpellLightning(targetPos);
-        else if (name.toLowerCase().equals("fireball"))
-            spell = new SpellFireball(targetPos);
-        else if (name.toLowerCase().equals("zap"))
-            spell = new SpellZap(targetPos);
-        else
-            return;
-
-        this.spellQueue.append(spell);
-    }
-
-
-    public int ValidateDeploymentOfCard(int index) {
-        Card card = this.GetCurrentPlayer().GetCard(index);
-
-        if (currentPlayer.GetElixir() < card.GetElixirCost()) {
-            return -1;  // Not enough elixir
-        }
-
-        return 1;  // Valid deployment
-    }
-
-
-    // DEVELOPED BY: Sheldon & DAIKI
-    /* deploy a card by spawning a troop or summoning a spell
-     * @param index - the index of the card to be deployed
-     * @param pos - the position where the card will be deployed
-     * @return - 1 if the card was deployed successfully, -1 if the player does not have enough elixir, -2 if the index is out of bounds */
-    public int DeployCard(int index, Pos pos) {
-        // Check if the card index is valid
-    
-        Card card = this.GetCurrentPlayer().GetCard(index);
-        Player currentPlayer = this.GetCurrentPlayer();
-    
-        // Deduct elixir cost
-        currentPlayer.DeductElixir(card.GetElixirCost());
-    
-        // Check if card is a spell or troop and deploy accordingly
-        if (card.GetType() == Card.SPELL)
-            this.summonSpell(card.GetName(), pos);
-        else
-            this.SpawnTroop(card.GetName(), pos);
-    
-        // Remove the deployed card from the player's hand
-        currentPlayer.RemoveCard(index);
-
-        return 1;  // Successfully deployed
-    }
-    
-
-    // DEVELOPED BY: Sheldon
-    /* spawn a troop on the game grid
-     * @param troopName - the name of the troop to be spawned
-     * @param pos - the position where the troop will be spawned
-     * @return - 1 if the troop was spawned successfully */
-    public int SpawnTroop(String troopName, Pos pos) {
-        this.troops.append(newTroop(troopName.toLowerCase(), pos, this.GetCurrentPlayer()));
-
-        return 1;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* convert a string to a new instance of a troop
-     * @param troopType - the type of troop to be spawned
-     * @param startingPos - the position where the troop will be spawned
-     * @param parent - the player that the troop belongs to
-     * @return - the newly spawned troop */
-    private Troop newTroop(String troopType, Pos startingPos, Player parent) {
-        troopType = troopType.toLowerCase();
-        
-        Troop newTroop = null;
-
-        if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(startingPos, parent); }
-        else if (troopType.equals("elixirgolem")){ newTroop = new TroopElixirGolem(startingPos, parent); }
-        else if (troopType.equals("giant"))       { newTroop = new TroopGiant(startingPos, parent); }
-        else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(startingPos, parent); }
-        else if (troopType.equals("golem"))       { newTroop = new TroopGolem(startingPos, parent); }
-        else if (troopType.equals("hogrider"))   { newTroop = new TroopHogRider(startingPos, parent); }
-        else if (troopType.equals("knight"))      { newTroop = new TroopKnight(startingPos, parent); }
-        else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(startingPos, parent); }
-        else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(startingPos, parent); }
-        else if (troopType.equals("skeleton"))   { newTroop = new TroopSkeletons(startingPos, parent); }
-        else
-            return null;
-
-        newTroop.SetGameSysRef(this);
-
-        return newTroop;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* check if a character is in a character array
-     * @param arr - the character array to be checked
-     * @param c - the character to be checked
-     * @return - true if the character is in the array, false otherwise */
-    private boolean isInCharArr(char []arr, char c) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == c)
-                return true;
-        }
-        return false;
-    }
-
-    // DEVELOPED BY: Sheldon
     /* get the type of the tile based on the surrounding tiles
      * @param cell - the cell to be checked
      * @param subjects - the array of objects to be checked
      * @return - the type of the tile */
-    private int GetCellSideType(Cell cell, String[] subjects) {
+    private int getCellSideType(Cell cell, String[] subjects) {
         Cell[] neighbours = cell.GetNeighbours();
     
         boolean nLeft = neighbours[Cell.NEIGHBOUR_LEFT] != null  && neighbours[Cell.NEIGHBOUR_LEFT].GetObject().isInObjArr(subjects);
@@ -476,56 +493,6 @@ class GameSystem {
         // inside
         return Texture.INSIDE;
     }
-    
-    public int ValidatePositionString(String input) {
-        if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q')) {
-            return -1;
-        }
-        input = input.toUpperCase();
-
-        if (input.charAt(0) < 'A' || input.charAt(0) > 'Q') {
-            return -2; //invalid row coordinate
-        }
-
-        if (input.charAt(1) < '0' || input.charAt(1) > '9') {
-            return -3; //invalid column coordinate
-        }
-
-        if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9')) {
-            return -3; //invalid column coordinate
-        }
-
-        Pos pos = parsePosition(input);
-
-        if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow) {
-            return -4; //out of bounds
-        }
-
-        if ((currentPlayer.GetPlayerNum() == GameSystem.PLAYER1_REGION && (pos.x < 0 || pos.x > 14)) ||
-            (currentPlayer.GetPlayerNum() == GameSystem.PLAYER2_REGION && (pos.x < 15 || pos.x > 28))) {
-                return -5; //invalid deployment area
-        }
-
-        Obj obj = this.GetCell(pos).GetObject();
-
-        if (!(obj instanceof TileFloor)) {
-            return -6; //invalid deployment area
-        }
-
-        return 1;
-
-    }
-
-    // DEVELOPED BY : DAIKI
-    /* Convert a user's input string, which represents a position on the game grid (ex: A25) */
-    public Pos parsePosition(String input) {
-
-        int  row    = input.charAt(0) - 'A';  // Convert column character to an integer
-        int  column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
-
-        return new Pos(column, row);
-    }
-    
 
     // DEVELOPED BY: Sheldon
     /* initialize the game world by creating the grid, players, and troops */
@@ -574,7 +541,7 @@ class GameSystem {
         // Setup towers and neighbors in the grid
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
-                
+
                 if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
 
                     Cell[] neighbours = this.GetCell(new Pos(x, y)).GetAllNeighbours();
@@ -597,12 +564,12 @@ class GameSystem {
                 if (object instanceof Tile) {
                     if (object instanceof TileTower) {
                         TileTower tower = (TileTower) object;
-                        tower.SetType(this.GetCellSideType(currentCell, new String[] {"TileTower", "Tower"}));
+                        tower.SetType(this.getCellSideType(currentCell, new String[] {"TileTower", "Tower"}));
                     }
 
                     if (object instanceof TileEmpty) {
                         TileEmpty empty = (TileEmpty) object;
-                        empty.SetType(this.GetCellSideType(currentCell, new String[] {"TileEmpty"}));
+                        empty.SetType(this.getCellSideType(currentCell, new String[] {"TileEmpty"}));
                     }
                 }
             }
@@ -611,42 +578,19 @@ class GameSystem {
         this.UpdateWorld();
     }
 
-
-    // DEVELOPED BY: Sheldon
-    /* get the character at a given position in the grid
-     * @param row - the row of the position
-     * @param col - the column of the position
-     * @param grid - the grid to be accessed
-     * @return - the character at the given position */
-    private char     accessChar(int row, int col, char [][]grid) {
-        if (row < 0 || row >= grid.length)
-            return 0;
-
-        if (col < 0 || col >= grid[row].length)
-            return 0;
-
-        return grid[row][col];
-    }
-
     // DEVELOPED BY: Sheldon
     /* Convert a 2D char array to a 2D Cell array
      * @param grid - the 2D char array to be converted
-     * @return - the converted 2D Cell array
-     */
+     * @return - the converted 2D Cell array */
     public Cell[][] CharGrid2CellGrid(char[][] grid) {
         Cell [][]wGrid = new Cell[grid.length][grid[0].length];
     
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[row].length; col++) {
-                char currentTile = accessChar(row, col, grid);
+                
+                char currentTile = grid[row][col];
 
                 Obj tileContent = new TileFloor();
-
-                // get the neighbouring characters
-                char neighbourLeft  = accessChar(row, col - 1, grid);
-                char neighbourRight = accessChar(row, col + 1, grid);
-                char neighbourUp    = accessChar(row - 1, col, grid);
-                char neighbourDown  = accessChar(row + 1, col, grid);
                 
                 // create the tile content based on the current character
                 switch (currentTile) {
@@ -672,73 +616,25 @@ class GameSystem {
             }
         }
 
-        
-
         return wGrid;
     }
 
-
-   
     // DEVELOPED BY : DAIKI
     // Check if the game is over
     public boolean isGameOver() {
-        if (player1.GetKingTower().getHealth() <= 0) {
-            gameEnded = true;
+
+        if (player1.GetKingTower().IsDestroyed()) {
             winner = player2;
-        } else if (player2.GetKingTower().getHealth() <= 0) {
-            gameEnded = true;
+            return true;
+        }
+
+        else if (player2.GetKingTower().IsDestroyed()) {
             winner = player1;
+            return true;
         }
-        return gameEnded;
+
+        return false;
     }
 
-    // DEVELOPED BY : DAIKI
-    // Gets the winning player
-    public Player GetWinner() {
-        if (player1.GetKingTower().getHealth() <= 0) {
-            return player2;  // Player 2 wins if Player 1's King Tower is destroyed
-        } else if (player2.GetKingTower().getHealth() <= 0) {
-            return player1;  // Player 1 wins if Player 2's King Tower is destroyed
-        }
-        return null;  // No winner yet
-    }
-
-
-   
-
     
-
-    
-
-
 }
-
-// // DEVELOPED BY: Sheldon
-    // /* randomly spawn troops on the game grid, with half of the troops belonging to each player
-    //  * @param amt - the amount of troops to be spawned
-    //  * @return - the list of spawned troops
-    //  */
-    // private void spawnTroops(int amt) {
-    //     this.troops.ClearList();
-
-    //     for (int i = 0; i < amt; i++) {
-    //         Player currPlayer = player1;
-            
-    //         if (i > (amt / 2))
-    //             currPlayer = player2;
-
-    //         Pos startPos;
-            
-    //         while (true) {
-    //             if (currPlayer.GetPlayerNum() == PLAYER1_REGION)
-    //                 startPos = new Pos((int) (Math.random() * (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
-    //             else
-    //                 startPos = new Pos((int) ((Math.random() * (worldGrid[0].length / 2) ) + (worldGrid[0].length / 2)), (int) (Math.random() * worldGrid.length));
-                    
-    //             if (this.GetCell(startPos).GetObject() instanceof TileFloor)
-    //                 break;
-    //         }
-
-    //         this.troops.append(newTroop("barbarian", startPos, currPlayer));
-    //     }
-    // }

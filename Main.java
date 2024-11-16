@@ -126,9 +126,8 @@ public class Main {
             input.nextLine();
             
             gameSys.UpdateWorld();
-            gameSys.RegenerateElixir();
     
-            if (gameSys.IsEndGame() || gameSys.isGameOver())
+            if (gameSys.isGameOver())
                 break;
     
             gameSys.AlternatePlayer();
