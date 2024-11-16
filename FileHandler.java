@@ -10,68 +10,79 @@ import java.util.Scanner;
 class FileHandler {
 
     // DEVELOPED BY: Sheldon
-    private int[] getFileDimensions(String fileName) throws FileNotFoundException {
+    private int[] getFileDimensions(String fileName) {
         int rows = 0;
         int cols = 0;
         int[] dimensions = new int[2];
         File file = new File(fileName);
 
         // First pass to determine the dimensions of the char array
-        Scanner input = new Scanner(file);
-        while (input.hasNextLine()) {
-            String line = input.nextLine();
-            rows++;
-            if (line.length() > cols)
-                cols = line.length();
+        try {
+            Scanner input = new Scanner(file);
+            while (input.hasNextLine()) {
+                String line = input.nextLine();
+                rows++;
+                if (line.length() > cols)
+                    cols = line.length();
+            }
+            input.close();
+    
+            dimensions[0] = rows;
+            dimensions[1] = cols;
+            return dimensions;
         }
-        input.close();
-
-        dimensions[0] = rows;
-        dimensions[1] = cols;
-        return dimensions;
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public String[] readFileLine(String fileName) throws FileNotFoundException {
+    public String[] readFileLine(String fileName) {
         File file = new File(fileName);
         int[] dimensions = getFileDimensions(fileName);
-
+    
         int rows = dimensions[0];
         String[] stringArray = new String[rows];
-
-        // Second pass to populate
-        Scanner input = new Scanner(file);
-        int row = 0;
-        while (input.hasNextLine()) {
-            String line = input.nextLine();
-            stringArray[row] = line;
-            row++;
+    
+        try {
+            // Second pass to populate
+            Scanner input = new Scanner(file);
+            int row = 0;
+            while (input.hasNextLine()) {
+                String line = input.nextLine();
+                stringArray[row] = line;
+                row++;
+            }
+            input.close();
+        } 
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
         }
-        input.close();
-
+    
         return stringArray;
     }
-
+    
     // DEVELOPED BY: Sheldon
-    public char[][] readFile(String fileName) throws FileNotFoundException {
-        File file = new File(fileName);
-        int[] dimensions = getFileDimensions(fileName);
-
-        int rows = dimensions[0];
-        int cols = dimensions[1];
+    public char[][] readFile(String fileName) {
+        String[] lines = readFileLine(fileName);
+        if (lines == null) {
+            return null;
+        }
+    
+        int rows = lines.length;
+        int cols = lines[0].length();
         char[][] charArray = new char[rows][cols];
+    
+        for (int row = 0; row < rows; row++) {
+            
+            String line = lines[row];
 
-        // Second pass to populate the char array
-        Scanner input = new Scanner(file);
-        int row = 0;
-        while (input.hasNextLine()) {
-            String line = input.nextLine();
             for (int col = 0; col < line.length(); col++) {
                 charArray[row][col] = line.charAt(col);
             }
-            row++;
         }
-        input.close();
-
+    
         return charArray;
     }
 

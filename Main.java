@@ -1,6 +1,5 @@
 // DEVELOPED BY : DAIKI
 
-import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /* 
@@ -12,13 +11,7 @@ public class Main {
         
         char[][] grid;
 
-        try {
-            grid = fHandler.readFile("game_grid.txt");
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: game_grid.txt file not found.");
-            e.printStackTrace();
-            return; // Exit the program if the file is not found
-        }
+        grid = fHandler.readFile("game_grid.txt");
 
         GameSystem gameSys = new GameSystem();
         gameSys.CharGrid2CellGrid(grid);
@@ -85,12 +78,9 @@ public class Main {
                         selectedCard.GetElixirCost(), 
                         gameSys.GetCurrentPlayer().GetElixir());
                 }
-                else {
+                else
                     break;
-                }
             }
-
-            int cardIndex = Integer.parseInt(userInput) - 1;
 
             String positionRaw = "";
 
@@ -99,34 +89,38 @@ public class Main {
                 positionRaw = input.nextLine();
                 int parseStatus = gameSys.ValidatePositionString(positionRaw);
 
-                if (parseStatus == -1)
+                if (parseStatus == gameSys.ERR_INVALID_FORMAT)
                     System.out.println("ERROR: Invalid format ");
                     
-                else if (parseStatus == -2)
+                else if (parseStatus == gameSys.ERR_INVALID_ROW)
                     System.out.println("ERROR: Invalid position");
                     
-                else if (parseStatus == -3)
+                else if (parseStatus == gameSys.ERR_INVALID_COL )
                     System.out.println("ERROR: Invalid position");
                     
-                else if (parseStatus == -4)
+                else if (parseStatus == gameSys.ERR_OUT_OF_BOUNDS)
                     System.out.println("ERROR: Out of bounds");
                 
-                else if (parseStatus == -5)
+                else if (parseStatus == gameSys.ERR_INVALID_DEPLOY_REGION)
                     System.out.println("ERROR: You cannot place your troop in the enemy region");
 
-                else if (parseStatus == -6)
+                else if (parseStatus == gameSys.ERR_OCCUPIED_SPACE)
                     System.out.println("ERROR: Position already occupied");
 
                 else if (parseStatus == 1)
                     break;
             }
 
-            Pos deployPos = gameSys.parsePosition(positionRaw); // Assuming there's a method to convert user input into position
-
-            gameSys.DeployCard(cardIndex, deployPos);
-            display.PrintWorld(gameSys.GetGrid());
-            
-            System.out.printf("successfully deployed %s at (%d, %d)\n", gameSys.GetCurrentPlayer().GetCard(cardIndex).GetName(), deployPos.x, deployPos.y); 
+            if (!skipTurn) {
+                int cardIndex = Integer.parseInt(userInput) - 1;
+    
+                Pos deployPos = gameSys.parsePosition(positionRaw); // Assuming there's a method to convert user input into position
+    
+                gameSys.DeployCard(cardIndex, deployPos);
+                display.PrintWorld(gameSys.GetGrid());
+                
+                System.out.printf("successfully deployed %s at (%d, %d)\n", gameSys.GetCurrentPlayer().GetCard(cardIndex).GetName(), deployPos.x, deployPos.y); 
+            }
 
             System.out.print("Press ENTER to continue...");
             input.nextLine();

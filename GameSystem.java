@@ -5,27 +5,31 @@
  * contains methods to spawn troops, shuffle player cards, and update the world
  */
 
-import java.io.FileNotFoundException;
-
 class GameSystem {
 
     // -- CONSTANTS --
 
     public final static String  FILENAME = "game_grid.txt";
 
-    public final static char    SYMBOL_TOWER = 'T';
-    public final static char    SYMBOL_FLOOR = '.';
-    public final static char    SYMBOL_EMPTY = ' ';
+    private final static char    SYMBOL_TOWER       = 'T';
+    private final static char    SYMBOL_FLOOR       = '.';
+    private final static char    SYMBOL_EMPTY       = ' ';
+    private final static char    SYMBOL_P1_PRINCESS = 'P';
+    private final static char    SYMBOL_P1_KING     = 'K';
+    private final static char    SYMBOL_P2_PRINCESS = 'p';
+    private final static char    SYMBOL_P2_KING     = 'k';
 
-    public final static char    P1_TOWER_PRINCESS = 'P';
-    public final static char    P1_TOWER_KING = 'K';
-
-    public final static char    P2_TOWER_PRINCESS = 'p';
-    public final static char    P2_TOWER_KING = 'k';
-
-    public final static int     NO_REGION = 0;
+    public final static int     NO_REGION      = 0;
     public final static int     PLAYER1_REGION = 1;
     public final static int     PLAYER2_REGION = 2;
+
+    public final int ERR_INVALID_FORMAT = -1;
+    public final int ERR_INVALID_ROW    = -2;
+    public final int ERR_INVALID_COL    = -3;
+    public final int ERR_OUT_OF_BOUNDS  = -4;
+    public final int ERR_INVALID_DEPLOY_REGION = -5;
+    public final int ERR_OCCUPIED_SPACE = -6;
+
     
     public final static String [] CARDS = {
         "barbarian",
@@ -483,6 +487,7 @@ class GameSystem {
         return Texture.INSIDE;
     }
 
+    
     public int ValidatePositionString(String input) {
         if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q')) {
             return -1;
@@ -534,89 +539,80 @@ class GameSystem {
     
 
     // DEVELOPED BY: Sheldon
-/* initialize the game world by creating the grid, players, and troops */
-private void initWorld() {
-    FileHandler fHandler = new FileHandler();
-    
-    // Initialize cards array from the cards file with error handling
-    String[] cardsRaw = null;
-    try {
+    /* initialize the game world by creating the grid, players, and troops */
+    private void initWorld() {
+        FileHandler fHandler = new FileHandler();
+        
+        // Initialize cards array from the cards file with error handling
+        String[] cardsRaw = null;
+        
         cardsRaw = fHandler.readFileLine("cards.csv");
-    } catch (FileNotFoundException e) {
-        System.out.println("Error: cards.csv file not found.");
-        e.printStackTrace();
-        return; // Exit the method if the file is not found
-    }
 
-    this.cards = new Card[cardsRaw.length];
-    for (int i = 0; i < cardsRaw.length; i++) {
-        String[] contentsSplitted = cardsRaw[i].split(",");
-        String cardName = contentsSplitted[0];
-        int elixirCost = Integer.valueOf(contentsSplitted[1]);
-        String rawType = contentsSplitted[2];
+        this.cards = new Card[cardsRaw.length];
+        
+        for (int i = 0; i < cardsRaw.length; i++) {
 
-        int type = Card.TROOP;
-        if (rawType.equals("troop")) {
-            type = Card.TROOP;
-        } else if (rawType.equals("spell")) {
-            type = Card.SPELL;
+            String[] contentsSplitted = cardsRaw[i].split(",");
+            String cardName = contentsSplitted[0];
+            
+            int elixirCost = Integer.valueOf(contentsSplitted[1]);
+            String rawType = contentsSplitted[2];
+
+            int type = Card.TROOP;
+            if (rawType.equals("troop"))
+                type = Card.TROOP;
+            else if (rawType.equals("spell"))
+                type = Card.SPELL;
+
+            this.cards[i] = new Card(cardName, elixirCost, type);
+            System.out.println(cards[i].GetRepr());
         }
 
-        this.cards[i] = new Card(cardName, elixirCost, type);
-        System.out.println(cards[i].GetRepr());
-    }
+        // Initialize lists
+        this.spellQueue = new ObjList();
+        this.troops = new ObjList();
 
-    // Initialize lists
-    this.spellQueue = new ObjList();
-    this.troops = new ObjList();
+        // Initialize players
+        this.player1 = new Player("Player1", 1, this);
+        this.player2 = new Player("Player2", 2, this);
 
-    // Initialize players
-    this.player1 = new Player("Player1", 1, this);
-    this.player2 = new Player("Player2", 2, this);
+        this.SetCurrentPlayer(this.GetPlayer1());
+        this.shufflePlayerCards();
 
-    this.SetCurrentPlayer(this.GetPlayer1());
-    this.shufflePlayerCards();
-
-    // Initialize world grid with error handling for the main game grid file
-    try {
+        // Initialize world grid with error handling for the main game grid file
         this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile(FILENAME));
-    } catch (FileNotFoundException e) {
-        System.out.println("Error: " + FILENAME + " file not found.");
-        e.printStackTrace();
-        return; // Exit the method if the file is not found
-    }
 
-    // Setup towers and neighbors in the grid
-    for (int y = 0; y < this.worldGrid.length; y++) {
-        for (int x = 0; x < this.worldGrid[y].length; x++) {
-            if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
-                Cell[] neighbours = this.GetCell(new Pos(x, y)).GetNeighbours();
-                Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
+        // Setup towers and neighbors in the grid
+        for (int y = 0; y < this.worldGrid.length; y++) {
+            for (int x = 0; x < this.worldGrid[y].length; x++) {
+                if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
+                    Cell[] neighbours = this.GetCell(new Pos(x, y)).GetNeighbours();
+                    Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
 
-                for (int i = 0; i < 4; i++) {
-                    if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
-                        TileTower wall = (TileTower) neighbours[i].GetObject();
-                        wall.SetParent(parent);
+                    for (int i = 0; i < 4; i++) {
+                        if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
+                            TileTower wall = (TileTower) neighbours[i].GetObject();
+                            wall.SetParent(parent);
+                        }
                     }
-                }
 
-                Pos[] diagonalPositions = {
-                    new Pos(x, y).Add(1, 1),
-                    new Pos(x, y).Add(-1, 1),
-                    new Pos(x, y).Add(1, -1),
-                    new Pos(x, y).Add(-1, -1)
-                };
+                    Pos[] diagonalPositions = {
+                        new Pos(x, y).Add(1, 1),
+                        new Pos(x, y).Add(-1, 1),
+                        new Pos(x, y).Add(1, -1),
+                        new Pos(x, y).Add(-1, -1)
+                    };
 
-                for (int i = 0; i < diagonalPositions.length; i++) {
-                    Cell cell = this.GetCell(diagonalPositions[i]);
-                    if (cell != null && cell.GetObject() instanceof TileTower)
-                        ((TileTower) cell.GetObject()).SetParent(parent);
+                    for (int i = 0; i < diagonalPositions.length; i++) {
+                        Cell cell = this.GetCell(diagonalPositions[i]);
+                        if (cell != null && cell.GetObject() instanceof TileTower)
+                            ((TileTower) cell.GetObject()).SetParent(parent);
+                    }
                 }
             }
         }
+        this.UpdateWorld();
     }
-    this.UpdateWorld();
-}
 
 
     // DEVELOPED BY: Sheldon
@@ -657,20 +653,20 @@ private void initWorld() {
                 
                 // create the tile content based on the current character
                 switch (currentTile) {
-                    case P1_TOWER_PRINCESS:
+                    case SYMBOL_P1_PRINCESS:
                         tileContent = new TowerPrincess(this.player1);
-                    break; case P1_TOWER_KING:
+                    break; case SYMBOL_P1_KING:
                         tileContent = new TowerKing(this.player1);
                         
-                    break; case P2_TOWER_PRINCESS:
+                    break; case SYMBOL_P2_PRINCESS:
                         tileContent = new TowerPrincess(this.player2);
-                    break; case P2_TOWER_KING:
+                    break; case SYMBOL_P2_KING:
                         tileContent = new TowerKing(this.player2);
 
                     break; case SYMBOL_TOWER:
-                        tileContent = new TileTower(GetCellSideType(new char[]{SYMBOL_TOWER, 'K', 'k', 'p', 'P'}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new TileTower(Texture.CORNER_BOTTOM_LEFT);
                     break; case SYMBOL_EMPTY:
-                        tileContent = new TileEmpty(GetCellSideType(new char[] {SYMBOL_EMPTY}, neighbourLeft, neighbourRight, neighbourUp, neighbourDown));
+                        tileContent = new TileEmpty(Texture.CORNER_BOTTOM_LEFT);
                     break; case SYMBOL_FLOOR:
                         tileContent = new TileFloor();
                 }
