@@ -50,6 +50,9 @@ public class Main {
         while (true) {
             boolean skipTurn = false;
 
+            System.out.println("\n\n");
+            display.DisplayRound();
+            display.PrintPlayerOverlay();
             display.PrintWorld(gameSys.GetGrid());
             display.DisplayCardDeck(gameSys.GetCurrentPlayer());  
 
@@ -131,6 +134,12 @@ public class Main {
                 break;
     
             gameSys.AlternatePlayer();
+        }
+
+        display.PrintWorld(gameSys.GetGrid());
+        String [] GameOverMsg = fHandler.readFileLine("MsgGameOver.txt");
+        for (int i = 0; i < GameOverMsg.length; i ++) {
+            System.out.println(GameOverMsg[i]);
         }
 
         input.close();

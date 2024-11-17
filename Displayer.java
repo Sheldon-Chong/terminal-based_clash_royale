@@ -1,8 +1,5 @@
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Scanner;
 
 /*
@@ -24,6 +21,9 @@ public class Displayer {
     private Scanner input;
     private Screen screen;
     private Screen CardScreen;
+    private FileHandler fHandler;
+
+    private String [] msgPlayerOverlay;
 
 
     // -- CONSTRUCTORS --
@@ -32,8 +32,12 @@ public class Displayer {
         this.screen = new Screen();
         this.gameRef = gameSystem;
         this.input = new Scanner(System.in);
+        this.fHandler = new FileHandler();
+        
+        this.msgPlayerOverlay = this.fHandler.readFileLine("MsgPlayerOverlay.txt");
     }
 
+    
     // -- SETTER AND GETTER --
 
     // DEVELOPED BY: Daiki
@@ -44,17 +48,13 @@ public class Displayer {
     // DEVELOPED BY: Daiki
     // Display ASCII Title Screen
     public void ShowTitleScreen() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("title_screen.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            System.out.println("Press ENTER to begin game");
-            System.in.read();  // Wait for user to press ENTER
-        } catch (IOException e) {
-            System.out.println("Error loading title screen.");
-            e.printStackTrace();
+        String [] startingScreen = this.fHandler.readFileLine("title_screen.txt");
+
+        for (int i = 0; i < startingScreen.length; i ++) {
+            System.out.println(startingScreen[i]);
         }
+            
+        System.out.println("Press ENTER to begin game");
     }
     
 
@@ -66,6 +66,16 @@ public class Displayer {
         renderSpells();
         renderCells();
         this.screen.PrintScreen();
+    }
+
+    public void PrintPlayerOverlay() {
+        for (int i = 0; i < this.msgPlayerOverlay.length; i ++) {
+            System.out.println(this.msgPlayerOverlay[i]);
+        }
+    }
+    
+    public void DisplayRound() {
+        System.out.printf("------------------------- Round %d -------------------------\n", this.gameRef.GetRound());
     }
 
 
@@ -96,7 +106,7 @@ public class Displayer {
         screen.AppendLine("   _");
 
         for (int x = 0; x < grid[0].length; x++) {
-            if (grid[0][x].GetObject() instanceof TileEmpty)
+            if (grid[0][x].GetObject() instanceof TileVoid)
                 screen.AppendStrToLastLine("     ");
             else
                 screen.AppendStrToLastLine("_____");
@@ -154,24 +164,24 @@ public class Displayer {
             Pos startingCorner = corners[TOP_LEFT_CORNER];
 
             int textureID = (spell.GetDeployTime() < 0) ? 1 : 0;
-            Texture texture = spell.GetTexture(textureID);
+            TextureSet texture = spell.GetTexture(textureID);
 
             Pos startPos = spell.GetStartPos();
             Pos endPos = spell.GetEndPos();
 
-            screen.ImposeImage(texture.getTexture(Texture.CORNER_TOP_LEFT), startingCorner);
-            screen.ImposeImage(texture.getTexture(Texture.CORNER_BOTTOM_RIGHT), pos2Corner(endPos));
-            screen.ImposeImage(texture.getTexture(Texture.CORNER_BOTTOM_LEFT), pos2Corner(new Pos(startPos.x, endPos.y)));
-            screen.ImposeImage(texture.getTexture(Texture.CORNER_TOP_RIGHT), pos2Corner(new Pos(endPos.x, startPos.y)));
+            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_TOP_LEFT), startingCorner);
+            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_BOTTOM_RIGHT), pos2Corner(endPos));
+            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_BOTTOM_LEFT), pos2Corner(new Pos(startPos.x, endPos.y)));
+            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_TOP_RIGHT), pos2Corner(new Pos(endPos.x, startPos.y)));
 
             for (int y = startPos.y + 1; y < endPos.y; y++) {
-                screen.ImposeImage(texture.getTexture(Texture.SIDE_LEFT), pos2Corner(new Pos(startPos.x, y)));
-                screen.ImposeImage(texture.getTexture(Texture.SIDE_RIGHT), pos2Corner(new Pos(endPos.x, y)));
+                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_LEFT), pos2Corner(new Pos(startPos.x, y)));
+                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_RIGHT), pos2Corner(new Pos(endPos.x, y)));
             }
 
             for (int x = startPos.x + 1; x < endPos.x; x++) {
-                screen.ImposeImage(texture.getTexture(Texture.SIDE_TOP), pos2Corner(new Pos(x, startPos.y)));
-                screen.ImposeImage(texture.getTexture(Texture.SIDE_BOTTOM), pos2Corner(new Pos(x, endPos.y)));
+                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_TOP), pos2Corner(new Pos(x, startPos.y)));
+                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_BOTTOM), pos2Corner(new Pos(x, endPos.y)));
             }
         }
     }
@@ -201,8 +211,8 @@ public class Displayer {
                         screen.ImposeImage(towerWall.GetTexture().getTexture(towerWall.GetType()), startingCorner);  // Display the tower wall
                     } 
                     // If the object is a TileEmpty (empty space on the board), render it
-                    else if (object instanceof TileEmpty) {
-                        TileEmpty empty = (TileEmpty) object;  // Cast the object to a TileEmpty
+                    else if (object instanceof TileVoid) {
+                        TileVoid empty = (TileVoid) object;  // Cast the object to a TileEmpty
                         screen.ImposeImage(empty.GetTexture().getTexture(empty.GetType()), startingCorner);  // Display the empty space
                     }
                     // Additional object types can be added here if needed (e.g., spells, troops, etc.)

@@ -9,4 +9,9 @@ public class TileFloor extends Tile {
         SetType(type);
         this.SetStrType("TileFloor");
     }
+
+    public TileFloor (Pos pos) {
+        this();
+        this.SetPos(pos);
+    }
 }

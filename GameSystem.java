@@ -11,13 +11,15 @@ class GameSystem {
 
     public final static String  FILENAME = "game_grid.txt";
 
-    private final static char  SYMBOL_TOWER       = 'T';
-    private final static char  SYMBOL_FLOOR       = '.';
-    private final static char  SYMBOL_EMPTY       = ' ';
-    private final static char  SYMBOL_P1_PRINCESS = 'P';
-    private final static char  SYMBOL_P1_KING     = 'K';
-    private final static char  SYMBOL_P2_PRINCESS = 'p';
-    private final static char  SYMBOL_P2_KING     = 'k';
+    private final static char  SYMBOL_TOWER         = 'T';
+    private final static char  SYMBOL_FLOOR         = '.';
+    private final static char  SYMBOL_EMPTY         = ' ';
+    private final static char  SYMBOL_P1_PRINCESS   = 'P';
+    private final static char  SYMBOL_P1_KING       = 'K';
+    private final static char  SYMBOL_P2_PRINCESS   = 'p';
+    private final static char  SYMBOL_P2_KING       = 'k';
+    private final static char  SYMBOL_P1_NAV_MARKER = 'e';
+    private final static char  SYMBOL_P2_NAV_MARKER = 'E';
 
     public final static int  NO_REGION      = 0;
     public final static int  PLAYER1_REGION = 1;
@@ -76,6 +78,10 @@ class GameSystem {
 
     
     // -- GETTERS AND SETTERS --
+
+    public void NextRound() {
+        this.currentRound ++;
+    }
 
     // DEVELOPED BY : DAIKI
     // Gets the winning player
@@ -196,14 +202,6 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Daiki
-    // Method to increment the round count
-    public void nextRound() { 
-        this.currentRound++;
-        System.out.println("Starting Round " + this.currentRound);
-        shufflePlayerCards();
-    }
-
-    // DEVELOPED BY: Daiki
     public int GetObjRegion(Obj object) {
         Pos pos = object.GetPos();
 
@@ -229,6 +227,8 @@ class GameSystem {
         this.updateTiles();
         this.updateSpellQueue();
         this.RegenerateElixir();
+        
+        this.NextRound();
     }
 
     
@@ -282,8 +282,11 @@ class GameSystem {
 
         Obj obj = this.GetCell(pos).GetObject();
 
-        if (!(obj instanceof TileFloor))
+        if (!(obj instanceof TileFloor)) {
+            if (obj instanceof Tile)
+                System.out.println(((Tile)(obj)).GetStrType());
             return ERR_OCCUPIED_SPACE;
+        }
 
         return 1;
     }
@@ -381,7 +384,10 @@ class GameSystem {
     // DEVELOPED BY: Sheldon
     /* update the troops in the world grid, by accessing each element of the troops list*/
     private void updateTroops() {
+        
+        // iterate for all troops
         for (int i = 0; i < troops.GetLen(); i++) {
+
             Troop currentTroop = (Troop)troops.GetItem(i);
 
             // get the current position of the troop and store it temporarily
@@ -441,10 +447,8 @@ class GameSystem {
             if (spell.GetDeployTime() * -1 > spell.GetDuration())
                 this.spellQueue.SetItem(i, null);
             
-            if (spell.GetDeployTime() < 0)
+            else if (spell.GetDeployTime() < 0)
                 spell.ApplyEffect(spell.GetPos(), this);
-
-            System.out.print("Spell " + i + " has " + spell.GetDeployTime() + " turns left. Duration is " + spell.GetDuration() + "\n");
         }
 
         int index = 0;
@@ -478,34 +482,34 @@ class GameSystem {
         if (nUp) wallCount++;
         if (nDown) wallCount++;
     
-        if (wallCount == 0) return Texture.INDEPENDANT;
-        if (wallCount == 4) return Texture.INSIDE;
+        if (wallCount == 0) return TextureSet.INDEPENDANT;
+        if (wallCount == 4) return TextureSet.INSIDE;
     
         // sides
         if ((nLeft && nRight) || (nUp && nDown)) {
             if (nLeft && nRight) {
-                if (nUp && !nDown) return Texture.SIDE_BOTTOM;
-                if (nDown && !nUp) return Texture.SIDE_TOP;
+                if (nUp && !nDown) return TextureSet.SIDE_BOTTOM;
+                if (nDown && !nUp) return TextureSet.SIDE_TOP;
     
-                return Texture.PIPE_H;
+                return TextureSet.PIPE_H;
             } 
             else {
-                if (nLeft && !nRight) return Texture.SIDE_RIGHT;
-                if (nRight && !nLeft) return Texture.SIDE_LEFT;
+                if (nLeft && !nRight) return TextureSet.SIDE_RIGHT;
+                if (nRight && !nLeft) return TextureSet.SIDE_LEFT;
     
-                return Texture.PIPE_V;
+                return TextureSet.PIPE_V;
             }
         } 
         // corners
         else {
-            if (nRight && nDown) return Texture.CORNER_TOP_LEFT;
-            if (nLeft && nDown) return Texture.CORNER_TOP_RIGHT;
-            if (nRight && nUp) return Texture.CORNER_BOTTOM_LEFT;
-            if (nLeft && nUp) return Texture.CORNER_BOTTOM_RIGHT;
+            if (nRight && nDown) return TextureSet.CORNER_TOP_LEFT;
+            if (nLeft && nDown) return TextureSet.CORNER_TOP_RIGHT;
+            if (nRight && nUp) return TextureSet.CORNER_BOTTOM_LEFT;
+            if (nLeft && nUp) return TextureSet.CORNER_BOTTOM_RIGHT;
         }
     
         // inside
-        return Texture.INSIDE;
+        return TextureSet.INSIDE;
     }
 
     // DEVELOPED BY: Sheldon
@@ -565,6 +569,18 @@ class GameSystem {
                     Cell[] neighbours = this.GetCell(new Pos(x, y)).GetAllNeighbours();
                     Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
 
+
+                    if (parent instanceof TowerKing) {
+                        if (parent.GetPlayer().GetPlayerNum() == PLAYER1_REGION) {
+                            System.out.println("set king tower p1");
+                            player1.SetKingTower(parent);
+                        }
+                        if (parent.GetPlayer().GetPlayerNum() == PLAYER2_REGION) {
+                            System.out.println("set king tower p2");
+                            player2.SetKingTower(parent);
+                        }
+                    }
+
                     for (int i = 0; i < 8; i++) {
                         if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
                             ((TileTower) neighbours[i].GetObject()).SetParent(parent);
@@ -573,21 +589,30 @@ class GameSystem {
             }
         }
         
-        // UPDATE TILE APPEARANCE 
+        // - UPDATE TILE APPEARANCE - 
+
+        // iterate for each cell in the worldgrid
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
 
                 Obj object = this.GetCell(new Pos(x, y)).GetObject();
                 Cell currentCell = this.GetCell(new Pos(x, y));
 
+
+                // - SET TILE TEXTURE BASED ON SURROUNDING TILES -
+
+                // if object is a tile
                 if (object instanceof Tile) {
+                    
+                    // if object is tower
                     if (object instanceof TileTower) {
                         TileTower tower = (TileTower) object;
                         tower.SetType(this.getCellSideType(currentCell, new String[] {"TileTower", "Tower"}));
                     }
 
-                    if (object instanceof TileEmpty) {
-                        TileEmpty empty = (TileEmpty) object;
+                    // if object is an empty tile
+                    if (object instanceof TileVoid) {
+                        TileVoid empty = (TileVoid) object;
                         empty.SetType(this.getCellSideType(currentCell, new String[] {"TileEmpty"}));
                     }
                 }
@@ -602,8 +627,14 @@ class GameSystem {
      * @param grid - the 2D char array to be converted
      * @return - the converted 2D Cell array */
     public Cell[][] CharGrid2CellGrid(char[][] grid) {
+
+        // create a empty grid of cells
         Cell [][]wGrid = new Cell[grid.length][grid[0].length];
     
+
+        // - POPULATE WORLD WITH CELLS -
+
+        // iterate for each character in the char grid
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[row].length; col++) {
                 
@@ -611,40 +642,58 @@ class GameSystem {
 
                 Obj tileContent = new TileFloor();
                 
-                // create the tile content based on the current character
+                // - CREATE A TILE BASED ON THE CHARACTER -
+
                 switch (currentTile) {
+                    // player 1
                     case SYMBOL_P1_PRINCESS:
                         tileContent = new TowerPrincess(this.player1);
                     break; case SYMBOL_P1_KING:
                         tileContent = new TowerKing(this.player1);
                         
+                    // player 2
                     break; case SYMBOL_P2_PRINCESS:
                         tileContent = new TowerPrincess(this.player2);
                     break; case SYMBOL_P2_KING:
                         tileContent = new TowerKing(this.player2);
 
+                    // other types of objects
                     break; case SYMBOL_TOWER:
-                        tileContent = new TileTower(Texture.CORNER_BOTTOM_LEFT);
+                        tileContent = new TileTower(TextureSet.CORNER_BOTTOM_LEFT);
                     break; case SYMBOL_EMPTY:
-                        tileContent = new TileEmpty(Texture.CORNER_BOTTOM_LEFT);
+                        tileContent = new TileVoid(TextureSet.CORNER_BOTTOM_LEFT);
                     break; case SYMBOL_FLOOR:
                         tileContent = new TileFloor();
+                    
+                    // default case
                     break; default:
                         tileContent = new TileFloor();
                 }
                 
                 
-                if (currentTile == 'e') {
-                    tileContent = new Tile(new Pos(col, row));
+                // - HANDLE NAVIGATION MARKERS
+
+                // if it is a player1 navigation marker
+                if (currentTile == SYMBOL_P1_NAV_MARKER) {
+
+                    tileContent = new TileFloor(new Pos(col, row));
                     this.p1TravelPoints.append(tileContent);
                 }
-                else if (currentTile == 'E') {
-                    tileContent = new Tile(new Pos(col, row));
+
+                // if it is a player2 navigation marker
+                else if (currentTile == SYMBOL_P2_NAV_MARKER) {
+
+                    tileContent = new TileFloor(new Pos(col, row));
                     this.p2TravelPoints.append(tileContent);
                 }
+
                 
+                // - ADD NEW TILE INTO A CELL -
+
+                // if the content is a tile, set its back-link referrence to the current instance of GameSystem
                 if (tileContent instanceof Tile)
                     ((Tile)(tileContent)).SetGameSysRef(this);
+
                 wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
             }
         }
@@ -652,6 +701,7 @@ class GameSystem {
         return wGrid;
     }
 
+    // DEVELOPED BY: Sheldon
     public Cell [] GetP1NavMarkers () {
         Obj  [] navigationMarkers     = this.p1TravelPoints.GetList();
         Cell [] navigationMarkerCells = new Cell[navigationMarkers.length];
@@ -662,6 +712,7 @@ class GameSystem {
         return navigationMarkerCells;
     }
 
+    // DEVELOPED BY: Sheldon
     public Cell [] GetP2NavMarkers () {
         Obj  [] navigationMarkers     = this.p2TravelPoints.GetList();
         Cell [] navigationMarkerCells = new Cell[navigationMarkers.length];

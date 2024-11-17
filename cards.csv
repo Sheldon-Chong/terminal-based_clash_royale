@@ -8,6 +8,6 @@ Goblins,4,troop
 Giant,12,troop
 Lumberjack,6,troop
 PEKKA,10,troop
-Zap,0,spell
-Fireball,0,spell
-Lightning,0,spell
+Zap,2,spell
+Fireball,4,spell
+Lightning,6,spell

@@ -98,6 +98,10 @@ public class Player {
         return this.king;
     }
 
+    public void SetKingTower(Tower king) {
+        this.king = king;
+    }
+
     // DEVELOPED BY: Daiki
     public int RemoveCard (int index) {
         this.cardsOnHand[index] = null;

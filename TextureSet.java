@@ -1,4 +1,4 @@
-public class Texture {
+public class TextureSet {
 
     // -- CONSTANTS --
 
@@ -24,7 +24,7 @@ public class Texture {
 
     // DEVELOPED BY: Sheldon
     /* Default constructor for Texture */
-    public Texture() {
+    public TextureSet() {
         this.textures = new String [12][];
     }
 

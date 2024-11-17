@@ -12,92 +12,93 @@ public abstract class Spell extends Obj {
     
     private Pos         startPos;
     private Pos         endPos;
-    private Texture     textureDeploy;
-    private Texture     textureInEffect;
+    private TextureSet     textureDeploy;
+    private TextureSet     textureInEffect;
     private int         deployTime;
     private int         effectDuration;
     private GameSystem  gameSys;
     private int         radius;
 
 
-    // -- CONSTRUCTOR --
+    // -- CONSTRUCTORS --
     
-    public Spell (Pos startingPos, Pos endPos, int deployTime, int effectDuration) {
+    public Spell (Pos startingPos, Pos endPos, int deployTime, int effectDuration, int radius) {
         this.effectDuration = effectDuration;
         this.deployTime = deployTime;
         this.startPos = startingPos;
         this.endPos = endPos;
+        this.radius = radius;
 
-        this.textureDeploy = new Texture();
+        this.textureDeploy = new TextureSet();
 
-        this.textureDeploy.setTexture(Texture.CORNER_TOP_LEFT, new String [] {
+        this.textureDeploy.setTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
             "._____",
             "|     ",
             "|     "
         });
 
-        this.textureDeploy.setTexture(Texture.CORNER_BOTTOM_LEFT, new String [] {
+        this.textureDeploy.setTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             "|     ",
             "|_____"
         });
 
-        this.textureDeploy.setTexture(Texture.CORNER_BOTTOM_RIGHT, new String [] {
+        this.textureDeploy.setTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
             "      ",
             "     |",
             "_____|"
         });
 
-        this.textureDeploy.setTexture(Texture.CORNER_TOP_RIGHT, new String [] {
+        this.textureDeploy.setTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
             "_____.",
             "     |",
             "     |"
         });
 
         
-        this.textureInEffect = new Texture();
+        this.textureInEffect = new TextureSet();
 
-        this.textureInEffect.setTexture(Texture.CORNER_TOP_LEFT, new String [] {
+        this.textureInEffect.setTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
             "/\\/\\/",
             ">     ",
             ">     "
         });
 
-        this.textureInEffect.setTexture(Texture.CORNER_BOTTOM_LEFT, new String [] {
+        this.textureInEffect.setTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             ">     ",
             "/\\/\\/"
         });
 
-        this.textureInEffect.setTexture(Texture.CORNER_BOTTOM_RIGHT, new String [] {
+        this.textureInEffect.setTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
             "     <",
             "     <",
             "/\\/\\/\\"
         });
 
-        this.textureInEffect.setTexture(Texture.CORNER_TOP_RIGHT, new String [] {
+        this.textureInEffect.setTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
             "/\\/\\/",
             "     <",
             "     <"
         });
 
-        this.textureInEffect.setTexture(Texture.SIDE_RIGHT, new String [] {
+        this.textureInEffect.setTexture(TextureSet.SIDE_RIGHT, new String [] {
             "     <",
             "     <",
             "     <"
         });
 
-        this.textureInEffect.setTexture(Texture.SIDE_LEFT, new String [] {
+        this.textureInEffect.setTexture(TextureSet.SIDE_LEFT, new String [] {
             ">     ",
             ">     ",
             ">     "
         });
 
-        this.textureInEffect.setTexture(Texture.SIDE_TOP, new String [] {
+        this.textureInEffect.setTexture(TextureSet.SIDE_TOP, new String [] {
             "/\\/\\/",
         });
 
-        this.textureInEffect.setTexture(Texture.SIDE_BOTTOM, new String [] {
+        this.textureInEffect.setTexture(TextureSet.SIDE_BOTTOM, new String [] {
             "     ",
             "     ",
             "/\\/\\/"
@@ -147,24 +148,9 @@ public abstract class Spell extends Obj {
         return this.deployTime;
     }
 
-    public void ApplyEffect(Pos targetPos, GameSystem gameSysRef) {
-        System.out.println("Fireball spell effect applied");
-        
-        for (int y = -this.GetRadius(); y <= this.GetRadius(); y++) {
-            for (int x = -this.GetRadius(); x <= this.GetRadius(); x++) {
-                Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
-                if (gameSysRef.IsWithinBoard(impactPos)) {
-                    Obj obj = gameSysRef.GetCell(impactPos).GetObject();
-                    if (obj instanceof Troop) {
-                        System.out.println("Fireball hit " + ((Troop) obj).GetNameShort() + " at position " + impactPos.x + ", " + impactPos.y);
-                        ((Troop) obj).DecreaseHP(1);
-                    }
-                }
-            }
-        }
-    }
+    public abstract void ApplyEffect(Pos targetPos, GameSystem gameSysRef);
 
-    public Texture GetTexture(int num) {
+    public TextureSet GetTexture(int num) {
         if (num == 0)
             return this.textureDeploy;
             

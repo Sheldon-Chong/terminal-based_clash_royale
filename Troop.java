@@ -191,7 +191,7 @@
         Obj object = gameSysRef.GetGrid()[movedPosition.y][movedPosition.x].GetObject();
 
         // if the position the troop moves to happens to be occupied by a static object
-        if (object instanceof TileTower || object instanceof TileEmpty)
+        if (object instanceof TileTower || object instanceof TileVoid)
             return DEST_COLLISION_WORLD;
             
             
@@ -319,13 +319,13 @@
             for (int j = 0; j < accessPoints.length; j++) {
                 Pos currentAccessPoint = accessPoints[j].GetPos();
 
+                // if
                 if (((closestPoint == null) || this.GetPos().DistanceFrom(currentAccessPoint.GetPos()) < this.GetPos().DistanceFrom(closestPoint))
                     && currentAccessPoint.GetPos().x > start.x 
                     && currentAccessPoint.GetPos().x < end.x)
                     closestPoint = currentAccessPoint;
             }
         }
-
 
         return closestPoint;
     }

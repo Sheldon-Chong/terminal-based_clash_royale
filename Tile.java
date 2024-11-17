@@ -2,7 +2,7 @@ public class Tile extends Obj {
     // -- ATTRIBUTES --
 
     private int type;
-    private Texture texture;
+    private TextureSet texture;
     private boolean isSolid;
     private GameSystem gameSysRef;
 
@@ -12,7 +12,7 @@ public class Tile extends Obj {
     // DEVELOPED BY: Sheldon
     /* Default constructor for the Tile class */
     public Tile() {
-        this.texture = new Texture();
+        this.texture = new TextureSet();
         this.SetStrType("Tile");
     }
 
@@ -37,12 +37,12 @@ public class Tile extends Obj {
     /* SetTextureRef sets the texture reference of the tile
      * @param - texture: the texture reference */
 
-    public void SetTextureRef(Texture texture) {
+    public void SetTextureRef(TextureSet texture) {
         this.texture = texture;
     }
 
     // DEVELOPED BY: Sheldon
-    public Texture GetTexture() {
+    public TextureSet GetTexture() {
         return this.texture;
     }
 
