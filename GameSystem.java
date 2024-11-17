@@ -131,6 +131,18 @@ class GameSystem {
         return this.worldGrid; 
     }
 
+    public int GetHeight() {
+        return this.worldGrid.length;
+    }
+
+    public int GetWidth() {
+        return this.worldGrid[0].length;
+    }
+
+    public Pos GetDimensions() {
+        return new Pos(this.GetWidth(), this.GetHeight());
+    }
+
     // DEVELOPED BY: Daiki
     public void      SetCell(int row, int col, Cell cell) {
          this.worldGrid[row][col] = cell;
@@ -640,12 +652,24 @@ class GameSystem {
         return wGrid;
     }
 
-    public Obj [] GetP1AccessPoints () {
-        return this.p1TravelPoints.GetList();
+    public Cell [] GetP1NavMarkers () {
+        Obj  [] navigationMarkers     = this.p1TravelPoints.GetList();
+        Cell [] navigationMarkerCells = new Cell[navigationMarkers.length];
+
+        for (int i = 0; i < navigationMarkers.length; i++)
+            navigationMarkerCells[i] = ((Tile)(navigationMarkers[i])).GetCell();
+
+        return navigationMarkerCells;
     }
 
-    public Obj [] GetP2AccessPoints () {
-        return this.p2TravelPoints.GetList();
+    public Cell [] GetP2NavMarkers () {
+        Obj  [] navigationMarkers     = this.p2TravelPoints.GetList();
+        Cell [] navigationMarkerCells = new Cell[navigationMarkers.length];
+
+        for (int i = 0; i < navigationMarkers.length; i++)
+            navigationMarkerCells[i] = ((Tile)(navigationMarkers[i])).GetCell();
+
+        return navigationMarkerCells;
     }
 
     // DEVELOPED BY : DAIKI
@@ -686,5 +710,21 @@ class GameSystem {
         }
 
         return cellArr;
+    }
+
+
+    public Cell [] AppendCell(Cell [] cellList, Cell cell) {
+
+        if (cellList == null)
+            return new Cell[]{cell};
+
+        Cell [] newCellList = new Cell[cellList.length + 1];
+
+        for (int i = 0; i < cellList.length; i ++) {
+            newCellList[i] = cellList[i];
+        }
+
+        newCellList[cellList.length] = cell;
+        return newCellList;
     }
 }

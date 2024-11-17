@@ -9,17 +9,16 @@ public class TowerPrincess extends Tower {
     // -- CONSTRUCTORS --
 
     // DEVELOPED BY: Sheldon
-    /* Constructor for TowerPrincess */
-    public TowerPrincess () {
-        super();
-        this.setHealth(5);
-    }
-
-    // DEVELOPED BY: Sheldon
     /* Constructor for TowerPrincess
      * @param parentPlayer - the player that this tower belongs to */
     public TowerPrincess (Player parentPlayer) {
         super(parentPlayer);
-        this.setHealth(5);
+        this.setHealth(20);
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* Constructor for TowerPrincess */
+    public TowerPrincess () {
+        this(null);
     }
 }

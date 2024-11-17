@@ -37,13 +37,14 @@
     public Troop() {
         this.name = "troop";
         this.SetPos(new Pos(0, 0));
+        this.SetDest(null);
     }
 
     public Troop(Pos startingPos, String name, Player parent) {
         this.SetPos(startingPos);
-        this.Dest = new Pos(5, 5);
         this.name = name;
         this.player = parent;
+        this.SetDest(null);
     }
 
 
@@ -123,31 +124,48 @@
      * @param dest - the position to move towards
      * @return boolean - true if the troop has moved, false otherwise */
     private boolean moveTowards(Pos dest) {
-        Pos moveVector = new Pos(0, 0);
-        Pos currentPos = this.GetPos().Copy();
-        int status;
         
+        // if destination isn't set
+        if (dest == null)
+            return false;
+
+        Pos currentPos = this.GetPos().Copy();
         this.SetAction(ACTION_MOVE);
+        int status;
+            
+        Pos moveVector = new Pos(0, 0);
 
-        // System.out.printf("%c = (%d, %d), -> (%d, %d)\n",
-        //     this.nameInitial, 
-        //     this.getPos().x,
-        //     this.getPos().y,
-        //     dest.x, 
-        //     dest.y);
+        
+        // GET X DIRECTION TO MOVE IN
 
+        // Down
         if (this.GetPos().x < dest.x) moveVector.x = 1;
+        
+        // Up
         if (this.GetPos().x > dest.x) moveVector.x = -1;
+
+        // move forward
         status = MoveTo(new Pos(moveVector.x, 0));
+
+        // if movement was unsucessful due to a troop blocking, or being blocked by the world
         if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
             this.attack(gameSysRef.GetCell(currentPos.Add(moveVector)).GetObject());
         
         moveVector = new Pos(0, 0);
         
+
+        // GET Y DIRECTION TO MOVE IN
+
+        // Down
         if (this.GetPos().y < dest.y) moveVector.y = 1;
+        
+        // Up
         if (this.GetPos().y > dest.y) moveVector.y = -1;
+        
+        // move forward
         status = MoveTo(new Pos (0, moveVector.y));
 
+        // if movement was unsucessful due to a troop blocking, or being blocked by the world
         if (status == DEST_TROOP_BLOCKING || status == DEST_COLLISION_WORLD)
             this.attack(gameSysRef.GetCell(currentPos.Add(moveVector)).GetObject());
 
@@ -156,87 +174,70 @@
     
     /* moves the troop to a specified position, and checks for collisions with other objects */
     public int MoveTo(Pos destPos) {
+        
+        // create the position that the troop would be if the troop moved hypothetically 
         Pos movedPosition = this.GetPos().Add(destPos);
-        
-        Obj object = gameSysRef.GetGrid()[movedPosition.y][movedPosition.x].GetObject();
 
-        if (object instanceof TileTower || object instanceof TileEmpty)
-            return DEST_COLLISION_WORLD;
 
-        Troop[] troops = gameSysRef.GetTroops();
+        // - CHECK IF POSITION IS OUTSIDE THE GRID -
         
-        for (int troopIndex = 0; troopIndex < troops.length; troopIndex++) {
-            Troop currentTroop = troops[troopIndex];
-            if (currentTroop.GetPos().IsEquals(movedPosition) && !troops[troopIndex].GetPos().IsEquals(this.GetPos()))
-                return DEST_TROOP_BLOCKING;
-        }
-        
+        // if the moved-to position is out of bounds
         if (gameSysRef.isOutOfBounds(movedPosition))
             return DEST_OUT_OF_BOUNDS;
 
+
+        // - CHECK IF POSITION COLLIDES WITH A WALL -
+
+        Obj object = gameSysRef.GetGrid()[movedPosition.y][movedPosition.x].GetObject();
+
+        // if the position the troop moves to happens to be occupied by a static object
+        if (object instanceof TileTower || object instanceof TileEmpty)
+            return DEST_COLLISION_WORLD;
+            
+            
+        // - CHECK IF POSITION COLLIDES WITH TROOP -
+            
+        Troop[] troops = gameSysRef.GetTroops();
+        
+        // iterate for every troop in the world
+        for (int troopIndex = 0; troopIndex < troops.length; troopIndex++) {
+            Troop currentTroop = troops[troopIndex];
+
+            // if the current troop matches position with this troop
+            if (currentTroop.GetPos().IsEquals(movedPosition) && !troops[troopIndex].GetPos().IsEquals(this.GetPos()))
+                return DEST_TROOP_BLOCKING;
+        }
+
+        // set position if all is sucessfull
         this.SetPos(movedPosition.Copy());
         
         return 1;
     }
 
-    private Pos startPos;
-    private Pos endPos;
-
     /* recalculates the destination of the troop */
     public void  RecalcDest() {
-        if (this.startPos == null)
-            this.startPos = new Pos (0,0);
         
-        if (this.endPos == null)
-            this.endPos = new Pos (this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length);
-
         Pos destination = null;
-
-        Cell [] p1EntryPoints = new Cell[this.gameSysRef.GetP1AccessPoints().length];
-        Cell [] p2EntryPoints = new Cell[this.gameSysRef.GetP2AccessPoints().length];
-
-        for (int i = 0; i < p1EntryPoints.length; i++)
-            p1EntryPoints[i] = ((Tile)(this.gameSysRef.GetP1AccessPoints()[i])).GetCell();
-
-        for (int i = 0; i < p2EntryPoints.length; i++)
-            p2EntryPoints[i] = ((Tile)(this.gameSysRef.GetP2AccessPoints()[i])).GetCell();
-            
-
         int playerNum = this.player.GetPlayerNum(); 
-        int currentRegion = this.GetRegion();
 
+        // - DECIDE WHERE TO SET DESTINATION -
 
-        boolean isAtAccessPoint = false;
-
-        for (int i = 0; i < p1EntryPoints.length; i++) {
-            if (this.GetPos().IsEquals(p1EntryPoints[i].GetPos())) {
-                isAtAccessPoint = true;
-                break;
-            }
+        // if troop in enemy region
+        if (playerNum != this.GetRegion()) { 
+            destination = this.findNearestAccessPoint(gameSysRef.FindAllCellContaining("TileTower"));
         }
 
-        if (this.GetDest() == null || isAtAccessPoint) {
-            if ((playerNum == GameSystem.PLAYER1_REGION && currentRegion == GameSystem.PLAYER1_REGION) 
-                || (playerNum == GameSystem.PLAYER2_REGION && currentRegion == GameSystem.PLAYER2_REGION)) {
-    
-                if (playerNum == GameSystem.PLAYER1_REGION && currentRegion == GameSystem.PLAYER1_REGION)
-                    destination = this.findNearestAccessPoint(p1EntryPoints, this.GetPos(), new Pos (this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length));
-        
-                else if (playerNum == GameSystem.PLAYER2_REGION && currentRegion == GameSystem.PLAYER2_REGION)
-                    destination = this.findNearestAccessPoint(p2EntryPoints, new Pos (this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length), this.GetPos());
-            }
-                else {
-                    Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
-                    
-                    for (int i = 0; i < 4; i++) {
-                        if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
-                            return;
-                    }
-                    destination = this.findNearestAccessPoint(gameSysRef.FindAllCellContaining("TileTower"));
-                }
-                
-            this.SetDest(destination);
+        // if this troop belongs player 1 and in player 2's region
+        else if (playerNum == GameSystem.PLAYER1_REGION) {
+            destination = this.findNearestAccessPoint(gameSysRef.GetP1NavMarkers(), this.GetPos(), this.gameSysRef.GetDimensions());
         }
+
+        // if this troop belongs player 2 and in player 2's region
+        else if (playerNum == GameSystem.PLAYER2_REGION) {
+            destination = this.findNearestAccessPoint(gameSysRef.GetP2NavMarkers(), new Pos (0, 0), this.GetPos());
+        }
+
+        this.SetDest(destination);
     }
 
     /* checks if the troop is adjacent to a tower
@@ -244,11 +245,16 @@
     public Cell IsAdjTower() {
         Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
 
-        for (int i = 0; i < 4; i++) {
-            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
-                TileTower tileTower = (TileTower)neighbours[i].GetObject();
+        // - CHECK IF TROOP IS ADJACENT TOA A TOWER -
 
-                if (tileTower.GetParent() != null)
+        // iterate for each neighbour
+        for (int i = 0; i < 4; i++) {
+            
+            // if the neighbour happens to be a tower tile
+            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower) {
+
+                // if parent isn't null, return the parent
+                if (((TileTower)neighbours[i].GetObject()).GetParent() != null)
                     return neighbours[i];
             }
         }
@@ -258,17 +264,22 @@
 
     /* performs an action (either moving or attacking), and sets the state of the troop */
     public void Action() {
-        if (this.GetDest() == null || this.GetPos() == null)
+        if (this.GetPos() == null)
             return;
 
         Cell adjTower = IsAdjTower();
         
+        // if Troop is adjacent to tower
         if (adjTower != null) {
+
+            // get parent that belongs to tower
             Tower parent = ((TileTower)adjTower.GetObject()).GetParent();
 
+            // if the tower is an enemy tower
             if (parent != null && isEnemy(parent)) {
+
                 this.SetAction(ACTION_ATTACK);
-                parent.subtractHealth(1);
+                parent.subtractHealth(this.GetAttack());
                 return;
             }
         }
@@ -281,24 +292,15 @@
 
     // -- HELPER METHODS --
 
-    /* locate available adjacent cells that allow the troop to reach a specified position, that isn't blocked by walls */
+    /* locate available adjacent cells that allow the troop to reach a specified position, that aren't occupied */
     private Cell []findAccessPoint(Pos pos) {
         
         Cell []neighbours = this.gameSysRef.GetCell(pos).GetNeighbours();
-
-        int accessPointsLen = 0;
+        Cell[] accessPoints = new Cell[0];
         
         for (int i = 0; i < 4; i++) {
             if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileFloor)
-                    accessPointsLen ++;
-        }
-        
-        Cell[] accessPoints = new Cell[accessPointsLen];
-        
-        accessPointsLen = 0;
-        for (int i = 0; i < 4; i++) {
-            if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileFloor)
-                    accessPoints[accessPointsLen++] = neighbours[i];
+                    accessPoints = gameSysRef.AppendCell(accessPoints, neighbours[i]);
         }
 
         return accessPoints;
@@ -317,14 +319,13 @@
             for (int j = 0; j < accessPoints.length; j++) {
                 Pos currentAccessPoint = accessPoints[j].GetPos();
 
-                if (closestPoint == null)
-                    closestPoint = currentAccessPoint;
-                else if ((this.GetPos().DistanceFrom(currentAccessPoint.GetPos()) < this.GetPos().DistanceFrom(closestPoint))
-                    && currentAccessPoint.GetPos().LargerThan(start) 
-                    && currentAccessPoint.GetPos().SmallerThan(end))
+                if (((closestPoint == null) || this.GetPos().DistanceFrom(currentAccessPoint.GetPos()) < this.GetPos().DistanceFrom(closestPoint))
+                    && currentAccessPoint.GetPos().x > start.x 
+                    && currentAccessPoint.GetPos().x < end.x)
                     closestPoint = currentAccessPoint;
             }
         }
+
 
         return closestPoint;
     }
@@ -357,10 +358,13 @@
         if (object instanceof Troop && isEnemy(object)) {
             Troop enemy = (Troop) object;
             enemy.DecreaseHP(this.GetAttack());  // Use this troop's specific attack value
-        } else if (object instanceof Tower && isEnemy(object)) {
+        } 
+
+        else if (object instanceof Tower && isEnemy(object)) {
             Tower enemyTower = (Tower) object;
             enemyTower.subtractHealth(this.GetAttack());  // Apply attack to the tower
         }
+
         this.SetAction(ACTION_ATTACK);
     }
     
