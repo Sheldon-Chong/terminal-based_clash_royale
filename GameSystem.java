@@ -9,11 +9,11 @@ class GameSystem {
 
     // -- CONSTANTS --
 
-    public final static String  FILENAME = "game_grid.txt";
+    public final static String  FILENAME = "GameMap.txt";
 
     private final static char  SYMBOL_TOWER         = 'T';
     private final static char  SYMBOL_FLOOR         = '.';
-    private final static char  SYMBOL_EMPTY         = ' ';
+    private final static char  SYMBOL_VOID         = ' ';
     private final static char  SYMBOL_P1_PRINCESS   = 'P';
     private final static char  SYMBOL_P1_KING       = 'K';
     private final static char  SYMBOL_P2_PRINCESS   = 'p';
@@ -515,18 +515,16 @@ class GameSystem {
     // DEVELOPED BY: Sheldon
     /* initialize the game world by creating the grid, players, and troops */
     private void initWorld() {
-        this.p1TravelPoints = new ObjList();
-        this.p2TravelPoints = new ObjList();
-
+        
         FileHandler fHandler = new FileHandler();
         
-        // Initialize cards array from the cards file with error handling
-        String[] cardsRaw = null;
-        
-        cardsRaw = fHandler.readFileLine("cards.csv");
 
-        this.cards = new Card[cardsRaw.length];
+        // - INITIALIZE CARD STATS -
         
+        String[] cardsRaw = fHandler.readFile2Lines("cards.csv");
+        this.cards        = new Card[cardsRaw.length];
+        
+        // iterate for each card
         for (int i = 0; i < cardsRaw.length; i++) {
 
             String[] contentsSplitted = cardsRaw[i].split(",");
@@ -543,14 +541,19 @@ class GameSystem {
                 type = Card.SPELL;
 
             this.cards[i] = new Card(cardName, elixirCost, type);
-            System.out.println(cards[i].GetRepr());
         }
 
-        // Initialize lists
+        
+        // - INITIALIZE LISTS -
+        
         this.spellQueue = new ObjList();
         this.troops = new ObjList();
+        this.p1TravelPoints = new ObjList();
+        this.p2TravelPoints = new ObjList();
 
-        // Initialize players
+
+        // - INITIALIZE PLAYERS - 
+
         this.player1 = new Player("Player1", 1, this);
         this.player2 = new Player("Player2", 2, this);
 
@@ -558,37 +561,41 @@ class GameSystem {
         this.shufflePlayerCards();
 
         // Initialize world grid with error handling for the main game grid file
-        this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile(FILENAME));
+        this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile2Grid(FILENAME));
 
+
+        // - INITIALIZE TOWER REFFERENCES -
+        
         // Setup towers and neighbors in the grid
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
 
+                // if the current object is a tower
                 if (this.GetCell(new Pos(x, y)).GetObject() instanceof Tower) {
 
+                    // get neighbours and the current tower
                     Cell[] neighbours = this.GetCell(new Pos(x, y)).GetAllNeighbours();
-                    Tower parent = (Tower) this.GetCell(new Pos(x, y)).GetObject();
+                    Tower tower = (Tower) this.GetCell(new Pos(x, y)).GetObject();
 
+                    // set the player's tower king refference based on the current tower king
+                    if (tower instanceof TowerKing) {
+                        if (tower.GetPlayer().GetPlayerNum() == PLAYER1_REGION)
+                            player1.SetKingTower(tower);
 
-                    if (parent instanceof TowerKing) {
-                        if (parent.GetPlayer().GetPlayerNum() == PLAYER1_REGION) {
-                            System.out.println("set king tower p1");
-                            player1.SetKingTower(parent);
-                        }
-                        if (parent.GetPlayer().GetPlayerNum() == PLAYER2_REGION) {
-                            System.out.println("set king tower p2");
-                            player2.SetKingTower(parent);
-                        }
+                        if (tower.GetPlayer().GetPlayerNum() == PLAYER2_REGION)
+                            player2.SetKingTower(tower);
                     }
 
+                    // set all tiles serrounding the Tower to belong to that tower.
                     for (int i = 0; i < 8; i++) {
                         if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
-                            ((TileTower) neighbours[i].GetObject()).SetParent(parent);
+                            ((TileTower) neighbours[i].GetObject()).SetParent(tower);
                     }
                 }
             }
         }
         
+
         // - UPDATE TILE APPEARANCE - 
 
         // iterate for each cell in the worldgrid
@@ -660,7 +667,7 @@ class GameSystem {
                     // other types of objects
                     break; case SYMBOL_TOWER:
                         tileContent = new TileTower(TextureSet.CORNER_BOTTOM_LEFT);
-                    break; case SYMBOL_EMPTY:
+                    break; case SYMBOL_VOID:
                         tileContent = new TileVoid(TextureSet.CORNER_BOTTOM_LEFT);
                     break; case SYMBOL_FLOOR:
                         tileContent = new TileFloor();
@@ -740,30 +747,22 @@ class GameSystem {
         return false;
     }
 
-    public Cell []FindAllCellContaining(String objType) {
-        int len = 0;
-        
+    public Cell[] FindAllCellContaining(String objType) {
+        Cell[] cellArr = null;
+    
         for (int y = 0; y < this.worldGrid.length; y++) {
             for (int x = 0; x < this.worldGrid[y].length; x++) {
-                if ((this.GetCell(new Pos(x, y)).GetObject() != null) 
-                    && (this.GetCell(new Pos(x, y)).GetObject().GetStrType().equals(objType)))
-                    len++;
+
+                Obj obj = this.GetCell(new Pos(x, y)).GetObject();
+
+                if (obj != null && obj.GetStrType().equals(objType))
+                    cellArr = AppendCell(cellArr, this.GetCell(new Pos(x, y)));
             }
         }
-
-        Cell [] cellArr = new Cell[len];
-        for (int y = 0; y < this.worldGrid.length; y++) {
-            for (int x = 0; x < this.worldGrid[y].length; x++) {
-                if ((this.GetCell(new Pos(x, y)).GetObject() != null) 
-                    && (this.GetCell(new Pos(x, y)).GetObject().GetStrType().equals(objType)))
-                    cellArr[--len] = this.GetCell(new Pos(x, y));
-            }
-        }
-
+    
         return cellArr;
     }
-
-
+    
     public Cell [] AppendCell(Cell [] cellList, Cell cell) {
 
         if (cellList == null)

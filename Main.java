@@ -7,11 +7,31 @@ import java.util.Scanner;
  */
 public class Main {
     public static void main(String[] args) {
+
+        
+
+        
         FileHandler fHandler = new FileHandler();
+        
+        // initial check to see if resource files are present
+        String file = fHandler.filesExist(new String[] {
+            "MsgGameOver.txt", 
+            "MsgPlayerOverlay.txt",
+            "GameMap.txt",
+            "MsgTitleScreen.txt",
+        });
+
+        // if a resource file isn't present
+        if (file != null) {
+            
+            // print the resource file
+            System.out.printf("ERROR: resource '%s' doesn't exist\n", file);
+            return ;
+        }
         
         char[][] grid;
 
-        grid = fHandler.readFile("game_grid.txt");
+        grid = fHandler.readFile2Grid("GameMap.txt");
 
         GameSystem gameSys = new GameSystem();
         gameSys.CharGrid2CellGrid(grid);
@@ -137,7 +157,7 @@ public class Main {
         }
 
         display.PrintWorld(gameSys.GetGrid());
-        String [] GameOverMsg = fHandler.readFileLine("MsgGameOver.txt");
+        String [] GameOverMsg = fHandler.readFile2Lines("MsgGameOver.txt");
         for (int i = 0; i < GameOverMsg.length; i ++) {
             System.out.println(GameOverMsg[i]);
         }

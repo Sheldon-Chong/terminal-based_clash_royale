@@ -34,7 +34,7 @@ public class Displayer {
         this.input = new Scanner(System.in);
         this.fHandler = new FileHandler();
         
-        this.msgPlayerOverlay = this.fHandler.readFileLine("MsgPlayerOverlay.txt");
+        this.msgPlayerOverlay = this.fHandler.readFile2Lines("MsgPlayerOverlay.txt");
     }
 
     
@@ -48,7 +48,7 @@ public class Displayer {
     // DEVELOPED BY: Daiki
     // Display ASCII Title Screen
     public void ShowTitleScreen() {
-        String [] startingScreen = this.fHandler.readFileLine("title_screen.txt");
+        String [] startingScreen = this.fHandler.readFile2Lines("MsgTitleScreen.txt");
 
         for (int i = 0; i < startingScreen.length; i ++) {
             System.out.println(startingScreen[i]);

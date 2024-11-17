@@ -9,35 +9,41 @@ import java.util.Scanner;
  */
 class FileHandler {
 
-    // DEVELOPED BY: Sheldon
-    private int[] getFileDimensions(String fileName) {
-        int rows = 0;
-        int cols = 0;
-        int[] dimensions = new int[2];
-        File file = new File(fileName);
+    // -- CONSTRUCTORS --
 
-        // First pass to determine the dimensions of the char array
-        try {
-            Scanner input = new Scanner(file);
-            while (input.hasNextLine()) {
-                String line = input.nextLine();
-                rows++;
-                if (line.length() > cols)
-                    cols = line.length();
-            }
-            input.close();
-    
-            dimensions[0] = rows;
-            dimensions[1] = cols;
-            return dimensions;
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+    // DEVELOPED BY: Sheldon
+    public FileHandler() {
+
     }
 
-    public String[] readFileLine(String fileName) {
+
+    // -- PUBLIC METHODS --
+
+    public boolean fileExists(String filename) {
+        File file = new File(filename);
+
+        try {
+            Scanner input = new Scanner(file);
+
+            input.close();
+        } 
+        catch (FileNotFoundException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public String filesExist(String [] filenames) {
+        for (int i = 0; i < filenames.length; i ++) {
+            if (!this.fileExists(filenames[i]))
+                return filenames[i];
+        }
+        return null;
+    }
+
+    // DEVELOPED BY: Sheldon
+    public String[] readFile2Lines(String fileName) {
         File file = new File(fileName);
         int[] dimensions = getFileDimensions(fileName);
     
@@ -47,12 +53,15 @@ class FileHandler {
         try {
             // Second pass to populate
             Scanner input = new Scanner(file);
+
             int row = 0;
+
             while (input.hasNextLine()) {
                 String line = input.nextLine();
                 stringArray[row] = line;
                 row++;
             }
+
             input.close();
         } 
         catch (FileNotFoundException e) {
@@ -64,8 +73,8 @@ class FileHandler {
     }
     
     // DEVELOPED BY: Sheldon
-    public char[][] readFile(String fileName) {
-        String[] lines = readFileLine(fileName);
+    public char[][] readFile2Grid(String fileName) {
+        String[] lines = readFile2Lines(fileName);
         if (lines == null) {
             return null;
         }
@@ -92,6 +101,37 @@ class FileHandler {
             for (int col = 0; col < arr[row].length; col++)
                 System.out.printf("%c", arr[row][col]);
             System.out.println();
+        }
+    }
+
+
+    // -- HELPER METHODS --
+
+    // DEVELOPED BY: Sheldon
+    private int[] getFileDimensions(String fileName) {
+        int rows = 0;
+        int cols = 0;
+        int[] dimensions = new int[2];
+        File file = new File(fileName);
+
+        // First pass to determine the dimensions of the char array
+        try {
+            Scanner input = new Scanner(file);
+            while (input.hasNextLine()) {
+                String line = input.nextLine();
+                rows++;
+                if (line.length() > cols)
+                    cols = line.length();
+            }
+            input.close();
+    
+            dimensions[0] = rows;
+            dimensions[1] = cols;
+            return dimensions;
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
