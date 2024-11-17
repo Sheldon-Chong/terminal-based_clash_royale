@@ -91,8 +91,24 @@ public class Pos {
     /* calculates the distance between two positions by using the pythagorean theorem
      * @param pos - the position to calculate the distance to
      * @return - double */
-    public double CalcDistance(Pos pos) {
+    public double DistanceFrom(Pos pos) {
         return Math.sqrt(Math.pow(this.x - pos.x, 2) + Math.pow(this.y - pos.y, 2));
+    }
+
+    public boolean LargerThan(Pos pos) {
+        return (this.x > pos.x && this.y > pos.y);
+    }
+
+    public boolean LargerOrEqualTo(Pos pos) {
+        return (this.x >= pos.x && this.y >= pos.y);
+    }
+
+    public boolean SmallerOrEqualTo(Pos pos) {
+        return (this.x <= pos.x && this.y <= pos.y);
+    }
+
+    public boolean SmallerThan(Pos pos) {
+        return (this.x < pos.x && this.y < pos.y);
     }
 
     // OTHERS

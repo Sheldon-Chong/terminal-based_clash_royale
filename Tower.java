@@ -21,13 +21,13 @@ public class Tower extends Obj{
     
     // DEVELOPED BY: Daiki
     Tower () { 
-        this.SetType("Tower");
+        this.SetStrType("Tower");
     }
 
     // DEVELOPED BY: Daiki
     Tower (Player player) {
         this.parentPlayer = player;
-        this.SetType("Tower");
+        this.SetStrType("Tower");
     }
 
 

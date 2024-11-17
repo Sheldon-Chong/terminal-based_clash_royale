@@ -179,40 +179,64 @@
         return 1;
     }
 
+    private Pos startPos;
+    private Pos endPos;
+
     /* recalculates the destination of the troop */
     public void  RecalcDest() {
+        if (this.startPos == null)
+            this.startPos = new Pos (0,0);
+        
+        if (this.endPos == null)
+            this.endPos = new Pos (this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length);
+
         Pos destination = null;
 
-        Cell [] p1EntryPoints = {
-            gameSysRef.GetCell(new Pos(16, 3)), 
-            gameSysRef.GetCell(new Pos(16, 14))
-        };
+        Cell [] p1EntryPoints = new Cell[this.gameSysRef.GetP1AccessPoints().length];
+        Cell [] p2EntryPoints = new Cell[this.gameSysRef.GetP2AccessPoints().length];
 
-        Cell [] p2EntryPoints = {
-            gameSysRef.GetCell(new Pos(11, 3)), 
-            gameSysRef.GetCell(new Pos(11, 14))
-        };
+        for (int i = 0; i < p1EntryPoints.length; i++)
+            p1EntryPoints[i] = ((Tile)(this.gameSysRef.GetP1AccessPoints()[i])).GetCell();
+
+        for (int i = 0; i < p2EntryPoints.length; i++)
+            p2EntryPoints[i] = ((Tile)(this.gameSysRef.GetP2AccessPoints()[i])).GetCell();
+            
 
         int playerNum = this.player.GetPlayerNum(); 
         int currentRegion = this.GetRegion();
 
-        if (playerNum == GameSystem.PLAYER1_REGION && currentRegion == GameSystem.PLAYER1_REGION)
-            destination = findNearestAccessPoint(p1EntryPoints);
 
-        else if (playerNum == GameSystem.PLAYER2_REGION && currentRegion == GameSystem.PLAYER2_REGION)
-            destination = findNearestAccessPoint(p2EntryPoints);
+        boolean isAtAccessPoint = false;
 
-        else {
-            Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
-            
-            for (int i = 0; i < 4; i++) {
-                if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
-                    return;
+        for (int i = 0; i < p1EntryPoints.length; i++) {
+            if (this.GetPos().IsEquals(p1EntryPoints[i].GetPos())) {
+                isAtAccessPoint = true;
+                break;
             }
-            destination = findNearestAccessPoint(gameSysRef.FindAllCellContaining("TileTower"));
         }
+
+        if (this.GetDest() == null || isAtAccessPoint) {
+            if ((playerNum == GameSystem.PLAYER1_REGION && currentRegion == GameSystem.PLAYER1_REGION) 
+                || (playerNum == GameSystem.PLAYER2_REGION && currentRegion == GameSystem.PLAYER2_REGION)) {
+    
+                if (playerNum == GameSystem.PLAYER1_REGION && currentRegion == GameSystem.PLAYER1_REGION)
+                    destination = this.findNearestAccessPoint(p1EntryPoints, this.GetPos(), new Pos (this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length));
         
-        this.SetDest(destination);
+                else if (playerNum == GameSystem.PLAYER2_REGION && currentRegion == GameSystem.PLAYER2_REGION)
+                    destination = this.findNearestAccessPoint(p2EntryPoints, new Pos (this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length), this.GetPos());
+            }
+                else {
+                    Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
+                    
+                    for (int i = 0; i < 4; i++) {
+                        if (neighbours[i] != null && neighbours[i].GetObject() instanceof TileTower)
+                            return;
+                    }
+                    destination = this.findNearestAccessPoint(gameSysRef.FindAllCellContaining("TileTower"));
+                }
+                
+            this.SetDest(destination);
+        }
     }
 
     /* checks if the troop is adjacent to a tower
@@ -281,22 +305,32 @@
     }
 
     /* locate the closest position to the troop that allows it to reach the specified position */
-    private Pos findNearestAccessPoint(Cell []cells) {
+    private Pos findNearestAccessPoint(Cell []cells, Pos start, Pos end) {
         Pos closestPoint = null;
 
+        // iterate for every cell in the given array
         for (int i = 0; i < cells.length; i++) {
+
             Cell []accessPoints = findAccessPoint(cells[i].GetPos());
 
+            // iterate for every access point to the current cell
             for (int j = 0; j < accessPoints.length; j++) {
-                if (closestPoint == null)
-                    closestPoint = accessPoints[j].GetPos();
+                Pos currentAccessPoint = accessPoints[j].GetPos();
 
-                else if (this.GetPos().CalcDistance(accessPoints[j].GetPos()) < this.GetPos().CalcDistance(closestPoint))
-                    closestPoint = accessPoints[j].GetPos();
+                if (closestPoint == null)
+                    closestPoint = currentAccessPoint;
+                else if ((this.GetPos().DistanceFrom(currentAccessPoint.GetPos()) < this.GetPos().DistanceFrom(closestPoint))
+                    && currentAccessPoint.GetPos().LargerThan(start) 
+                    && currentAccessPoint.GetPos().SmallerThan(end))
+                    closestPoint = currentAccessPoint;
             }
         }
 
         return closestPoint;
+    }
+
+    private Pos findNearestAccessPoint(Cell []cells) {
+        return findNearestAccessPoint(cells, new Pos(0, 0), new Pos(this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length));
     }
 
     /* checks if an object belongs to an enemy

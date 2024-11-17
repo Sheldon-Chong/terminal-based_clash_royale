@@ -26,7 +26,7 @@ public class TileTower extends Tile {
     // DEVELOPED BY: Sheldon
     /* Constructor for TileTower */
     public TileTower () {
-        this.SetType("TileTower");
+        this.SetStrType("TileTower");
         this.SetTextureRef(this.TextureTowerAlive());
     }
 

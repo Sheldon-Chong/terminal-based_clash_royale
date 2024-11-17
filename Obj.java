@@ -20,13 +20,14 @@ public class Obj {
     // DEVELOPED BY: Sheldon
     /* Default constructor for the Obj class*/
     public Obj () { 
-        
+        this.SetStrType("Obj");
     }
 
     // DEVELOPED BY: Sheldon
     /* Constructor for the Obj class with a starting position
      * @param - startPos: the starting position of the object */
     public Obj (Pos startPos) {
+        this();
         pos = startPos;
     }
 
@@ -37,7 +38,7 @@ public class Obj {
         return type;
     }
 
-    public void SetType(String type) {
+    public void SetStrType(String type) {
         this.type = type;
     }
 
@@ -71,7 +72,7 @@ public class Obj {
      * @param - obj: the object to calculate the distance to
      * @return - the distance between the two objects */
     public double CalcDistance (Obj obj) {
-        return pos.CalcDistance(obj.GetPos());
+        return pos.DistanceFrom(obj.GetPos());
     }
 
     public boolean isInObjArr(String[] objects) {

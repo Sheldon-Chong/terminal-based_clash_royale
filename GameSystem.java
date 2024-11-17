@@ -623,16 +623,17 @@ class GameSystem {
                 
                 
                 if (currentTile == 'e') {
-                    this.p1TravelPoints.append(new Obj(new Pos(col, row)));
+                    tileContent = new Tile(new Pos(col, row));
+                    this.p1TravelPoints.append(tileContent);
                 }
                 else if (currentTile == 'E') {
-                    this.p2TravelPoints.append(new Obj(new Pos(col, row)));
+                    tileContent = new Tile(new Pos(col, row));
+                    this.p2TravelPoints.append(tileContent);
                 }
                 
-                else {
+                if (tileContent instanceof Tile)
                     ((Tile)(tileContent)).SetGameSysRef(this);
-                    wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
-                }
+                wGrid[row][col] = new Cell(tileContent, wGrid, new Pos(col, row));
             }
         }
 

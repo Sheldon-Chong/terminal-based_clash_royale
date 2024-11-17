@@ -1,4 +1,4 @@
-public abstract class Tile extends Obj {
+public class Tile extends Obj {
     // -- ATTRIBUTES --
 
     private int type;
@@ -13,9 +13,14 @@ public abstract class Tile extends Obj {
     /* Default constructor for the Tile class */
     public Tile() {
         this.texture = new Texture();
-        this.SetType("Tile");
+        this.SetStrType("Tile");
     }
 
+
+    public Tile(Pos pos) {
+        this();
+        this.SetPos(pos);
+    }
     
     // DEVELOPED BY: Sheldon
     /* Constructor for the Tile class with a type
@@ -23,7 +28,6 @@ public abstract class Tile extends Obj {
     public Tile(boolean isSolid) {
         this();
         this.isSolid = isSolid;
-        this.SetType("Tile");
     }
 
     
