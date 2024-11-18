@@ -404,6 +404,43 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
+    /* create a new troop based on the type of the troop
+     * @param troopType - the type of the troop to be created
+     * @return - the new troop object */
+    public Troop NewTroop(String troopType) {
+
+        Troop newTroop = null;
+
+        troopType = troopType.toLowerCase();
+
+        if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(); }
+        else if (troopType.equals("elixirgolem")) { newTroop = new TroopElixirGolem(); }
+        else if (troopType.equals("giant"))       { newTroop = new TroopGiant(); }
+        else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(); }
+        else if (troopType.equals("golem"))       { newTroop = new TroopGolem(); }
+        else if (troopType.equals("hogrider"))    { newTroop = new TroopHogRider(); }
+        else if (troopType.equals("knight"))      { newTroop = new TroopKnight(); }
+        else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(); }
+        else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(); }
+        else if (troopType.equals("skeleton"))    { newTroop = new TroopSkeletons(); }
+
+        return newTroop;
+    }
+
+    public Spell NewSpell(String spellType) {
+
+        Spell newSpell = null;
+
+        spellType = spellType.toLowerCase();
+
+        if      (spellType.equals("lightning")) { newSpell = new SpellLightning(); }
+        else if (spellType.equals("fireball"))  { newSpell = new SpellFireball(); }
+        else if (spellType.equals("zap"))       { newSpell = new SpellZap(); }
+
+        return newSpell;
+    }
+
+    // DEVELOPED BY: Sheldon
     /* spawn a troop on the game grid
      * @param troopType - the type of troop to be spawned
      * @param startingPos - the position where the troop will be spawned
@@ -413,22 +450,11 @@ class GameSystem {
 
         troopType = troopType.toLowerCase();
         
-        Troop newTroop = null;
-    
-        if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(startingPos, parent); }
-        else if (troopType.equals("elixirgolem")) { newTroop = new TroopElixirGolem(startingPos, parent); }
-        else if (troopType.equals("giant"))       { newTroop = new TroopGiant(startingPos, parent); }
-        else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(startingPos, parent); }
-        else if (troopType.equals("golem"))       { newTroop = new TroopGolem(startingPos, parent); }
-        else if (troopType.equals("hogrider"))    { newTroop = new TroopHogRider(startingPos, parent); }
-        else if (troopType.equals("knight"))      { newTroop = new TroopKnight(startingPos, parent); }
-        else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(startingPos, parent); }
-        else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(startingPos, parent); }
-        else if (troopType.equals("skeleton"))    { newTroop = new TroopSkeletons(startingPos, parent); }
-        else
-            return 0;
-    
+        Troop newTroop = NewTroop(troopType);
+        newTroop.SetPlayer(parent);
+        newTroop.SetPos(startingPos);
         newTroop.SetGameSysRef(this);
+        
         this.troops.append(newTroop);
     
         return 1;

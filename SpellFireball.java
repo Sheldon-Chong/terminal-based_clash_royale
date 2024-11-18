@@ -1,5 +1,6 @@
 // DEVELOPED BY: Daiki
 
+/* */
 public class SpellFireball extends Spell {
 
     // DEVELOPED BY: Daiki

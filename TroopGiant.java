@@ -7,6 +7,13 @@
 public class TroopGiant extends Troop {
 
     // DEVELOPED BY: Daiki
+    /* Default constructor for the Giant troop.
+     * Initializes the Giant with no specific starting position or player ownership.*/
+    public TroopGiant() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
     /*
      * Constructs a Giant troop with a specified starting position and player ownership.
      * Sets initial health and attack values specific to a Giant.

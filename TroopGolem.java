@@ -6,6 +6,13 @@
 public class TroopGolem extends Troop {
     
     // DEVELOPED BY: Daiki
+    /* Default constructor for the Golem troop.
+     * Initializes the Golem with no specific starting position or player ownership.*/
+    public TroopGolem() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
     /*
      * Constructs a Golem troop at a specified starting position and assigns it to a player.
      * Sets the unique health and attack values characteristic of the Golem.

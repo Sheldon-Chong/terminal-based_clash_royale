@@ -6,6 +6,10 @@
  */
 public class TroopGoblins extends Troop {
 
+    public TroopGoblins() {
+        this(null, null);
+    }
+
     // DEVELOPED BY: Daiki
     /*
      * Constructs Goblins with a specific starting position and player ownership.

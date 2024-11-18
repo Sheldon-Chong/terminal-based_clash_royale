@@ -8,6 +8,13 @@
 public class TroopBarbarian extends Troop {
 
     // DEVELOPED BY: Daiki
+    /* Default constructor for the Barbarian troop.
+     * Initializes the Barbarian with no specific starting position or player ownership.*/
+    public TroopBarbarian() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
     /*
      * Constructs a Barbarian troop with specified starting position and player ownership.
      * Sets initial health and attack values specific to a Barbarian.

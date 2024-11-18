@@ -6,6 +6,13 @@
 public class TroopHogRider extends Troop {
     
     // DEVELOPED BY: Daiki
+    /* Default constructor for the Hog Rider troop.
+     * Initializes the Hog Rider with no specific starting position or player ownership.*/
+    public TroopHogRider() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
     /*
      * Constructor for the Hog Rider troop, setting its starting position, player ownership, health, and attack.
      * @param startingPos - the initial position of the Hog Rider on the game grid.

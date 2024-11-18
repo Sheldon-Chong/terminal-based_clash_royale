@@ -136,36 +136,36 @@ public class Displayer {
      * @param grid - the 2D array of cells representing the game world */
     private void printBoard(Cell[][] grid) {
         
-        // render a gap
         screen.AppendLine("     ");
 
-        // render number guides
         for (int x = 0; x < grid[0].length; x++)
             screen.AppendStrToLastLine(String.format(" %2d  ", x + 1));
 
-        // render the start of the board
         screen.AppendLine("   _");
 
-        // render the top row
-        for (int x = 0; x < grid[0].length; x++)
-            screen.AppendStrToLastLine("_____");
+        for (int x = 0; x < grid[0].length; x++) {
+            if (grid[0][x].GetObject() instanceof TileVoid)
+                screen.AppendStrToLastLine("     ");
+                
+            else
+                screen.AppendStrToLastLine("_____");
+        }
 
-        // render all rows
         for (int y = 0; y < grid.length; y++) {
-            
-            // render alphabetic guides
+            // Render edge row
             String edgeBuffer = String.format("  | ", (char) (y + 'A'));
             
-            // render the dots on the grid
-            for (int x = 0; x < grid[y].length; x++)
-                edgeBuffer += ".   ";
+            for (int x = 0; x < grid[y].length; x++) {
+                char corner = '.';
+                String edge = "    ";
+                edgeBuffer += String.format("%c%s", corner, edge);
+            }
 
             screen.AppendLine(edgeBuffer);
 
             // Render content row
             String contentBuffer = String.format("%c | ", (char) (y + 'A'));
             
-            // render the content of the grid
             for (int x = 0; x < grid[y].length; x++)
                 contentBuffer += "     ";
 
@@ -176,7 +176,6 @@ public class Displayer {
         String lastEdgeBuffer = "  |_";
         for (int x = 0; x < grid[0].length; x++)
             lastEdgeBuffer += "_____";
-        
         screen.AppendLine(lastEdgeBuffer);
     }
 
@@ -217,7 +216,7 @@ public class Displayer {
 
 
             // - FIGURE OUT WHICH TEXTURE TO USE - 
-            
+
             int textureID;
 
             if (spell.GetDeployTime() < 0)
@@ -309,9 +308,9 @@ public class Displayer {
     private Pos[] getCornersFromTile(Pos pos) {
         Pos[] corners = new Pos[4];
 
-        corners[TOP_LEFT_CORNER] = pos2Corner(pos.Add(0, 0));
-        corners[TOP_RIGHT_CORNER] = pos2Corner(pos.Add(1, 0));
-        corners[BOTTOM_LEFT_CORNER] = pos2Corner(pos.Add(0, 1));
+        corners[TOP_LEFT_CORNER]     = pos2Corner(pos.Add(0, 0));
+        corners[TOP_RIGHT_CORNER]    = pos2Corner(pos.Add(1, 0));
+        corners[BOTTOM_LEFT_CORNER]  = pos2Corner(pos.Add(0, 1));
         corners[BOTTOM_RIGHT_CORNER] = pos2Corner(pos.Add(1, 1));
 
         return corners;
@@ -331,14 +330,15 @@ public class Displayer {
 
         // - RENDER BASE -
 
-        this.CardScreen.AppendLine(" ^^                                                               ");
+        this.CardScreen.AppendLine(" %name                                                            ");
         this.CardScreen.AppendLine("o=======================#1=========#2=========#3=========#4======o");
-        this.CardScreen.AppendLine("|  Next:______     | **       | **       | **       | **       | |");
-        this.CardScreen.AppendLine("|  | %%       |    |          |          |          |          | |");
+        this.CardScreen.AppendLine("|  Next:______     | %card    | %card    | %card    | %card    | |");
+        this.CardScreen.AppendLine("|  | %up      |    | %stat1   | %stat1   | %stat1   | %stat1   | |");
+        this.CardScreen.AppendLine("|  |          |    | %stat2   | %stat2   | %stat2   | %stat2   | |");
         this.CardScreen.AppendLine("|  |          |    |          |          |          |          | |");
-        this.CardScreen.AppendLine("|  |          |    |___[>>]___|___[>>]___|___[>>]___|___[>>]___| |");
-        this.CardScreen.AppendLine("|  |___[<<]___|       ________________________________________   |");
-        this.CardScreen.AppendLine("|              Elixir:&&                                      |$ |");
+        this.CardScreen.AppendLine("|  |          |    |___[%C]___|___[%C]___|___[%C]___|___[%C]___| |");
+        this.CardScreen.AppendLine("|  |___[%d]___|       ________________________________________   |");
+        this.CardScreen.AppendLine("|              Elixir:%elixirMeter                            |$ |");
         this.CardScreen.AppendLine("o================================================================o");
 
         Player currentPlayer = gameRef.GetCurrentPlayer();
@@ -347,7 +347,7 @@ public class Displayer {
         // - RENDER CARDS -
         
         Card []cards = currentPlayer.GetCardsOnHand();
-        this.CardScreen.ImposeImage(currentPlayer.GetName(), "^^");
+        this.CardScreen.ImposeImage(String.format("player %s : %s", this.gameRef.GetCurrentPlayer().GetPlayerNum(), currentPlayer.GetName()), "%name");
         
         // iterate for each card
         for (int i = 0; i < 4; i ++) {
@@ -367,16 +367,27 @@ public class Displayer {
             }
 
             // render card
-            this.CardScreen.ImposeImage(name, "**");
-            this.CardScreen.ImposeImage(elixirCost, ">>");
+            this.CardScreen.ImposeImage(name, "%card");
+            this.CardScreen.ImposeImage(elixirCost, "%C");
+            
+            if (cards[i].GetType() == Card.TROOP) {
+                Troop troop = gameRef.NewTroop(cards[i].GetName());
+                this.CardScreen.ImposeImage(String.format(" ATK: %d", troop.GetAttack()), "%stat1");
+                this.CardScreen.ImposeImage(String.format(" HP: %d", troop.GetHP()), "%stat2");
+            }
+            else if (cards[i].GetType() == Card.SPELL) {
+                Spell spell = gameRef.NewSpell(cards[i].GetName());
+                this.CardScreen.ImposeImage(String.format(" DMG: %d", spell.GetDuration()), "%stat1");
+                this.CardScreen.ImposeImage(String.format(" RADIUS:%d", spell.GetRadius()), "%stat2");
+            }
         }
 
         
         // - RENDER ELIXIR -
         
         // render upcoming card
-        this.CardScreen.ImposeImage(String.format("%2d", currentPlayer.GetUpcomingCard().GetElixirCost()), "<<");
-        this.CardScreen.ImposeImage(currentPlayer.GetUpcomingCard().GetName() + "", "%%");
+        this.CardScreen.ImposeImage(String.format("%2d", currentPlayer.GetUpcomingCard().GetElixirCost()), "%d");
+        this.CardScreen.ImposeImage(currentPlayer.GetUpcomingCard().GetName() + "", "%up");
         
         // render elixir bar
         String elixirMeter = "";
@@ -385,7 +396,7 @@ public class Displayer {
         }
 
         // render elixir
-        this.CardScreen.ImposeImage(elixirMeter, "&&");
+        this.CardScreen.ImposeImage(elixirMeter, "%elixirMeter");
         this.CardScreen.ImposeImage(currentPlayer.GetElixir() + "", "$");
 
 

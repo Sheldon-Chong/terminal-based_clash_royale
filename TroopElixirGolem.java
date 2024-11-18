@@ -7,6 +7,13 @@
 public class TroopElixirGolem extends Troop {
 
     // DEVELOPED BY: Daiki
+    /* Default constructor for the Elixir Golem troop.
+     * Initializes the Elixir Golem with no specific starting position or player ownership.*/
+    public TroopElixirGolem() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
     /*
      * Constructs an Elixir Golem troop with a specified starting position and player ownership.
      * Sets initial health and attack values specific to an Elixir Golem.

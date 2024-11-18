@@ -6,6 +6,13 @@
 public class TroopSkeletons extends Troop {
 
     // DEVELOPED BY: Daiki
+    /* Default constructor for the Skeletons troop.
+     * Initializes the Skeletons with no specific starting position or player ownership.*/
+    public TroopSkeletons() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
     /*
      * Constructor for the Skeletons troop, setting its initial attributes like position, health, and attack.
      * @param startingPos - the initial position of the Skeletons on the game grid.

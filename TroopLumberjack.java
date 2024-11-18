@@ -6,8 +6,14 @@
 public class TroopLumberjack extends Troop {
 
     // DEVELOPED BY: Daiki
-    /*
-     * Constructor for the Lumberjack troop, setting its starting position, player ownership, health, and attack.
+    /* Default constructor for the Lumberjack troop.
+     * Initializes the Lumberjack with no specific starting position or player ownership.*/
+    public TroopLumberjack() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
+    /* Constructor for the Lumberjack troop, setting its starting position, player ownership, health, and attack.
      * @param startingPos - the initial position of the Lumberjack on the game grid.
      * @param player - the player who owns and controls the Lumberjack.
      */

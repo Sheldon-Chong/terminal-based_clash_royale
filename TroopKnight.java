@@ -6,6 +6,13 @@
 public class TroopKnight extends Troop {
     
     // DEVELOPED BY: Daiki
+    /* Default constructor for the Knight troop.
+     * Initializes the Knight with no specific starting position or player ownership.*/
+    public TroopKnight() {
+        this(null, null);
+    }
+
+    // DEVELOPED BY: Daiki
     /*
      * Constructor for the Knight troop, setting its starting position, player ownership, health, and attack.
      * @param startingPos - the initial position of the Knight on the game grid.
