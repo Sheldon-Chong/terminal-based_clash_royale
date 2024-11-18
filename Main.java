@@ -29,7 +29,7 @@ public class Main {
         }
         
 
-        //  - LOAD MAP FROM FILE  -
+        // - LOAD MAP FROM FILE  -
 
         char[][] grid      = fHandler.readFile2Grid("GameMap.txt");
         GameSystem gameSys = new GameSystem();

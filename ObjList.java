@@ -1,11 +1,12 @@
 
-/*
- * A class that stores a list of objects.
- * Contains many methods to manipulate the list, without depending on existing libraries.
- */
-
+/* A class that stores a list of objects.
+ * Contains many methods to manipulate the list, without depending on existing libraries */
 public class ObjList {
+
+    // -- ATTRIBUTES --
+    
     private Obj[] list;
+
 
     // -- CONSTRUCTORS --
 

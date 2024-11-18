@@ -41,7 +41,8 @@ public class Pos {
         return new Pos(this.x, this.y);
     }
 
-    // -- METHODS --
+
+    // -- PUBLIC METHODS --
 
     // OPERATIONS
 
@@ -84,7 +85,6 @@ public class Pos {
         return (this.x == pos.x && this.y == pos.y);
     }
     
-
     // COMPLEX OPERATIONS
 
     // DEVELOPED BY: Sheldon

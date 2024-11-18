@@ -136,36 +136,36 @@ public class Displayer {
      * @param grid - the 2D array of cells representing the game world */
     private void printBoard(Cell[][] grid) {
         
+        // render a gap
         screen.AppendLine("     ");
 
+        // render number guides
         for (int x = 0; x < grid[0].length; x++)
             screen.AppendStrToLastLine(String.format(" %2d  ", x + 1));
 
+        // render the start of the board
         screen.AppendLine("   _");
 
-        for (int x = 0; x < grid[0].length; x++) {
-            if (grid[0][x].GetObject() instanceof TileVoid)
-                screen.AppendStrToLastLine("     ");
-                
-            else
-                screen.AppendStrToLastLine("_____");
-        }
+        // render the top row
+        for (int x = 0; x < grid[0].length; x++)
+            screen.AppendStrToLastLine("_____");
 
+        // render all rows
         for (int y = 0; y < grid.length; y++) {
-            // Render edge row
+            
+            // render alphabetic guides
             String edgeBuffer = String.format("  | ", (char) (y + 'A'));
             
-            for (int x = 0; x < grid[y].length; x++) {
-                char corner = '.';
-                String edge = "    ";
-                edgeBuffer += String.format("%c%s", corner, edge);
-            }
+            // render the dots on the grid
+            for (int x = 0; x < grid[y].length; x++)
+                edgeBuffer += ".   ";
 
             screen.AppendLine(edgeBuffer);
 
             // Render content row
             String contentBuffer = String.format("%c | ", (char) (y + 'A'));
             
+            // render the content of the grid
             for (int x = 0; x < grid[y].length; x++)
                 contentBuffer += "     ";
 
@@ -176,6 +176,7 @@ public class Displayer {
         String lastEdgeBuffer = "  |_";
         for (int x = 0; x < grid[0].length; x++)
             lastEdgeBuffer += "_____";
+        
         screen.AppendLine(lastEdgeBuffer);
     }
 

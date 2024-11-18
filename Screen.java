@@ -107,6 +107,8 @@ public class Screen {
      * @param texture - the texture to be placed on the screen
      * @param startingPos - the position on the screen where the texture will be placed */
     public String GetLine(int index) {
+
+        // if the index is out of bounds, return null
         if (index < 0 || index >= output.length) {
             return null;
         }
@@ -119,12 +121,16 @@ public class Screen {
      * @param texture - the texture to be placed on the screen
      * @param startingPos - the position on the screen where the texture will be placed */
     public Pos FindPattern(String s) {
+
+        // iterate for each character in the screen
         for (int y = 0; y < output.length; y++) {
             for (int x = 0; x < output[y].length; x++) {
                 
+                // if the character matches the first character of the pattern
                 if (output[y][x] == s.charAt(0)) {
                     boolean found = true;
 
+                    // check if the rest of the pattern matches
                     for (int i = 1; i < s.length(); i++) {
                         if (x + i >= output[y].length || output[y][x + i] != s.charAt(i)) {
                             found = false;
@@ -147,6 +153,8 @@ public class Screen {
      * @param startingPos - the position on the screen where the texture will be placed */
     public void ImposeImage(String texture, String pattern) {
         Pos startingPos = FindPattern(pattern);
+
+        // if the pattern is not found, return
         if (startingPos == null) {
             return;
         }
@@ -165,6 +173,7 @@ public class Screen {
     /* prints the screen to the console */
     public void PrintScreen() {
         
+        // iterate through each line and print them out
         for (int i = 0; i < output.length; i++)
             System.out.println(new String(output[i]));
         
@@ -176,20 +185,32 @@ public class Screen {
     /* appends a string to the last line of the screen
      * the equivalent of print for terminals */
     public void AppendStrToLastLine(String value) {
+
+        // If the output array is empty, initialize it with one row containing the value
         if (this.output.length == 0) {
-            this.output = new char[1][];
-            this.output[0] = value.toCharArray();
+            this.AppendLine(value);
             return;
         }
-
+    
+        // Get the last line of the output array
         char[] lastLine = this.output[this.output.length - 1];
-        char[] newLine = new char[lastLine.length + value.length()];
         
-        System.arraycopy(lastLine, 0, newLine, 0, lastLine.length);
-        System.arraycopy(value.toCharArray(), 0, newLine, lastLine.length, value.length());
+        // Create a new line with enough space to hold the last line and the new value
+        char[] newLine = new char[lastLine.length + value.length()];
+    
+        // Copy the characters from the last line to the new line
+        for (int i = 0; i < lastLine.length; i++)
+            newLine[i] = lastLine[i];
+
+        char[] valueChars = this.String2CharArr(value);
+
+        for (int i = 0; i < valueChars.length; i++)
+            newLine[lastLine.length + i] = valueChars[i];
+    
+        // Replace the last line in the output array with the new line
         this.output[this.output.length - 1] = newLine;
     }
-
+    
     // DEVELOPED BY: Sheldon
     /* appends a new line to the screen
      * the equivalent of println for terminals 
@@ -201,8 +222,22 @@ public class Screen {
         for (int i = 0; i < output.length; i++)
             newOutput[i] = this.output[i];
         
-        newOutput[this.output.length] = line.toCharArray(); // Convert string to char array
+        newOutput[this.output.length] = this.String2CharArr(line);
         this.output = newOutput;
 
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* converts a string to a character array
+     * @param String - the string to convert
+     * @return - the character array */
+
+    public char[] String2CharArr(String s) {
+        char[] charArr = new char[s.length()];
+
+        for (int i = 0; i < s.length(); i++)
+            charArr[i] = s.charAt(i);
+        
+        return charArr;
     }
 }

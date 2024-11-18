@@ -2,10 +2,10 @@
 
 
 
-/*
- * a world instance of a spell that occupies a position and radius
- */
-
+/* a world instance of a spell that occupies a position. 
+ * Spells start with a specified deployTime, which deducts every round
+ * When the deployTime reaches 0 and below, the spell is considored to have been "deployed"
+ * A deployed spell will keep deducting further until having been on the field for the length specified by effectDuration */
 public abstract class Spell extends Obj {
     
     // -- ATTRIBUTES --
@@ -16,7 +16,6 @@ public abstract class Spell extends Obj {
     private TextureSet  textureInEffect;
     private int         deployTime;
     private int         effectDuration;
-    private GameSystem  gameSys;
     private int         radius;
 
 
