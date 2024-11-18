@@ -8,6 +8,12 @@
  * A deployed spell will keep deducting further until having been on the field for the length specified by effectDuration */
 public abstract class Spell extends Obj {
     
+    // -- CONSTANTS --
+
+    public static final int TEXTURE_DEPLOYING = 0;
+    public static final int TEXTURE_DEPLOYED  = 1;
+
+
     // -- ATTRIBUTES --
     
     private Pos         startPos;

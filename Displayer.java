@@ -213,30 +213,43 @@ public class Displayer {
             Spell spell = (Spell) spellQueue.GetItem(i);
 
             Pos[] corners = getCornersFromTile(spell.GetBoundaryStart());
-
             Pos startingCorner = corners[TOP_LEFT_CORNER];
 
-            int textureID = (spell.GetDeployTime() < 0) ? 1 : 0;
-            TextureSet texture = spell.GetTexture(textureID);
 
+            // - FIGURE OUT WHICH TEXTURE TO USE - 
+            
+            int textureID;
+
+            if (spell.GetDeployTime() < 0)
+                textureID = Spell.TEXTURE_DEPLOYED;
+            else
+                textureID = Spell.TEXTURE_DEPLOYING;
+            
+            TextureSet spellTexture = spell.GetTexture(textureID);
+
+            
+            // - RENDER SPELL ONTO SCREEN -
+            
+            // get the boundaries of the spell (starting and ending corners)
             Pos startPos = spell.GetBoundaryStart();
-            Pos endPos = spell.GetBoundaryEnd();
+            Pos endPos   = spell.GetBoundaryEnd();
+            
+            // render corners first
+            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_LEFT),     startingCorner);
+            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_BOTTOM_RIGHT), pos2Corner(endPos));
+            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_BOTTOM_LEFT),  pos2Corner(new Pos(startPos.x, endPos.y)));
+            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_RIGHT),    pos2Corner(new Pos(endPos.x, startPos.y)));
 
-            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_TOP_LEFT),     startingCorner);
-            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_BOTTOM_RIGHT), pos2Corner(endPos));
-            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_BOTTOM_LEFT),  pos2Corner(new Pos(startPos.x, endPos.y)));
-            screen.ImposeImage(texture.getTexture(TextureSet.CORNER_TOP_RIGHT),    pos2Corner(new Pos(endPos.x, startPos.y)));
-
-            // Render the sides
+            // render the left and right side
             for (int y = startPos.y + 1; y < endPos.y; y++) {
-                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_LEFT),  pos2Corner(new Pos(startPos.x, y)));
-                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_RIGHT), pos2Corner(new Pos(endPos.x, y)));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_LEFT),  pos2Corner(new Pos(startPos.x, y)));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_RIGHT), pos2Corner(new Pos(endPos.x, y)));
             }
 
-            // Render the top and bottom
+            // render the top and bottom side
             for (int x = startPos.x + 1; x < endPos.x; x++) {
-                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_TOP),    pos2Corner(new Pos(x, startPos.y)));
-                screen.ImposeImage(texture.getTexture(TextureSet.SIDE_BOTTOM), pos2Corner(new Pos(x, endPos.y)));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_TOP),    pos2Corner(new Pos(x, startPos.y)));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_BOTTOM), pos2Corner(new Pos(x, endPos.y)));
             }
         }
     }
