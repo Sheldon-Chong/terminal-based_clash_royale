@@ -1,10 +1,10 @@
 public class Tile extends Obj {
+
     // -- ATTRIBUTES --
 
-    private int type;
-    private TextureSet texture;
-    private boolean isSolid;
-    private GameSystem gameSysRef;
+    private int         type;
+    private TextureSet  texture;
+    private GameSystem  gameSysRef;
 
 
     // -- CONSTRUCTORS --
@@ -17,36 +17,35 @@ public class Tile extends Obj {
     }
 
 
+    // DEVELOPED BY: Sheldon
+    /* Constructor for the Tile class with a position
+     * @param - pos: the position of the tile */
     public Tile(Pos pos) {
         this();
         this.SetPos(pos);
-    }
-    
-    // DEVELOPED BY: Sheldon
-    /* Constructor for the Tile class with a type
-     * @param - type: the type of the tile */
-    public Tile(boolean isSolid) {
-        this();
-        this.isSolid = isSolid;
     }
 
     
     // -- GETTERS and SETTERS --
 
     // DEVELOPED BY: Sheldon
-    /* SetTextureRef sets the texture reference of the tile
+    /* sets the texture reference of the tile
      * @param - texture: the texture reference */
 
-    public void SetTextureRef(TextureSet texture) {
+    public void SetAppearance(TextureSet texture) {
         this.texture = texture;
     }
 
     // DEVELOPED BY: Sheldon
-    public TextureSet GetTexture() {
+    /* returns the texture reference of the tile
+     * @return - the texture reference */
+    public TextureSet GetAppearance() {
         return this.texture;
     }
 
     // DEVELOPED BY: Sheldon
+    /* SetType sets the type of the tile
+     * @param type - the type to set the tile to */
     public void SetType(int type) {
         this.type = type;
     }
@@ -59,23 +58,16 @@ public class Tile extends Obj {
     }
 
     // DEVELOPED BY: Sheldon
-    /* SetSolid sets the tile to be solid or not
-     * @param isSolid - boolean value to set the tile to solid/non-solid*/
-    public void SetSolid(boolean isSolid) {
-        this.isSolid = isSolid;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* IsSolid returns whether the tile is solid or not
-     * @return - boolean */
-    public boolean IsSolid() {
-        return this.isSolid;
-    }
-
+    /* SetGameSysRef sets the reference to the game system
+     * @param gameSysRef - the reference to the game system */
     public void SetGameSysRef(GameSystem gameSysRef) {
         this.gameSysRef = gameSysRef;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* GetCell returns the cell that the tile is in
+     * functions as a backlink
+     * @return - Cell */
     public Cell GetCell() {
         return this.gameSysRef.GetCell(this.GetPos());
     }

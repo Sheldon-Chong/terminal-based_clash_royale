@@ -7,50 +7,60 @@
 public class ObjList {
     private Obj[] list;
 
-    public static void main(String [] args) {
-        Obj obj1 = new Troop();
-        Obj obj2 = new Troop();
-
-        obj1.SetPos(1,1);
-        obj2.SetPos(2,2);
-
-        ObjList objList = new ObjList();
-        objList.append(obj1);
-        objList.append(obj2);
-
-        System.out.println(objList.GetItem(0).GetPos().x);
-        System.out.println(objList.GetItem(1).GetPos().x);
-        System.out.println(objList.GetItem(-2).GetPos().x);
-
-        objList.PrintList();
-        objList.Pop(-1);
-        
-        objList.PrintList();
-
-        System.out.println(objList.FindItem(obj1));
-
-    }
-
     // -- CONSTRUCTORS --
 
+    // DEVELOPED BY: Sheldon
+    /* Default constructor */
     public ObjList() {
         this.list = null;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* Constructor that initializes the list with an array of objects
+     * @param list - the array of objects to initialize the list with */
     public ObjList(Obj[] list) {
         this.list = list;
     }
 
-    // -- PUBLIC METHODS --
+    // -- GETTER AND SETTER --
 
-    public Obj []SelfCopy() {
-        Obj []newList = new Obj[list.length];
-
-        for (int i = 0; i < list.length; i++)
-            newList[i] = list[i];
-        return newList;
+    // DEVELOPED BY: Sheldon
+    /* Inserts an object at a specified index
+     * @param index - the index to insert the object at
+     * @param obj - the object to insert
+     * @return - true if the object was inserted, false otherwise */
+    public void SetItem(int index, Obj obj) {
+        if (index >= list.length)
+            return ;
+        if (index < 0)
+            index = list.length + index;
+        list[index] = obj;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* Gets an object at a specified index
+     * @param index - the index to get the object from
+     * @return - the object at the specified index */
+    public Obj GetItem(int index) {
+        if (index < 0)
+            index = list.length + index;
+        return list[index];
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* Gets the list of objects
+     * @return - the list of objects */
+    public Obj[] GetList() {
+        return this.list;
+    }
+
+
+    // -- PUBLIC METHODS --
+
+    // DEVELOPED BY: Sheldon
+    /* Appends an object to the list
+     * @param obj - the object to append
+     * @return - true if the object was appended, false otherwise */
     public boolean append(Obj obj) {
         if (list == null) {
             this.list = new Obj[1];
@@ -67,20 +77,10 @@ public class ObjList {
         return true;
     }
 
-    public void SetItem(int index, Obj obj) {
-        if (index >= list.length)
-            return ;
-        if (index < 0)
-            index = list.length + index;
-        list[index] = obj;
-    }
-
-    public Obj GetItem(int index) {
-        if (index < 0)
-            index = list.length + index;
-        return list[index];
-    }
-
+    // DEVELOPED BY: Sheldon
+    /* Finds the index of an object in the list
+     * @param objRef - the object to find
+     * @return - the index of the object in the list */
     public int FindItem(Obj objRef) {
         for (int i = 0; i < list.length; i ++) {
             if (list[i] == objRef)
@@ -89,53 +89,56 @@ public class ObjList {
         return -1;
     }
 
-    public Obj[] GetList() {
-        return this.list;
-    }
-
+    // DEVELOPED BY: Sheldon
+    /* Removes an object from the list at a specified index
+     * @param index - the index to remove the object from */
     public void Pop(int index) {
+
+        // if the index is a negative, get the index starting from the end of the list
         if (index < 0)
             index = list.length + index;
 
-        Obj obj = list[index];
         Obj[] newList = new Obj[list.length - 1];
+
+        // iterate through the list
         for (int i = 0; i < list.length; i++) {
+
+            // if before the index to pop
             if (i < index)
                 newList[i] = list[i];
+
+            // if after the index to pop
             else if (i > index)
                 newList[i - 1] = list[i];
+
         }
+
+        // set the list to the new list
         this.list = newList;
-        return ;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* Removes an object from the list
+     * @param object - the object to remove */
     public void Pop(Obj object) {
+        // search for the object in the list
         int index = this.FindItem(object);
 
+        // if object doesn' exist
         if (index == -1)
             return ;
 
         this.Pop(index);
     }        
 
-    public void PrintList() {
-        System.out.print("{ ");
-        for (int i = 0; i < list.length; i++) {
-            System.out.print(list[i]);
-            if (i < list.length - 1)
-                System.out.print(", ");
-        }
-        System.out.print(" }\n");
-    }
-
-    public void ClearList() {
-        this.list = null;
-    }
-
+    // DEVELOPED BY: Sheldon
+    /* Gets the length of the list
+     * @return - the length of the list */
     public int GetLen() {
+
         if (list == null)
             return 0;
+
         return list.length;
     }
-
 }

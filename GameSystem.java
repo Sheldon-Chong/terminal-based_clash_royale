@@ -278,9 +278,8 @@ class GameSystem {
     // -- PUBLIC METHODS --
 
     // DEVELOPED BY: Daiki
-    // Updates the game state for the current round.
+    /* Updates the game state for the current round.*/
     public void UpdateWorld() { 
-
         this.updateTroops();
         this.updateTiles();
         this.updateSpellQueue();
@@ -290,7 +289,7 @@ class GameSystem {
 
     
     // DEVELOPED BY: Daiki
-    // Increases each player's elixir count to allow more card plays.
+    /*Increases each player's elixir count to allow more card plays */
     public void RegenerateElixir() {
         this.player1.RegenerateElixir();
         this.player2.RegenerateElixir();
@@ -298,7 +297,7 @@ class GameSystem {
 
 
     // DEVELOPED BY: Sheldon
-    /* Get the player that is not the current player */
+    /* Set the player that is not the current player */
     public void AlternatePlayer() {
         if (this.currentPlayer == this.player1)
             this.currentPlayer = this.player2;
@@ -306,6 +305,10 @@ class GameSystem {
             this.currentPlayer = this.player1;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* check if a card is deployable based on a given raw string input
+     * @param input - the input string
+     * @return - the error code based on the validation result */
     public int ValidateDeploymentOfCard(String input) {
         if (input.length() != 1) 
             return ERR_INVALID_FORMAT;
@@ -382,19 +385,19 @@ class GameSystem {
      * @param pos - the position where the card will be deployed
      * @return - 1 if the card was deployed successfully, -1 if the player does not have enough elixir, -2 if the index is out of bounds */
     public int DeployCard(int index, Pos pos) {
-        // Check if the card index is valid
-    
-        Card card = this.GetCurrentPlayer().GetCard(index);
+        Card   card          = this.GetCurrentPlayer().GetCard(index);
         Player currentPlayer = this.GetCurrentPlayer();
     
         // Deduct elixir cost
         currentPlayer.DeductElixir(card.GetElixirCost());
     
+        // Determine the type of the card and spawn the appropriate object
         if (card.GetType() == Card.SPELL)
             this.SpawnSpell(card.GetName(), pos);
         else
             this.SpawnTroop(card.GetName(), pos);
     
+        // Remove the card from the player's hand
         currentPlayer.RemoveCard(index);
 
         return 1;
@@ -798,6 +801,8 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
+    /* Get the navigation markers for player 1 
+     * @return - the list of navigation markers for player 1 as a cell array*/
     public Cell [] GetP1NavMarkers () {
         Obj  [] navigationMarkers     = this.p1TravelPoints.GetList();
         Cell [] navigationMarkerCells = new Cell[navigationMarkers.length];
@@ -809,6 +814,8 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
+    /* Get the navigation markers for player 2 
+     * @return - the list of navigation markers for player 2 as a cell array*/
     public Cell [] GetP2NavMarkers () {
         Obj  [] navigationMarkers     = this.p2TravelPoints.GetList();
         Cell [] navigationMarkerCells = new Cell[navigationMarkers.length];
@@ -866,7 +873,7 @@ class GameSystem {
     }
 
     // DEVELOPED BY : DAIKI
-    // Check if the game is over
+    /* Check if the game is over by determining if either player's king tower has been destroyed*/
     public boolean isGameOver() {
 
         if (player1.GetKingTower() == null || player1.GetKingTower().IsDestroyed()) {

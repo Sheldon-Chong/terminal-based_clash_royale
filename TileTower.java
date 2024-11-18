@@ -27,7 +27,7 @@ public class TileTower extends Tile {
     /* Constructor for TileTower */
     public TileTower () {
         this.SetStrType("TileTower");
-        this.SetTextureRef(this.TextureTowerAlive());
+        this.SetAppearance(this.TextureTowerAlive());
     }
 
     // DEVELOPED BY: Sheldon
@@ -113,57 +113,7 @@ public class TileTower extends Tile {
             " ----",
             "     "
         });
+        
         return towerAlive;
     }
 }
-
-// /* Texture for the tower when it is dead
-    //  * @return - Texture
-    //  */
-    // private Texture TextureTowerDead() {
-    //     Texture towerDead = new Texture();
-
-    //     towerDead.setTexture(Tile.CORNER_TOP_LEFT, new String [] {
-    //         "._____",
-    //         "|     ",
-    //         "|     "
-    //     });
-
-    //     towerDead.setTexture(Tile.CORNER_TOP_RIGHT, new String [] {
-    //         "_____.",
-    //         "     |",
-    //         "     |"
-    //     });
-    //     towerDead.setTexture(Tile.CORNER_BOTTOM_LEFT, new String [] {
-    //         "      ",
-    //         "|     ",
-    //         "|_____"
-    //     });
-    //     towerDead.setTexture(Tile.CORNER_BOTTOM_RIGHT, new String [] {
-    //         "      ",
-    //         "     |",
-    //         "_____|"
-    //     });
-    //     towerDead.setTexture(Tile.SIDE_LEFT, new String [] {
-    //         " ",
-    //         "|",
-    //         "| "
-    //     });
-    //     towerDead.setTexture(Tile.SIDE_RIGHT, new String [] {
-    //         "      ",
-    //         "     |",
-    //         "     |"
-    //     });
-    //     towerDead.setTexture(Tile.SIDE_BOTTOM, new String [] {
-    //         "      ",
-    //         "      ",
-    //         "_____ "
-    //     });
-    //     towerDead.setTexture(Tile.SIDE_TOP, new String [] {
-    //         "_____ ",
-    //         "      ",
-    //         "      "
-    //     });
-    //     return towerDead;
-    // }
-    

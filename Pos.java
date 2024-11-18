@@ -95,22 +95,6 @@ public class Pos {
         return Math.sqrt(Math.pow(this.x - pos.x, 2) + Math.pow(this.y - pos.y, 2));
     }
 
-    public boolean LargerThan(Pos pos) {
-        return (this.x > pos.x && this.y > pos.y);
-    }
-
-    public boolean LargerOrEqualTo(Pos pos) {
-        return (this.x >= pos.x && this.y >= pos.y);
-    }
-
-    public boolean SmallerOrEqualTo(Pos pos) {
-        return (this.x <= pos.x && this.y <= pos.y);
-    }
-
-    public boolean SmallerThan(Pos pos) {
-        return (this.x < pos.x && this.y < pos.y);
-    }
-
     // OTHERS
 
     // DEVELOPED BY: Sheldon

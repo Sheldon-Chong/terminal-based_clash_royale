@@ -271,13 +271,13 @@ public class Displayer {
                     // If the object is a TileTower (e.g., a wall or structure related to the tower), render it
                     else if (object instanceof TileTower) {
                         TileTower towerWall = (TileTower) object;  
-                        screen.ImposeImage(towerWall.GetTexture().getTexture(towerWall.GetType()), startingCorner);
+                        screen.ImposeImage(towerWall.GetAppearance().getTexture(towerWall.GetType()), startingCorner);
                     } 
 
                     // If the object is a TileEmpty (empty space on the board), render it
                     else if (object instanceof TileVoid) {
                         TileVoid empty = (TileVoid) object;  
-                        screen.ImposeImage(empty.GetTexture().getTexture(empty.GetType()), startingCorner);
+                        screen.ImposeImage(empty.GetAppearance().getTexture(empty.GetType()), startingCorner);
                     }
                 }
             }
