@@ -32,6 +32,9 @@ class GameSystem {
     public final static int  ERR_INVALID_DEPLOY_REGION = -5;
     public final static int  ERR_OCCUPIED_SPACE = -6;
     
+    public final static int  ERR_INVALID_CARD = -7;
+    public final static int  ERR_ELIXIR_COST = -8;
+
     public final static String [] CARDS = {
         "barbarian",
         "elixir golem",
@@ -68,6 +71,7 @@ class GameSystem {
     private final int maxRow = 17;    // Maximum index for rows (0-27)
     private final int maxCol = 28;    // Maximum index for columns (A-Q, 0-12)
 
+
     // -- CONSTRUCTORS --
     
     // DEVELOPED BY: Sheldon
@@ -79,6 +83,10 @@ class GameSystem {
     
     // -- GETTERS AND SETTERS --
 
+    // DEVELOPED BY : DAIKI
+    /* Advance to the next round.
+    * This method increments the counter for the current round in the game.
+    * It represents the progression of the game turn-by-turn. */
     public void NextRound() {
         this.currentRound ++;
     }
@@ -88,44 +96,62 @@ class GameSystem {
     public Player GetWinner() {
         return winner;
     }
-
     // DEVELOPED BY: Daiki
+    /* Retrieve the array of cards managed by the GameSystem.
+    * This method is used to access the full set of cards that are available in the game, 
+    * allowing other components of the system to interact with the card data.
+    * @return Card[] - returns an array of Card objects */
     public Card []getCards() {
         return this.cards;
     }
 
     // DEVELOPED BY: Daiki
+    /* Set the current player for the game turn.
+    * This method assigns the player who is currently taking their turn.
+    * @param player - the Player object representing the current player */
     public void SetCurrentPlayer(Player player) {
         this.currentPlayer = player;
     }
     
     // DEVELOPED BY: Daiki
+    /* Retrieve the current player.
+     * This method returns the player object of the player who is currently taking their turn.
+     * @return Player - the current player object */
     public Player GetCurrentPlayer() {
         return this.currentPlayer;
     }
 
     // DEVELOPED BY: Daiki
+    /* Retrieve player 1's object.
+     * This method returns the object of player 1 from the game system.
+     * @return Player - player 1's object */
     public Player GetPlayer1() {
         return this.player1;
     }
     
     // DEVELOPED BY: Daiki
+    /* Retrieve player 2's object.
+    * This method returns the object of player 2 from the game system.
+    * @return Player - player 2's object */
     public Player GetPlayer2() {
         return this.player2;
     }
 
     // DEVELOPED BY: Sheldon
     /* Get the troops in the game world
-     * @return - the list of troops in the game world */
+     * @return - the list of troops in the game world as a troop object*/
     public Troop[] GetTroops() {
         
         Obj[] objArray = this.troops.GetList();
 
+        // if the list is empty, return null
         if (objArray == null)
             return null;
 
+        // convert the object array to a troop array
         Troop[] troopArray = new Troop[objArray.length];
         
+        // iterate for all objects in the object array
         for (int i = 0; i < objArray.length; i++)
             troopArray[i] = (Troop) objArray[i];
 
@@ -133,35 +159,61 @@ class GameSystem {
     }
  
     // DEVELOPED BY: Daiki
+    /* Retrieve the entire game grid.
+    * This method returns a 2D array of Cell objects representing the current state of the game board.
+    * @return Cell[][] - the grid of cells that make up the game board */
     public Cell [][] GetGrid() {
         return this.worldGrid; 
     }
 
+    // DEVELOPED BY: Daiki
+    /* Get the height of the game grid.
+    * This method returns the number of rows in the grid, indicating the vertical dimension of the game board.
+    * @return int - the height of the grid measured in cells */
     public int GetHeight() {
         return this.worldGrid.length;
     }
 
+    // DEVELOPED BY: Daiki
+    /* Get the width of the game grid.
+    * This method returns the number of columns in the grid, indicating the horizontal dimension of the game board.
+    * @return int - the width of the grid measured in cells */
     public int GetWidth() {
         return this.worldGrid[0].length;
     }
 
+    // DEVELOPED BY: Daiki
+    /* Get the dimensions of the game grid as a position object.
+    * This method constructs a new Pos object representing the width and height of the grid.
+    * @return Pos - a position object where x is the width and y is the height of the grid */
     public Pos GetDimensions() {
         return new Pos(this.GetWidth(), this.GetHeight());
     }
 
     // DEVELOPED BY: Daiki
-    public void      SetCell(int row, int col, Cell cell) {
+    /* Set a cell at a specific position in the grid.
+    * This method places a Cell object at the specified row and column in the grid.
+    * @param row - the row index where the cell will be set
+    * @param col - the column index where the cell will be set
+    * @param cell - the Cell object to place in the grid */
+    public void SetCell(int row, int col, Cell cell) {
          this.worldGrid[row][col] = cell;
     }
 
     // DEVELOPED BY: Daiki
-    public Cell      GetCell(int row, int col) { 
+    /* Retrieve a cell from a specific row and column in the grid.
+    * This method returns the Cell object located at the specified row and column.
+    * @param row - the row index of the cell to retrieve
+    * @param col - the column index of the cell to retrieve
+    * @return Cell - the cell at the specified row and column */
+    public Cell GetCell(int row, int col) { 
         return this.worldGrid[row][col];
     }
 
     // DEVELOPED BY: Daiki
-    public Cell      GetCell(Pos pos) {
-        if (pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length)
+    /* Retrieve a cell from a specified position on the grid*/
+    public Cell GetCell(Pos pos) {
+        if (this.isOutOfBounds(pos))
             return null;
         
         return this.worldGrid[pos.y][pos.x];
@@ -176,24 +228,25 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Daiki
-    // Method to check if troop/spell is deployed within the board
-    public boolean IsWithinBoard(Pos pos) {
-        return pos.x >= 0 && pos.x < worldGrid[0].length && pos.y >= 0 && pos.y < worldGrid.length;
-    }
-
-    // DEVELOPED BY: Daiki
-    // Method to get the current round
+    /* Retrieve the current round number in the game.
+    * This method returns the integer value representing the current round of the game.
+    * @return int - the current game round number */
     public int GetRound() {
         return this.currentRound;
     }
 
     // DEVELOPED BY: Daiki
+    /* Get the list of active spells on the game board.
+    * This method returns the ObjList containing all currently active and queued spells in the game.
+    * @return ObjList - a list of spells currently in play */
     public ObjList GetSpells() {
         return this.spellQueue;
     }
 
     // DEVELOPED BY: Daiki
-    // Method to shuffle cards in each player's hand
+    /* Shuffle the cards in each player's hand at the start of a new round.
+    * This method shuffles the cards currently held by both players to randomize their hand.
+    * It prints a message indicating that the shuffling process is taking place. */
     public void shufflePlayerCards() { 
         System.out.println("Shuffling player cards...");
         
@@ -202,6 +255,10 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Daiki
+    /* Determine which side of the board an object is on based on its x-coordinate.
+    * Objects on the left half (x from 0 to 13) are in PLAYER1_REGION, while objects on the right half (x from 14 onward) are in PLAYER2_REGION
+    * @param object - the object to determine the region for
+    * @return int - PLAYER1_REGION or PLAYER2_REGION based on the object's position */
     public int GetObjRegion(Obj object) {
         Pos pos = object.GetPos();
 
@@ -221,18 +278,19 @@ class GameSystem {
     // -- PUBLIC METHODS --
 
     // DEVELOPED BY: Daiki
+    // Updates the game state for the current round.
     public void UpdateWorld() { 
 
         this.updateTroops();
         this.updateTiles();
         this.updateSpellQueue();
         this.RegenerateElixir();
-        
         this.NextRound();
     }
 
     
     // DEVELOPED BY: Daiki
+    // Increases each player's elixir count to allow more card plays.
     public void RegenerateElixir() {
         this.player1.RegenerateElixir();
         this.player2.RegenerateElixir();
@@ -248,21 +306,36 @@ class GameSystem {
             this.currentPlayer = this.player1;
     }
 
-    public int ValidateDeploymentOfCard(int index) {
-        Card card = this.GetCurrentPlayer().GetCard(index);
+    public int ValidateDeploymentOfCard(String input) {
+        if (input.length() != 1) 
+            return ERR_INVALID_FORMAT;
+        //System.out.println("Invalid input. Please enter a valid card number.");
+
+        else if (input.charAt(0) < '1' || input.charAt(0) > '4') 
+            return ERR_INVALID_CARD;
+        //System.out.println("Invalid card number. Please select a number between 1 and 4.");
+
+        Card card = this.GetCurrentPlayer().GetCard(Integer.valueOf(input) - 1);
 
         if (currentPlayer.GetElixir() < card.GetElixirCost())
-            return -1;  // Not enough elixir
+            return ERR_ELIXIR_COST;
 
-        return 1;  // Valid deployment
+        return 1;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* Check whether a position string is parsable and within the bounds of the game grid
+     * @param input - the string input by the user
+     * @return - the error code based on the validation result */
     public int ValidatePositionString(String input) {
+
+        // check if the input is of the correct format
         if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q'))
-            return ERR_INVALID_FORMAT; //invalid format
+            return ERR_INVALID_FORMAT;
             
         input = input.toUpperCase();
 
+        // check whether positions are readable
         if (input.charAt(0) < 'A' || input.charAt(0) > 'Q')
             return ERR_INVALID_ROW;
         if (input.charAt(1) < '0' || input.charAt(1) > '9')
@@ -272,9 +345,11 @@ class GameSystem {
 
         Pos pos = parsePosition(input);
 
+        // if out of bounds
         if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow)
             return ERR_OUT_OF_BOUNDS;
             
+        // if outside deployable region
         if ((currentPlayer.GetPlayerNum() == GameSystem.PLAYER1_REGION && (pos.x < 0 || pos.x > 14)) ||
             (currentPlayer.GetPlayerNum() == GameSystem.PLAYER2_REGION && (pos.x < 15 || pos.x > 28))) {
             return ERR_INVALID_DEPLOY_REGION;
@@ -301,7 +376,6 @@ class GameSystem {
         return new Pos(column, row);
     }
 
-
     // DEVELOPED BY: Sheldon & DAIKI
     /* deploy a card by spawning a troop or summoning a spell
      * @param index - the index of the card to be deployed
@@ -325,9 +399,8 @@ class GameSystem {
 
         return 1;
     }
-    
 
-        // DEVELOPED BY: Sheldon
+    // DEVELOPED BY: Sheldon
     /* spawn a troop on the game grid
      * @param troopType - the type of troop to be spawned
      * @param startingPos - the position where the troop will be spawned
@@ -455,6 +528,7 @@ class GameSystem {
         
         // remove null items from the spell queue
         while(index < this.spellQueue.GetLen()) {
+
             if (this.spellQueue.GetItem(index) == null)
                 this.spellQueue.Pop(index);
             else
@@ -467,45 +541,61 @@ class GameSystem {
      * @param cell - the cell to be checked
      * @param subjects - the array of objects to be checked
      * @return - the type of the tile */
-    private int getCellSideType(Cell cell, String[] subjects) {
+    private int getCellSideType(Cell cell, String[] connectingTileTypes) {
+        
         Cell[] neighbours = cell.GetNeighbours();
     
-        boolean nLeft = neighbours[Cell.NEIGHBOUR_LEFT] != null  && neighbours[Cell.NEIGHBOUR_LEFT].GetObject().isInObjArr(subjects);
-        boolean nRight= neighbours[Cell.NEIGHBOUR_RIGHT] != null && neighbours[Cell.NEIGHBOUR_RIGHT].GetObject().isInObjArr(subjects);
-        boolean nUp   = neighbours[Cell.NEIGHBOUR_UP] != null    && neighbours[Cell.NEIGHBOUR_UP].GetObject().isInObjArr(subjects);
-        boolean nDown = neighbours[Cell.NEIGHBOUR_DOWN] != null  && neighbours[Cell.NEIGHBOUR_DOWN].GetObject().isInObjArr(subjects);
+
+        // - GET NEIGHBOURS -
+
+        Cell neighbourLeft = neighbours[Cell.NEIGHBOUR_LEFT];
+        Cell neighbourRight= neighbours[Cell.NEIGHBOUR_RIGHT];
+        Cell neighbourUp   = neighbours[Cell.NEIGHBOUR_UP];
+        Cell neighbourDown = neighbours[Cell.NEIGHBOUR_DOWN];
+
+        boolean nLeft = neighbourLeft  != null && neighbourLeft.GetObject().IsType(connectingTileTypes);
+        boolean nRight= neighbourRight != null && neighbourRight.GetObject().IsType(connectingTileTypes);
+        boolean nUp   = neighbourUp    != null && neighbourUp.GetObject().IsType(connectingTileTypes);
+        boolean nDown = neighbourDown  != null && neighbourDown.GetObject().IsType(connectingTileTypes);
     
+
+        // - GET ADJACENT WALL COUNT -
+
         int wallCount = 0;
     
-        if (nLeft) wallCount++;
+        if (nLeft)  wallCount++;
         if (nRight) wallCount++;
-        if (nUp) wallCount++;
-        if (nDown) wallCount++;
+        if (nUp)    wallCount++;
+        if (nDown)  wallCount++;
     
-        if (wallCount == 0) return TextureSet.INDEPENDANT;
-        if (wallCount == 4) return TextureSet.INSIDE;
+
+        // - DETERMINE TILE TYPE -
+
+        if (wallCount == 0) return TextureSet.INDEPENDANT;     // if no adjacent walls
+        if (wallCount == 4) return TextureSet.INSIDE;          // if all adjacent walls
     
         // sides
-        if ((nLeft && nRight) || (nUp && nDown)) {
-            if (nLeft && nRight) {
-                if (nUp && !nDown) return TextureSet.SIDE_BOTTOM;
-                if (nDown && !nUp) return TextureSet.SIDE_TOP;
-    
-                return TextureSet.PIPE_H;
-            } 
-            else {
-                if (nLeft && !nRight) return TextureSet.SIDE_RIGHT;
-                if (nRight && !nLeft) return TextureSet.SIDE_LEFT;
-    
-                return TextureSet.PIPE_V;
-            }
-        } 
+
+        if (nLeft && nRight) {
+            if (nUp && !nDown) return TextureSet.SIDE_BOTTOM;
+            if (nDown && !nUp) return TextureSet.SIDE_TOP;
+
+            return TextureSet.PIPE_H;
+        }
+
+        else if (nUp && nDown) {
+            if (nLeft && !nRight) return TextureSet.SIDE_RIGHT;
+            if (nRight && !nLeft) return TextureSet.SIDE_LEFT;
+
+            return TextureSet.PIPE_V;
+        }
+
         // corners
         else {
             if (nRight && nDown) return TextureSet.CORNER_TOP_LEFT;
-            if (nLeft && nDown) return TextureSet.CORNER_TOP_RIGHT;
-            if (nRight && nUp) return TextureSet.CORNER_BOTTOM_LEFT;
-            if (nLeft && nUp) return TextureSet.CORNER_BOTTOM_RIGHT;
+            if (nLeft && nDown)  return TextureSet.CORNER_TOP_RIGHT;
+            if (nRight && nUp)   return TextureSet.CORNER_BOTTOM_LEFT;
+            if (nLeft && nUp)    return TextureSet.CORNER_BOTTOM_RIGHT;
         }
     
         // inside
@@ -646,9 +736,9 @@ class GameSystem {
             for (int col = 0; col < grid[row].length; col++) {
                 
                 char currentTile = grid[row][col];
-
                 Obj tileContent = new TileFloor();
                 
+
                 // - CREATE A TILE BASED ON THE CHARACTER -
 
                 switch (currentTile) {
@@ -678,18 +768,17 @@ class GameSystem {
                 }
                 
                 
-                // - HANDLE NAVIGATION MARKERS
-
+                // - HANDLE NAVIGATION MARKERS -
+                // append navigation markers to another list besides the world grid
+                
                 // if it is a player1 navigation marker
                 if (currentTile == SYMBOL_P1_NAV_MARKER) {
-
                     tileContent = new TileFloor(new Pos(col, row));
                     this.p1TravelPoints.append(tileContent);
                 }
 
                 // if it is a player2 navigation marker
                 else if (currentTile == SYMBOL_P2_NAV_MARKER) {
-
                     tileContent = new TileFloor(new Pos(col, row));
                     this.p2TravelPoints.append(tileContent);
                 }
@@ -730,6 +819,52 @@ class GameSystem {
         return navigationMarkerCells;
     }
 
+
+    // DEVELOPED BY : DAIKI
+    /* Find all cells containing a specific type of object in the game grid.
+    * This method searches through the entire game grid and collects cells that contain objects of a specified type.
+    * @param objType - the type of object to look for within the cells.
+    * @return an array of cells containing objects of the specified type. */
+    public Cell[] FindAllCellContaining(String objType) {
+        Cell[] cellArr = null; // Initialize an empty array to store cells.
+    
+        // Loop through all cells in the grid.
+        for (int y = 0; y < this.worldGrid.length; y++) {
+            for (int x = 0; x < this.worldGrid[y].length; x++) {
+
+                // Get the object in the current cell.
+                Obj obj = this.GetCell(new Pos(x, y)).GetObject();
+
+                // If the object is not null and matches the specified type, add the cell to the array.
+                if (obj != null && obj.GetStrType().equals(objType))
+                    cellArr = AppendCell(cellArr, this.GetCell(new Pos(x, y)));
+            }
+        }
+    
+        return cellArr;
+    }
+    
+    // DEVELOPED BY : DAIKI
+    /* Append a cell to an existing array of cells.
+    * This method expands an array of cells by adding a new cell to it.
+    * @param cellList - the existing array of cells to which the new cell will be added.
+    * @param cell - the new cell to add to the array.
+    * @return the updated array including the newly added cell. */
+    public Cell [] AppendCell(Cell [] cellList, Cell cell) {
+
+        if (cellList == null)
+            return new Cell[]{cell};
+
+        Cell [] newCellList = new Cell[cellList.length + 1];
+
+        for (int i = 0; i < cellList.length; i ++) {
+            newCellList[i] = cellList[i];
+        }
+
+        newCellList[cellList.length] = cell;
+        return newCellList;
+    }
+
     // DEVELOPED BY : DAIKI
     // Check if the game is over
     public boolean isGameOver() {
@@ -745,36 +880,5 @@ class GameSystem {
         }
 
         return false;
-    }
-
-    public Cell[] FindAllCellContaining(String objType) {
-        Cell[] cellArr = null;
-    
-        for (int y = 0; y < this.worldGrid.length; y++) {
-            for (int x = 0; x < this.worldGrid[y].length; x++) {
-
-                Obj obj = this.GetCell(new Pos(x, y)).GetObject();
-
-                if (obj != null && obj.GetStrType().equals(objType))
-                    cellArr = AppendCell(cellArr, this.GetCell(new Pos(x, y)));
-            }
-        }
-    
-        return cellArr;
-    }
-    
-    public Cell [] AppendCell(Cell [] cellList, Cell cell) {
-
-        if (cellList == null)
-            return new Cell[]{cell};
-
-        Cell [] newCellList = new Cell[cellList.length + 1];
-
-        for (int i = 0; i < cellList.length; i ++) {
-            newCellList[i] = cellList[i];
-        }
-
-        newCellList[cellList.length] = cell;
-        return newCellList;
     }
 }

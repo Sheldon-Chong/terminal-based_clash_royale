@@ -23,6 +23,9 @@ public class Card {
     // -- CONSTRUCTOR --
 
     // DEVELOPED BY: Daiki
+    /* Construct a default Card with predefined values
+     * This constructor initializes a card with a default name of "Card", 
+     * an elixir cost of 0, and a type of 0 */
     public Card() {
         this.name = "Card";
         this.elixirCost = 0;
@@ -44,22 +47,25 @@ public class Card {
     // -- GETTERS AND SETTERS --
 
     // DEVELOPED BY: Daiki
+    /* Gets the elixir cost of each card*/
     public int GetElixirCost() {
         return elixirCost;
     }
     
+    // DEVELOPED BY: Daiki
+    /* Sets the elixir cost of each card */
     public void SetElixirCost(int elixirCost) {
         this.elixirCost = elixirCost;
     }
     
     // DEVELOPED BY: Daiki
+    /* GetName gets the name of the card*/
     public String GetName() {
         return name;
     }
     
     // DEVELOPED BY: Daiki
-    /* SetName sets the name of the card
-     * @param - name: the new name of the card */
+    /* SetName sets the name of the card*/
     public void SetName() {
         this.name = name;
     }
@@ -79,6 +85,7 @@ public class Card {
     }
 
     // DEVELOPED BY: Daiki
+    /* Gets the type of card */
     public int GetType() {
         return this.type;
     }

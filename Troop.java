@@ -352,8 +352,12 @@
 
     // WRITTEN BY : DAIKI
     /*
-     * 
-     */
+    * Attacks a specified object if it is an enemy.
+    * This method checks the type of the object (either Troop or Tower) and if it is recognized as an enemy,
+    * it will reduce the enemy's health by this object's attack value. It also sets the current action
+    * of this object to 'ATTACK'.
+    * @param object - the target object this instance will attack.
+    */
     private void attack(Obj object) {
         if (object instanceof Troop && isEnemy(object)) {
             Troop enemy = (Troop) object;
@@ -365,7 +369,7 @@
             enemyTower.subtractHealth(this.GetAttack());  // Apply attack to the tower
         }
 
-        this.SetAction(ACTION_ATTACK);
+        this.SetAction(ACTION_ATTACK); // Records that this action was an attack
     }
     
 }

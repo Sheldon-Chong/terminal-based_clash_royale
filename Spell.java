@@ -12,8 +12,8 @@ public abstract class Spell extends Obj {
     
     private Pos         startPos;
     private Pos         endPos;
-    private TextureSet     textureDeploy;
-    private TextureSet     textureInEffect;
+    private TextureSet  textureDeploy;
+    private TextureSet  textureInEffect;
     private int         deployTime;
     private int         effectDuration;
     private GameSystem  gameSys;
@@ -22,14 +22,32 @@ public abstract class Spell extends Obj {
 
     // -- CONSTRUCTORS --
     
-    public Spell (Pos startingPos, Pos endPos, int deployTime, int effectDuration, int radius) {
+    // DEVELOPED BY: Sheldon
+    /* Default constructor for the Spell class */
+    public Spell () {
+        this(new Pos(0, 0), 1, 1, 1);
+    }
+    
+    // DEVELOPED BY: Sheldon
+    /* Constructor for the Spell class with a starting position, radius, deploy time, and effect duration
+     * @param startingPos - the starting position of the spell
+     * @param radius - the radius of the spell effect
+     * @param deployTime - the time it takes for the spell to be cast
+     * @param effectDuration - the duration of the spell effect */
+    public Spell (Pos startingPos, int radius, int deployTime, int effectDuration) {
+
+        // - INITIALIZE ATTRIBUTES -
+
         this.effectDuration = effectDuration;
-        this.deployTime = deployTime;
-        this.startPos = startingPos;
-        this.endPos = endPos;
-        this.radius = radius;
+        this.deployTime     = deployTime;
+        this.startPos       = startingPos.Add(-radius, -radius);
+        this.endPos         = startingPos.Add(radius, radius);
+        this.radius         = radius;
 
         this.textureDeploy = new TextureSet();
+
+
+        // - SET TEXTURES - 
 
         this.textureDeploy.setTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
             "._____",
@@ -55,6 +73,8 @@ public abstract class Spell extends Obj {
             "     |"
         });
 
+
+        // - SET TEXTURES WHEN IN-EFFECT -
         
         this.textureInEffect = new TextureSet();
 
@@ -108,48 +128,51 @@ public abstract class Spell extends Obj {
 
     // -- GETTER AND SETTER --
 
-    public void SetRadius(int radius) {
-        this.radius = radius;
-    }
-
+    // DEVELOPED BY: Sheldon
+    /* Retrieves the radius of the spell.
+     * @return - the radius of the spell as an int. */
     public int GetRadius() {
         return this.radius;
     }
 
-    public void SetDuration(int duration) {
-        this.effectDuration = duration;
-    }
-
+    // DEVELOPED BY: Sheldon
+    /* Retrieves the duration of the spell effect.
+     * @return - the duration of the spell effect as an int. */
     public int GetDuration() {
         return this.effectDuration;
     }
 
-    public void SetGameRef(GameSystem gameSys) {
-        this.gameSys = gameSys;
-    }
-
-    public GameSystem GetGameRef() {
-        return this.gameSys;
-    }
-
-    public Pos GetStartPos() {
+    // DEVELOPED BY: Sheldon
+    /* Sets the starting position of the spell.
+     * @param startPos - the starting position as a Pos. */
+    public Pos GetBoundaryStart() {
         return this.startPos;
     }
 
-    public Pos GetEndPos() {
+    // DEVELOPED BY: Sheldon
+    /* Retrieves the starting position of the spell.
+     * @return - the starting position as a Pos. */
+    public Pos GetBoundaryEnd() {
         return this.endPos;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* Deducts the deploy time of the spell by 1. */
     public void DeductDeployTime() {
         this.deployTime--;
     }
 
+    // DEVELOPED BY: Sheldon
+    /* Retrieves the deploy time of the spell.
+     * @return - the deploy time as an int. */
     public int GetDeployTime() {
         return this.deployTime;
     }
 
-    public abstract void ApplyEffect(Pos targetPos, GameSystem gameSysRef);
-
+    // DEVELOPED BY: Sheldon
+    /* Retrieves the texture set for the spell based on the current state.
+     * @param num - the number of the texture set to retrieve.
+     * @return - the texture set for the spell. */
     public TextureSet GetTexture(int num) {
         if (num == 0)
             return this.textureDeploy;
@@ -157,5 +180,14 @@ public abstract class Spell extends Obj {
         else
             return this.textureInEffect;
     }
+
+
+    // -- ABSTRACT METHODS --
+
+    // DEVELOPED BY: Sheldon
+    /* Apply the effect of the spell on a target position within the game world.
+     * @param targetPos - the center position where the spell strikes.
+     * @param gameSysRef - reference to the GameSystem to interact with game elements. */
+    public abstract void ApplyEffect(Pos targetPos, GameSystem gameSysRef);
 
 }

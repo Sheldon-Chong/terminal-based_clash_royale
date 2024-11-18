@@ -20,11 +20,18 @@ public class Tower extends Obj{
     // -- CONSTRUCTORS --
     
     // DEVELOPED BY: Daiki
+    /* Default constructor for Tower class without specific initialization. 
+     * It sets the tower type to "Tower" using the internal method.
+     */
     Tower () { 
         this.SetStrType("Tower");
     }
 
     // DEVELOPED BY: Daiki
+    /* Constructor for Tower with association to a player.
+     * @param player - the player object to whom the tower belongs.
+     * It initializes the tower's player ownership and sets its type.
+     */
     Tower (Player player) {
         this.parentPlayer = player;
         this.SetStrType("Tower");
@@ -34,36 +41,57 @@ public class Tower extends Obj{
     // -- SETTERS AND GETTERS --
     
     // DEVELOPED BY: Daiki
+    /* Sets the position of the tower on the game board.
+     * @param pos - position object specifying the tower's location.
+     */
     public void SetPos(Pos pos) {
         this.pos = pos;
     }
 
     // DEVELOPED BY: Daiki
+    /* Returns the current position of the tower.
+     * @return - the position object of the tower.
+     */
     public Pos GetPos() {
         return this.pos;
     }
 
     // DEVELOPED BY: Daiki
+    /* Sets the health of the tower.
+     * @param health - the health value to set for the tower.
+     */
     public void setHealth(int health) {
         this.health = health;
     }
     
     // DEVELOPED BY: Daiki
+    /* Subtracts a specified amount from the tower's health.
+     * @param health - the amount of health to subtract.
+     */
     public void subtractHealth(int health) {
         this.health -= health;
     }
     
     // DEVELOPED BY: Daiki
+    /* Gets the current health of the tower.
+     * @return - the current health value of the tower.
+     */
     public int getHealth() {
         return this.health;
     }
 
     // DEVELOPED BY: Daiki
+    /* Assigns a player to the tower, establishing ownership.
+     * @param parentPlayer - the player object that owns the tower.
+     */
     public void SetPlayer(Player parentPlayer) {
         this.parentPlayer = parentPlayer;
     }
 
     // DEVELOPED BY: Daiki
+    /* Retrieves the player that owns the tower.
+     * @return - the player object associated with the tower.
+     */
     public Player GetPlayer() {
         return this.parentPlayer;
     }
@@ -75,6 +103,10 @@ public class Tower extends Obj{
         return this.health <= 0; 
     }
 
+    // DEVELOPED BY: Daiki
+    /* Determines if the tower is the main king tower.
+     * @return - true if the tower is designated as the king tower.
+     */
     public boolean isKingTower() {
         return isKingTower;
     }

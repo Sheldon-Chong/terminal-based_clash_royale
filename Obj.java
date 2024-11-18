@@ -75,7 +75,7 @@ public class Obj {
         return pos.DistanceFrom(obj.GetPos());
     }
 
-    public boolean isInObjArr(String[] objects) {
+    public boolean IsType(String[] objects) {
     
         for (int i = 0; i < objects.length; i++) {
             if (objects[i].equals(this.GetStrType()))

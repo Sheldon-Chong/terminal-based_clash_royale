@@ -8,8 +8,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        
-
+        // - CHECK DEPENDENCIES -
         
         FileHandler fHandler = new FileHandler();
         
@@ -29,28 +28,31 @@ public class Main {
             return ;
         }
         
-        char[][] grid;
 
-        grid = fHandler.readFile2Grid("GameMap.txt");
+        //  - LOAD MAP FROM FILE  -
 
+        char[][] grid      = fHandler.readFile2Grid("GameMap.txt");
         GameSystem gameSys = new GameSystem();
+        Scanner input      = new Scanner(System.in);
+        Displayer display  = new Displayer(gameSys);
+
+        // Set the game map in the game system.
         gameSys.CharGrid2CellGrid(grid);
 
-        Scanner input     = new Scanner(System.in);
-        Displayer display = new Displayer(gameSys);
-
-        // Display title screen
         display.ShowTitleScreen();
+
+
+        // - GET PRELIMINARY INFO -
 
         input.nextLine();
 
-        // Get the players
+        // Get the player's name
         System.out.print("Enter Player 1 name: ");
         String player1Name = input.nextLine(); 
-        
         System.out.print("Enter Player 2 name: ");
         String player2Name = input.nextLine();
         
+        // Set player names in the game system.
         gameSys.GetPlayer1().SetName(player1Name);
         gameSys.GetPlayer2().SetName(player2Name);
         
@@ -58,17 +60,22 @@ public class Main {
         
         // Wait for ENTER to start the game
         System.out.println("\nPress ENTER to begin game...");
-        input.nextLine(); // Waits for ENTER input
+        input.nextLine();
 
         // Load and display the game board
         System.out.println("\nLoading the board...");
         display.PrintWorld(gameSys.GetGrid()); // Display the initial board
 
 
-        // GAME LOOP
+        // - GAME LOOP -
         
         while (true) {
+
+            // a flag to skip the turn
             boolean skipTurn = false;
+
+
+            // - DISPLAY GAME STATE -
 
             System.out.println("\n\n");
             display.DisplayRound();
@@ -76,27 +83,34 @@ public class Main {
             display.PrintWorld(gameSys.GetGrid());
             display.DisplayCardDeck(gameSys.GetCurrentPlayer());  
 
+            
+            
+            // - READ FROM USER INPUT -
+            
             String userInput;
-
             while (true) { 
 
                 System.out.print("Choose a card to deploy (1-4), or press ENTER to skip:");
                 userInput = input.nextLine();
 
-                if (userInput.length() == 0) { // if the input is empty
+                // if the input is empty
+                if (userInput.length() == 0) { 
                     System.out.println("Skipping turn...");
                     skipTurn = true;
                     break;
                 }
-                if (userInput.length() != 1) // if the input is not a single character
-                    System.out.println("Invalid input. Please enter a valid card number.");
-
-                else if (userInput.charAt(0) < '1' || userInput.charAt(0) > '4') // if the input is not a number between 1 and 4
-                    System.out.println("Invalid card number. Please select a number between 1 and 4.");
                 
-                else if (gameSys.ValidateDeploymentOfCard(Integer.parseInt(userInput) - 1) == -1) {
+                int status = gameSys.ValidateDeploymentOfCard(userInput);
+
+                if (status == GameSystem.ERR_INVALID_FORMAT)
+                    System.out.println("ERROR: Invalid input. Please enter a valid card number.");
+
+                else if (status == GameSystem.ERR_INVALID_CARD)
+                    System.out.println("ERROR: Invalid card number. Please select a number between 1 and 4.");
+                
+                else if (status == GameSystem.ERR_ELIXIR_COST) {
                     Card selectedCard = gameSys.GetCurrentPlayer().GetCard(Integer.parseInt(userInput) - 1);
-                    System.out.printf("Not enough elixir to deploy %s. Required: %d, Available: %d\n", 
+                    System.out.printf("ERROR: Not enough elixir to deploy %s. Required: %d, Available: %d\n", 
                         selectedCard.GetName(), 
                         selectedCard.GetElixirCost(), 
                         gameSys.GetCurrentPlayer().GetElixir());
@@ -105,13 +119,28 @@ public class Main {
                     break;
             }
 
+
+            // - DEPLOY CARD -
+
             String positionRaw = "";
 
+            // Handle position input for troop deployment.
             while (true && !skipTurn) {
+
+                // Get the position to deploy the card.
                 System.out.print("Enter a deploy position (e.g., A5): ");
                 positionRaw = input.nextLine();
+
+                // if user chooses to cancel deployment
+                if (positionRaw.equals("cancel")) {
+                    System.out.println("Cancelling deployment...");
+                    skipTurn = true;
+                    break;
+                }
+
                 int parseStatus = gameSys.ValidatePositionString(positionRaw);
 
+                // error handling
                 if (parseStatus == gameSys.ERR_INVALID_FORMAT)
                     System.out.println("ERROR: Invalid format ");
                     
@@ -132,35 +161,46 @@ public class Main {
 
                 else if (parseStatus == 1)
                     break;
-            }
+            }            
 
+            // Deploy the card if the user did not skip the turn.
             if (!skipTurn) {
                 int cardIndex = Integer.parseInt(userInput) - 1;
     
-                Pos deployPos = gameSys.parsePosition(positionRaw); // Assuming there's a method to convert user input into position
+                // Convert user input to position.
+                Pos deployPos = gameSys.parsePosition(positionRaw); 
     
+                // deploy card onto the world
                 gameSys.DeployCard(cardIndex, deployPos);
-                display.PrintWorld(gameSys.GetGrid());
                 
+                // print confirmation
+                display.PrintWorld(gameSys.GetGrid());
                 System.out.printf("successfully deployed %s at (%d, %d)\n", gameSys.GetCurrentPlayer().GetCard(cardIndex).GetName(), deployPos.x, deployPos.y); 
             }
+
+
+            // - PROCEED TO NEXT TURN -
 
             System.out.print("Press ENTER to continue...");
             input.nextLine();
             
+            // Update game state for the next round.
             gameSys.UpdateWorld();
     
+            // check if game over
             if (gameSys.isGameOver())
                 break;
-    
+
+            // Switch to the next player.
             gameSys.AlternatePlayer();
         }
 
+
+        // - GAME OVER -
+
+        // End game and display game over message.
         display.PrintWorld(gameSys.GetGrid());
-        String [] GameOverMsg = fHandler.readFile2Lines("MsgGameOver.txt");
-        for (int i = 0; i < GameOverMsg.length; i ++) {
-            System.out.println(GameOverMsg[i]);
-        }
+        display.PrintGameOver(gameSys.GetWinner());
 
         input.close();
     }

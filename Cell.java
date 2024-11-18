@@ -106,6 +106,10 @@ public class Cell {
     }
 
     // Written by Daiki
+    /* Creates a deep copy of this Cell instance
+    * This method is intended to create and return a new instance of Cell that duplicates the current state of this Cell.
+    * A deep copy of the contained Obj might be necessary depending on whether the Obj class itself properly supports cloning.
+    * @return Cell - a new Cell instance replicating this Cell's state */
     public Cell CopySelf() {
         // Deep copy the object if needed, e.g., by creating a new instance of the object
         Obj clonedObject = this.object; // Replace with deep copy if necessary
