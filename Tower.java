@@ -5,14 +5,13 @@
  * It will occupy a tile on the grid.
  * Since the gameSystem has refferences to these tower objects, troops will know how to direct themselves to the nearest tower by comparing positions of each tower. */
 
-public class Tower extends Obj{
+public abstract class Tower extends Obj{
     
     // -- ATTRIBUTES --
     
     private Pos     pos;
     private Player  parentPlayer;
     private int     health;
-    private boolean isKingTower;
 
 
     // -- CONSTRUCTORS --
