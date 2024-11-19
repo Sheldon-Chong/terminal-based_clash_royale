@@ -48,62 +48,7 @@ public class Displayer {
     }
 
 
-    // -- PUBLIC METHODS --
-
-    // DEVELOPED BY: Daiki
-    /*  Displays ASCII Title Screen */
-    public void ShowTitleScreen() {
-        String [] startingScreen = this.fHandler.readFile2Lines("MsgTitleScreen.txt");
-
-        for (int i = 0; i < startingScreen.length; i ++) {
-            System.out.println(startingScreen[i]);
-        }
-            
-        System.out.println("Press ENTER to begin game");
-    }
-    
-
-    public void PrintGameOver(Player winner) {
-        String [] GameOverMsg = fHandler.readFile2Lines("MsgGameOver.txt");
-
-        for (int i = 0; i < GameOverMsg.length; i ++) {
-            System.out.println(GameOverMsg[i]);
-        }
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* Displays the game board and all objects within the game world.
-     * This method is responsible for rendering the game state to the console, including troops, towers, spells, and other objects.
-     * The method uses the Screen class to impose images onto the game board display, updating the visual representation of the game state.
-     * @param grid - the 2D array of cells representing the game world */
-    public void PrintWorld(Cell[][] grid) {
-
-        // clear screen
-        this.screen.ResetScreen();
-
-        // print player titles
-        printBoard(grid);
-        renderTroops();
-        renderSpells();
-        renderCells();
-
-        // print screen to console
-        this.screen.PrintScreen();
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* print player1/player2 titles above the board */
-    public void PrintPlayerOverlay() {
-        for (int i = 0; i < this.msgPlayerOverlay.length; i ++) {
-            System.out.println(this.msgPlayerOverlay[i]);
-        }
-    }
-    
-    // DEVELOPED BY: Sheldon
-    /* Displays the current player's turn on the game screen */
-    public void DisplayRound() {
-        System.out.printf("------------------------------------------------------------------------ Round %d -----------------------------------------------------------------\n", this.gameRef.GetRound());
-    }
+    // -- HELPER METHODS --
 
     // DEVELOPED BY: Sheldon
     /* get the representation of a given object, with different visual representations for different object types */
@@ -135,48 +80,43 @@ public class Displayer {
     /* Print the game board to the console, including all cells and objects within the game world.
      * @param grid - the 2D array of cells representing the game world */
     private void printBoard(Cell[][] grid) {
-        
-        screen.AppendLine("     ");
+        String buffer = "     "; 
+
+        // - PRINT NUMERIC RULER (X-AXIS) -
 
         for (int x = 0; x < grid[0].length; x++)
-            screen.AppendStrToLastLine(String.format(" %2d  ", x + 1));
+            buffer += String.format(" %2d  ", x + 1);
+        screen.AppendLine(buffer);
 
-        screen.AppendLine("   _");
 
-        for (int x = 0; x < grid[0].length; x++) {
-            if (grid[0][x].GetObject() instanceof TileVoid)
-                screen.AppendStrToLastLine("     ");
-                
-            else
-                screen.AppendStrToLastLine("_____");
-        }
+        // - PRINT TOP BORDER -
 
+        buffer = "   _";
+
+        for (int x = 0; x < grid[0].length; x++)
+            buffer += "_____";
+
+        screen.AppendLine(buffer);
+
+        // - PRINT BOARD -
+
+        // iterate for each row
         for (int y = 0; y < grid.length; y++) {
-            // Render edge row
-            String edgeBuffer = String.format("  | ", (char) (y + 'A'));
-            
-            for (int x = 0; x < grid[y].length; x++) {
-                char corner = '.';
-                String edge = "    ";
-                edgeBuffer += String.format("%c%s", corner, edge);
-            }
 
-            screen.AppendLine(edgeBuffer);
-
-            // Render content row
-            String contentBuffer = String.format("%c | ", (char) (y + 'A'));
+            // print vertical axis ruler
+            buffer = String.format("  | ", (char)(y+'A'));
             
             for (int x = 0; x < grid[y].length; x++)
-                contentBuffer += "     ";
+                buffer += ".    ";
+            screen.AppendLine(buffer);
+            
 
-            screen.AppendLine(contentBuffer);
+            buffer = String.format("%c | ", (char) (y + 'A'));
+
+            for (int x = 0; x < grid[y].length; x++)
+                buffer += "     ";
+            screen.AppendLine(buffer);
         }
-
-        // Render the last edge row
-        String lastEdgeBuffer = "  |_";
-        for (int x = 0; x < grid[0].length; x++)
-            lastEdgeBuffer += "_____";
-        screen.AppendLine(lastEdgeBuffer);
     }
 
     // DEVELOPED BY: Sheldon
@@ -211,9 +151,6 @@ public class Displayer {
 
             Spell spell = (Spell) spellQueue.GetItem(i);
 
-            Pos[] corners = getCornersFromTile(spell.GetBoundaryStart());
-            Pos startingCorner = corners[TOP_LEFT_CORNER];
-
 
             // - FIGURE OUT WHICH TEXTURE TO USE - 
 
@@ -234,21 +171,21 @@ public class Displayer {
             Pos endPos   = spell.GetBoundaryEnd();
             
             // render corners first
-            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_LEFT),     startingCorner);
+            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_LEFT),     pos2Corner(startPos));
             screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_BOTTOM_RIGHT), pos2Corner(endPos));
-            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_BOTTOM_LEFT),  pos2Corner(new Pos(startPos.x, endPos.y)));
-            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_RIGHT),    pos2Corner(new Pos(endPos.x, startPos.y)));
+            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_BOTTOM_LEFT),  pos2Corner(startPos.x, endPos.y));
+            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_RIGHT),    pos2Corner(endPos.x, startPos.y));
 
             // render the left and right side
             for (int y = startPos.y + 1; y < endPos.y; y++) {
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_LEFT),  pos2Corner(new Pos(startPos.x, y)));
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_RIGHT), pos2Corner(new Pos(endPos.x, y)));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_LEFT),  pos2Corner(startPos.x, y));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_RIGHT), pos2Corner(endPos.x, y));
             }
 
             // render the top and bottom side
             for (int x = startPos.x + 1; x < endPos.x; x++) {
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_TOP),    pos2Corner(new Pos(x, startPos.y)));
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_BOTTOM), pos2Corner(new Pos(x, endPos.y)));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_TOP),    pos2Corner(x, startPos.y));
+                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_BOTTOM), pos2Corner(x, endPos.y));
             }
         }
     }
@@ -301,6 +238,12 @@ public class Displayer {
     /* Convert a tile position to a corner position on the screen */
     private Pos pos2Corner(Pos pos) {
         return (pos.Multiply(5, 2).Add(4, 2));
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* Convert a tile position to a corner position on the screen */
+    private Pos pos2Corner(int x, int y) {
+        return pos2Corner(new Pos(x, y));
     }
 
     // DEVELOPED BY: Sheldon
@@ -367,7 +310,7 @@ public class Displayer {
             }
 
             // render card
-            this.CardScreen.ImposeImage(name, "%card");
+            this.CardScreen.ImposeImage(String.format("%-7s", name), "%card");
             this.CardScreen.ImposeImage(elixirCost, "%C");
             
             if (cards[i].GetType() == Card.TROOP) {
@@ -405,7 +348,67 @@ public class Displayer {
         this.CardScreen.PrintScreen();
     }
 
-    
+    // -- PUBLIC METHODS --
 
+    // DEVELOPED BY: Daiki
+    /* Displays a texture (array of strings )onto the screen */
+    public void PrintTexture(String [] texture) {
+        for (int i = 0; i < texture.length; i ++) {
+            System.out.println(texture[i]);
+        }
+    }    
+
+    // DEVELOPED BY: Daiki
+    /*  Displays ASCII Title Screen */
+    public void ShowTitleScreen() {
+        String [] startingScreen = this.fHandler.readFile2Lines("MsgTitleScreen.txt");
+
+        this.PrintTexture(startingScreen);
+            
+        System.out.println("Press ENTER to begin game");
+    }
     
+    // DEVELOPED BY: Daiki
+    /* Displays the game over message */
+    public void PrintGameOver(Player winner) {
+        String [] GameOverMsg = fHandler.readFile2Lines("MsgGameOver.txt");
+
+        this.PrintTexture(GameOverMsg);
+
+        System.out.printf("Player %s wins!\n", winner.GetPlayerNum());
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* Displays the game board and all objects within the game world.
+     * This method is responsible for rendering the game state to the console, including troops, towers, spells, and other objects.
+     * The method uses the Screen class to impose images onto the game board display, updating the visual representation of the game state.
+     * @param grid - the 2D array of cells representing the game world */
+    public void PrintWorld(Cell[][] grid) {
+
+        // clear screen
+        this.screen.ResetScreen();
+
+        // print player titles
+        printBoard(grid);
+        renderTroops();
+        renderSpells();
+        renderCells();
+
+        // print screen to console
+        this.screen.PrintScreen();
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* print player1/player2 titles above the board */
+    public void PrintPlayerOverlay() {
+        for (int i = 0; i < this.msgPlayerOverlay.length; i ++) {
+            System.out.println(this.msgPlayerOverlay[i]);
+        }
+    }
+    
+    // DEVELOPED BY: Sheldon
+    /* Displays the current player's turn on the game screen */
+    public void DisplayRound() {
+        System.out.printf("------------------------------------------------------------------------ Round %d -----------------------------------------------------------------\n", this.gameRef.GetRound());
+    }
 }
