@@ -101,7 +101,7 @@ class GameSystem {
     * This method is used to access the full set of cards that are available in the game, 
     * allowing other components of the system to interact with the card data.
     * @return Card[] - returns an array of Card objects */
-    public Card []getCards() {
+    public Card []GetCards() {
         return this.cards;
     }
 
@@ -213,7 +213,7 @@ class GameSystem {
     // DEVELOPED BY: Daiki
     /* Retrieve a cell from a specified position on the grid*/
     public Cell GetCell(Pos pos) {
-        if (this.isOutOfBounds(pos))
+        if (this.IsOutOfBounds(pos))
             return null;
         
         return this.worldGrid[pos.y][pos.x];
@@ -223,7 +223,7 @@ class GameSystem {
     /* checks if a position is out of bounds
      * @param pos - the position to be checked
      * @return - true if the position is out of bounds, false otherwise*/
-    public boolean isOutOfBounds (Pos pos) {
+    public boolean IsOutOfBounds (Pos pos) {
         return pos.x < 0 || pos.x >= this.worldGrid[0].length || pos.y < 0 || pos.y >= this.worldGrid.length;
     }
 
@@ -241,17 +241,6 @@ class GameSystem {
     * @return ObjList - a list of spells currently in play */
     public ObjList GetSpells() {
         return this.spellQueue;
-    }
-
-    // DEVELOPED BY: Daiki
-    /* Shuffle the cards in each player's hand at the start of a new round.
-    * This method shuffles the cards currently held by both players to randomize their hand.
-    * It prints a message indicating that the shuffling process is taking place. */
-    public void shufflePlayerCards() { 
-        System.out.println("Shuffling player cards...");
-        
-        player1.ShuffleCards();
-        player2.ShuffleCards();
     }
 
     // DEVELOPED BY: Daiki
@@ -434,7 +423,7 @@ class GameSystem {
 
         // - INITIALIZE CARD STATS -
         
-        String[] cardsRaw = fHandler.readFile2Lines("cards.csv");
+        String[] cardsRaw = fHandler.ReadFile2Lines("cards.csv");
         this.cards        = new Card[cardsRaw.length];
         
         // iterate for each card
@@ -471,10 +460,10 @@ class GameSystem {
         this.player2 = new Player("Player2", 2, this);
 
         this.SetCurrentPlayer(this.GetPlayer1());
-        this.shufflePlayerCards();
+        this.ShufflePlayerCards();
 
         // Initialize world grid with error handling for the main game grid file
-        this.worldGrid = this.CharGrid2CellGrid(fHandler.readFile2Grid(FILENAME));
+        this.worldGrid = this.CharGrid2CellGrid(fHandler.ReadFile2Grid(FILENAME));
 
 
         // - INITIALIZE TOWER REFFERENCES -
@@ -694,7 +683,7 @@ class GameSystem {
 
     // DEVELOPED BY : DAIKI
     /* Check if the game is over by determining if either player's king tower has been destroyed*/
-    public boolean isGameOver() {
+    public boolean IsGameOver() {
 
         if (player1.GetKingTower() == null || player1.GetKingTower().IsDestroyed()) {
             winner = player2;
@@ -711,6 +700,15 @@ class GameSystem {
 
 
     // -- PUBLIC METHODS --
+
+    // DEVELOPED BY: Daiki
+    /* Shuffle the cards in each player's hand at the start of a new round.
+    * This method shuffles the cards currently held by both players to randomize their hand.
+    * It prints a message indicating that the shuffling process is taking place. */
+    public void ShufflePlayerCards() {         
+        player1.ShuffleCards();
+        player2.ShuffleCards();
+    }
 
     // DEVELOPED BY: Daiki
     /* Updates the game state for the current round.*/
@@ -781,7 +779,7 @@ class GameSystem {
         if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9'))
             return ERR_INVALID_COL;
 
-        Pos pos = parsePosition(input);
+        Pos pos = ParsePosition(input);
 
         // if out of bounds
         if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow)
@@ -809,7 +807,7 @@ class GameSystem {
 
     // DEVELOPED BY : DAIKI
     /* Convert a user's input string, which represents a position on the game grid (ex: A25) */
-    public Pos parsePosition(String input) {
+    public Pos ParsePosition(String input) {
 
         int  row    = input.charAt(0) - 'A';  // Convert column character to an integer
         int  column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
@@ -866,7 +864,7 @@ class GameSystem {
     }
 
     // DEVELOPED BY: Sheldon
-    /* create a new spell based on the type of the spell
+    /* create a new spell instance based on the type of the spell
      * @param spellType - the type of the spell to be created
      * @return - the new spell object */
     public Spell NewSpell(String spellType) {
@@ -892,13 +890,49 @@ class GameSystem {
 
         troopType = troopType.toLowerCase();
         
-        Troop newTroop = NewTroop(troopType);
-        newTroop.SetPlayer(parent);
-        newTroop.SetPos(startingPos);
-        newTroop.SetGameSysRef(this);
-        
-        this.troops.Append(newTroop);
+        if (troopType.equals("skeleton") 
+         || troopType.equals("goblins") 
+         || troopType.equals("barbarian")) {
+            this.SpawnTroopHoard(troopType, startingPos);
+        }
+
+        else {
+            Troop newTroop = NewTroop(troopType);
+            newTroop.SetPlayer(parent);
+            newTroop.SetPos(startingPos);
+            newTroop.SetGameSysRef(this);
+            this.troops.Append(newTroop);
+        }
     
+        return 1;
+    }
+
+
+    // DEVELOPED BY: Sheldon
+    /* spawn a troop hoard on the game grid (a group of troops)
+     * @param troopType - the type of troop to be spawned
+     * @param startingPos - the position where the troop will be spawned
+     * @return - 1 if the troop was spawned successfully, 0 otherwise */
+    public int SpawnTroopHoard(String troopType, Pos startingPos) {
+        
+        Pos [] positionOffsets = {
+            new Pos(0, 0),
+            new Pos(0, 1),
+            new Pos(0, -1)
+        };
+        
+        // iterate for each position
+        for (int i = 0; i < positionOffsets.length; i++) {
+            // ensure the position is within bounds
+            if (!this.IsOutOfBounds(startingPos.Add(positionOffsets[i]))) {
+                Troop newTroop = NewTroop(troopType);
+                newTroop.SetPlayer(this.GetCurrentPlayer());
+                newTroop.SetPos(startingPos.Add(positionOffsets[i]));
+                newTroop.SetGameSysRef(this);
+                this.troops.Append(newTroop);
+            }
+        }
+
         return 1;
     }
 

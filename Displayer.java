@@ -41,7 +41,7 @@ public class Displayer {
         this.input    = new Scanner(System.in);
         this.fHandler = new FileHandler();
         
-        this.msgPlayerOverlay = this.fHandler.readFile2Lines("MsgPlayerOverlay.txt");
+        this.msgPlayerOverlay = this.fHandler.ReadFile2Lines("MsgPlayerOverlay.txt");
     }
 
     
@@ -382,7 +382,7 @@ public class Displayer {
     // DEVELOPED BY: Daiki
     /*  Displays ASCII Title Screen */
     public void ShowTitleScreen() {
-        String [] startingScreen = this.fHandler.readFile2Lines("MsgTitleScreen.txt");
+        String [] startingScreen = this.fHandler.ReadFile2Lines("MsgTitleScreen.txt");
 
         this.PrintTexture(startingScreen);
             
@@ -392,7 +392,7 @@ public class Displayer {
     // DEVELOPED BY: Daiki
     /* Displays the game over message */
     public void PrintGameOver(Player winner) {
-        String [] GameOverMsg = fHandler.readFile2Lines("MsgGameOver.txt");
+        String [] GameOverMsg = fHandler.ReadFile2Lines("MsgGameOver.txt");
 
         this.PrintTexture(GameOverMsg);
 

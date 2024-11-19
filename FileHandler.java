@@ -60,7 +60,7 @@ class FileHandler {
     /* Checks if a file exists
      * @param filename - the name of the file to check
      * @return - true if the file exists, false otherwise */
-    public boolean fileExists(String filename) {
+    public boolean FileExists(String filename) {
         File file = new File(filename);
 
         // tries to read from the file
@@ -82,13 +82,13 @@ class FileHandler {
     /* Checks if all files exist
      * @param filenames - an array of filenames to check
      * @return - the name of the first file that does not exist, or null if all files exist */
-    public String filesExist(String [] filenames) {
+    public String FilesExist(String [] filenames) {
 
         // iterate through the array of filenames
         for (int i = 0; i < filenames.length; i ++) {
 
             // if a file does not exist, return the name of the file
-            if (!this.fileExists(filenames[i]))
+            if (!this.FileExists(filenames[i]))
                 return filenames[i];
         }
         
@@ -99,7 +99,7 @@ class FileHandler {
     /* Reads a file and returns a 1D string array
      * @param fileName - the name of the file to read
      * @return - a 1D string array representation of the file */
-    public String[] readFile2Lines(String fileName) {
+    public String[] ReadFile2Lines(String fileName) {
 
         File file = new File(fileName);
         int[] dimensions = getFileDimensions(fileName);
@@ -135,8 +135,8 @@ class FileHandler {
     /* Reads a file and returns a 2D char array
      * @param fileName - the name of the file to read
      * @return - a 2D char array representation of the file */
-    public char[][] readFile2Grid(String fileName) {
-        String[] lines = readFile2Lines(fileName);
+    public char[][] ReadFile2Grid(String fileName) {
+        String[] lines = ReadFile2Lines(fileName);
         if (lines == null) {
             return null;
         }
@@ -161,7 +161,7 @@ class FileHandler {
     /* Writes a 2D char array to a file
      * @param fileName - the name of the file to write to
      * @param arr - the 2D char array to write */
-    public void print2DCharArr(char[][] arr) {
+    public void Print2DCharArr(char[][] arr) {
         for (int row = 0; row < arr.length; row++) {
             for (int col = 0; col < arr[row].length; col++)
                 System.out.printf("%c", arr[row][col]);

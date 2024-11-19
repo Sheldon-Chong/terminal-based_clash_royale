@@ -75,6 +75,11 @@ public class Obj {
         return pos.DistanceFrom(obj.GetPos());
     }
 
+
+    // DEVELOPED BY: Sheldon
+    /* IsType checks if the object falls within an array of types
+     * @param - objects: an array of strings representing the types to check against
+     * @return - true if the object is of any of the types in the array, false otherwise */
     public boolean IsType(String[] objects) {
     
         for (int i = 0; i < objects.length; i++) {

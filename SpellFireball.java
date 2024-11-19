@@ -40,14 +40,14 @@ public class SpellFireball extends Spell {
                 Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
 
                 // Ensure the impact position is within the board limits.
-                if (!gameSysRef.isOutOfBounds(impactPos)) {
+                if (!gameSysRef.IsOutOfBounds(impactPos)) {
 
                     // Get the object at the impacted position.
                     Obj obj = gameSysRef.GetCell(impactPos).GetObject();
                     
                     // If the object is a troop, reduce its health.
                     if (obj instanceof Troop)
-                        ((Troop) obj).DecreaseHP(2);
+                        ((Troop) obj).DecreaseHP(3);
                 }
 
             }

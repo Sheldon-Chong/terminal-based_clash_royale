@@ -13,7 +13,7 @@ public class Main {
         FileHandler fHandler = new FileHandler();
         
         // initial check to see if resource files are present
-        String file = fHandler.filesExist(new String[] {
+        String file = fHandler.FilesExist(new String[] {
             "MsgGameOver.txt", 
             "MsgPlayerOverlay.txt",
             "GameMap.txt",
@@ -32,7 +32,7 @@ public class Main {
 
         // - LOAD MAP FROM FILE  -
 
-        char[][] grid      = fHandler.readFile2Grid("GameMap.txt");
+        char[][] grid      = fHandler.ReadFile2Grid("GameMap.txt");
         GameSystem gameSys = new GameSystem();
         Scanner input      = new Scanner(System.in);
         Displayer display  = new Displayer(gameSys);
@@ -170,7 +170,7 @@ public class Main {
                 int cardIndex = Integer.parseInt(userInput) - 1;
     
                 // Convert user input to position.
-                Pos deployPos = gameSys.parsePosition(positionRaw); 
+                Pos deployPos = gameSys.ParsePosition(positionRaw); 
     
                 // deploy card onto the world
                 gameSys.DeployCard(cardIndex, deployPos);
@@ -190,7 +190,7 @@ public class Main {
             gameSys.UpdateWorld();
     
             // check if game over
-            if (gameSys.isGameOver())
+            if (gameSys.IsGameOver())
                 break;
 
             // Switch to the next player.

@@ -71,17 +71,17 @@ public class Cell {
     public Cell [] GetDiagonalNeighbours() {
         Cell [] neighbours = new Cell[8];
 
-        neighbours[NEIGHBOUR_TOP_LEFT] = this.getCell(pos.x - 1, pos.y - 1);
-        neighbours[NEIGHBOUR_TOP_RIGHT] = this.getCell(pos.x + 1, pos.y - 1);
-        neighbours[NEIGHBOUR_BOTTOM_LEFT] = this.getCell(pos.x - 1, pos.y + 1);
-        neighbours[NEIGHBOUR_BOTTOM_RIGHT] = this.getCell(pos.x + 1, pos.y + 1);    
+        neighbours[NEIGHBOUR_TOP_LEFT] = this.GetCell(pos.x - 1, pos.y - 1);
+        neighbours[NEIGHBOUR_TOP_RIGHT] = this.GetCell(pos.x + 1, pos.y - 1);
+        neighbours[NEIGHBOUR_BOTTOM_LEFT] = this.GetCell(pos.x - 1, pos.y + 1);
+        neighbours[NEIGHBOUR_BOTTOM_RIGHT] = this.GetCell(pos.x + 1, pos.y + 1);    
 
         
 
         return neighbours;
     }
 
-    private Cell getCell(int x, int y) {
+    private Cell GetCell(int x, int y) {
         if (y < 0 || y >= this.gridRef.length || x < 0 || x >= this.gridRef[y].length)
             return null;
         return this.gridRef[y][x];

@@ -39,7 +39,7 @@ public class SpellZap extends Spell {
                 Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
 
                 // Check if the impact position is within the game board
-                if (!gameSysRef.isOutOfBounds(impactPos)) {
+                if (!gameSysRef.IsOutOfBounds(impactPos)) {
                     // Retrieve the object at the impact position
                     Obj obj = gameSysRef.GetCell(impactPos).GetObject();
 

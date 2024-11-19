@@ -70,7 +70,8 @@ public class Player {
     // DEVELOPED BY: Daiki
     /* Regenerates elixir by incrementing the current elixir by 1. */
     public void RegenerateElixir() {
-        this.elixir += 1;
+        if (this.elixir < 20)
+            this.elixir += 1;
     }
 
     // DEVELOPED BY: Daiki
@@ -204,10 +205,10 @@ public class Player {
 
         while (true) {
             // set a random index
-            int randomIndex = (int) (Math.random() * gameSysRef.getCards().length);
+            int randomIndex = (int) (Math.random() * gameSysRef.GetCards().length);
 
             // get the card at the random index
-            card = gameSysRef.getCards()[randomIndex];
+            card = gameSysRef.GetCards()[randomIndex];
 
             // check if the card is not in the player's hand
             if (!IsTroopInHand(card.GetName()))

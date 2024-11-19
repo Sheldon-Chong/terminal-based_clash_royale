@@ -311,7 +311,7 @@
         // - CHECK IF POSITION IS OUTSIDE THE GRID -
         
         // if the moved-to position is out of bounds
-        if (gameSysRef.isOutOfBounds(movedPosition))
+        if (gameSysRef.IsOutOfBounds(movedPosition))
             return DEST_OUT_OF_BOUNDS;
 
 

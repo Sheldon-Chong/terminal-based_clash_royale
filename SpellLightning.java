@@ -42,12 +42,12 @@ public class SpellLightning extends Spell {
                 Pos impactPos = new Pos(targetPos.x + x, targetPos.y + y);
                 
                 // Check if the impact position is within the game board
-                if (!gameSysRef.isOutOfBounds(impactPos)) {
+                if (!gameSysRef.IsOutOfBounds(impactPos)) {
                     Obj obj = gameSysRef.GetCell(impactPos).GetObject();
 
                     // If the object is a troop, apply damage.
                     if (obj instanceof Troop)
-                        ((Troop) obj).DecreaseHP(3);
+                        ((Troop) obj).DecreaseHP(5);
                 }
             }
         }
