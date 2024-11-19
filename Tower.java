@@ -57,7 +57,7 @@ public abstract class Tower extends Obj{
     /* Sets the health of the tower.
      * @param health - the health value to set for the tower.
      */
-    public void setHealth(int health) {
+    public void SetHealth(int health) {
         this.health = health;
     }
     
@@ -65,7 +65,7 @@ public abstract class Tower extends Obj{
     /* Subtracts a specified amount from the tower's health.
      * @param health - the amount of health to subtract.
      */
-    public void subtractHealth(int health) {
+    public void SubtractHealth(int health) {
         this.health -= health;
     }
     
@@ -73,7 +73,7 @@ public abstract class Tower extends Obj{
     /* Gets the current health of the tower.
      * @return - the current health value of the tower.
      */
-    public int getHealth() {
+    public int GetHealth() {
         return this.health;
     }
 

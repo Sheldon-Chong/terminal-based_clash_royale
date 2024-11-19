@@ -259,7 +259,7 @@ class GameSystem {
 
     // DEVELOPED BY: Sheldon
     /* destroy the troop given a refference, by popping the item of the troop array */
-    public void destroyTroop(Troop troop) {
+    public void DestroyTroop(Troop troop) {
         this.troops.Pop(troop);
     }
 
@@ -636,7 +636,7 @@ class GameSystem {
     }
 
 
-    // DEVELOPED BY : DAIKI
+    // DEVELOPED BY: Sheldon
     /* Find all cells containing a specific type of object in the game grid.
     * This method searches through the entire game grid and collects cells that contain objects of a specified type.
     * @param objType - the type of object to look for within the cells.
@@ -660,7 +660,7 @@ class GameSystem {
         return cellArr;
     }
     
-    // DEVELOPED BY : DAIKI
+    // DEVELOPED BY : Sheldon
     /* Append a cell to an existing array of cells.
     * This method expands an array of cells by adding a new cell to it.
     * @param cellList - the existing array of cells to which the new cell will be added.

@@ -77,7 +77,7 @@ public class Displayer {
 
         // if the object is a tower, display the tower's health. E.g. "T3"
         else if (object instanceof Tower)
-            return "T" + (((Tower) object).getHealth());
+            return "T" + (((Tower) object).GetHealth());
 
         return " ";
     }

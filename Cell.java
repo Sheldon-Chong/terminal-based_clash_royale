@@ -105,7 +105,7 @@ public class Cell {
         return neighbours;
     }
 
-    // Written by Daiki
+    // DEVELOPED BY: Daiki
     /* Creates a deep copy of this Cell instance
     * This method is intended to create and return a new instance of Cell that duplicates the current state of this Cell.
     * A deep copy of the contained Obj might be necessary depending on whether the Obj class itself properly supports cloning.

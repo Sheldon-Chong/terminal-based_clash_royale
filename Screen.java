@@ -204,7 +204,6 @@ public class Screen {
     /* converts a string to a character array
      * @param String - the string to convert
      * @return - the character array */
-
     public char[] String2CharArr(String s) {
         char[] charArr = new char[s.length()];
 

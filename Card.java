@@ -34,9 +34,9 @@ public class Card {
     
     // DEVELOPED BY: Sheldon
     /* Constructor for Card
-     * @param - name: the name of the card
-     * @param - elixirCost: the elixir cost of the card
-     * @param - type: the type of the card */
+     * @param name - the name of the card
+     * @param elixirCost - the elixir cost of the card
+     * @param type - the type of the card */
     public Card(String name, int elixirCost, int type) { 
         this.name = name;
         this.elixirCost = elixirCost; 
@@ -79,11 +79,6 @@ public class Card {
         return newCard; 
     }
 
-    // Abstract method that each subclass should implement
-    public void deploy(Pos targetPos, GameSystem gameSysRef) {
-
-    }
-
     // DEVELOPED BY: Daiki
     /* Gets the type of card */
     public int GetType() {
@@ -93,6 +88,9 @@ public class Card {
 
     // -- METHODS --
 
+    // DEVELOPED BY: Sheldon
+    /* Deploy is an abstract method that is implemented in the child classes
+     * It is used to deploy the card onto the game board */
     public String GetRepr() {
         return this.name + " (" + this.elixirCost + ")";
     }

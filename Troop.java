@@ -65,13 +65,15 @@
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the region of the troop */
+    /* gets the region of the troop 
+     * @return - the region of the troop */
     public int GetRegion() {
         return this.region;
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* gets the name of the troop 
+     * @return - the name troop action state */
     public int GetAction() {
         return this.currentAction;
     }
@@ -84,58 +86,58 @@
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* gets the name of the troop 
+     * @return - the HP of the troop */
     public int GetHP() {
         return this.hp;
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* set's the HP of the troop 
+     * @param hp - the HP to set the troop to */
     public void SetHP(int hp) {
         this.hp = hp;
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
-    public void IncreaseHP(int hp) {
-        this.hp += hp;
-    }
-    
-    // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* decreases the HP of the troop 
+     * @param hp - the amount to decrease the HP by */
     public void DecreaseHP(int hp) {
         this.hp -= hp;
         
         if (this.hp <= 0)
-        gameSysRef.destroyTroop(this);
+        gameSysRef.DestroyTroop(this);
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* sets the attack of the troop 
+     * @param atk - the attack to set the troop to */
     public void SetAttack(int atk) {
         this.atk = atk;
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* gets the attack of the troop 
+     * @return - the attack value of the troop */
     public int GetAttack() {
         return this.atk;
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* gets the name of the player that the troop belongs to */
     public Player GetPlayer() {
         return this.player;
     }
     
     // DEVELOPED BY: Daiki
-    /* gets the name of the troop */
+    /* sets the parent player of the troop */
     public void SetPlayer(Player player) {
         this.player = player;
     }
     
     // DEVELOPED BY: Sheldon
-    /* gets the name of the troop */
+    /* gets the name destination position that the troop is heading towards 
+     * @return - the destination position of the troop */
     public Pos GetDest() {
         return this.Dest;
     }
@@ -148,13 +150,15 @@
     }
     
     // DEVELOPED BY: Sheldon
-    /* gets the name of the troop */
+    /* gets first two cahracters as the name of the troop 
+     * @return - the first two characters of the troop's name */
     public String GetNameShort() {
         return this.name.substring(0, 2);
     }
     
     // DEVELOPED BY: Sheldon
-    /* gets the name of the troop */
+    /* gets refference to the game system
+     * @param gameSysRef - the game system to set the troop to */
     public void SetGameSysRef(GameSystem gameSysRef) {
         this.gameSysRef = gameSysRef;
     }
@@ -163,7 +167,9 @@
     // -- HELPER METHODS --
 
     // DEVELOPED BY: Sheldon
-    /* locate available adjacent cells that allow the troop to reach a specified position, that aren't occupied */
+    /* locate available adjacent cells that allow the troop to reach a specified position, that aren't occupied 
+     * @param pos - the position to find access points for
+     * @return - the array of cells that are access points */
     private Cell []findAccessPoint(Pos pos) {
         
         Cell []neighbours = this.gameSysRef.GetCell(pos).GetNeighbours();
@@ -178,7 +184,11 @@
     }
 
     // DEVELOPED BY: Sheldon
-    /* locate the closest position to the troop that allows it to reach the specified position */
+    /* locate the closest position to the troop that allows it to reach the specified position 
+     * @param cells - the array of cells to search for access points
+     * @param start - the starting position to search from
+     * @param end - the ending position to search to
+     * @return - the closest position to the troop that allows it to reach the specified position */
     private Pos findNearestAccessPoint(Cell []cells, Pos start, Pos end) {
         Pos closestPoint = null;
 
@@ -203,14 +213,18 @@
     }
 
     // DEVELOPED BY: Sheldon
-    /* locate the closest position to the troop that allows it to reach the closest of any of the specified cells*/
+    /* locate the closest position to the troop that allows it to reach the closest of any of the specified cells
+     * @param cells - the array of cells to search for access points
+     * @return - the closest position to the troop that allows it to reach the closest of any of the specified cells */
     private Pos findNearestAccessPoint(Cell []cells) {
         return findNearestAccessPoint(cells, new Pos(0, 0), new Pos(this.gameSysRef.GetGrid()[0].length, this.gameSysRef.GetGrid().length));
     }
 
     // DEVELOPED BY: Sheldon
     /* checks if an object belongs to an enemy
-     * @param object - the object to be checked */
+     * @param object - the object to be checked
+     * @return - true if the object belongs to an enemy, 
+     *         - false otherwise */
     private boolean isEnemy(Obj object) {
         if (object == null)
             return false;
@@ -225,7 +239,7 @@
     }
 
 
-    // WRITTEN BY : DAIKI
+    // DEVELOPED BY: : DAIKI
     /*Attacks a specified object if it is an enemy.
     * This method checks the type of the object (either Troop or Tower) and if it is recognized as an enemy,
     * it will reduce the enemy's health by this object's attack value. It also sets the current action
@@ -239,15 +253,12 @@
 
         else if (object instanceof Tower && isEnemy(object)) {
             Tower enemyTower = (Tower) object;
-            enemyTower.subtractHealth(this.GetAttack());  // Apply attack to the tower
+            enemyTower.SubtractHealth(this.GetAttack());  // Apply attack to the tower
         }
 
         this.SetAction(ACTION_ATTACK); // Records that this action was an attack
     }
     
-
-    // -- PUBLIC METHODS --
-
     /* moves the troop towards a specified position
      * @param dest - the position to move towards
      * @return boolean - true if the troop has moved, false otherwise */
@@ -300,8 +311,14 @@
 
         return true;
     }
+
+
+    // -- PUBLIC METHODS --
     
-    /* moves the troop to a specified position, and checks for collisions with other objects */
+    // DEVELOPED BY: Sheldon
+    /* moves the troop to a specified position, and checks for collisions with other objects 
+     * @param destPos - the position to move to
+     * @return int - the status of the movement */
     public int MoveTo(Pos destPos) {
         
         // create the position that the troop would be if the troop moved hypothetically 
@@ -343,8 +360,13 @@
         return 1;
     }
 
-    /* recalculates the destination of the troop */
-    public void  RecalcDest() {
+    // DEVELOPED BY: Sheldon
+    /* recalculates the destination of the troop based on 3 different conditions
+     * 1. If the troop is in an enemy region
+     * 2. If the troop is in player 1's region
+     * 3. If the troop is in player 2's region
+     * The destination is set to the nearest access point of any of the given conditions */
+    public void RecalcDest() {
         
         Pos destination = null;
         int playerNum = this.player.GetPlayerNum(); 
@@ -369,8 +391,9 @@
         this.SetDest(destination);
     }
 
+    // DEVELOPED BY: Sheldon
     /* checks if the troop is adjacent to a tower
-     * @return Cell - the tower tile that the troop is adjacent to */
+     * @return - the tower tile that the troop is adjacent to */
     public Cell IsAdjTower() {
         Cell []neighbours = gameSysRef.GetCell(this.GetPos()).GetNeighbours();
 
@@ -392,7 +415,7 @@
     }
 
     // DEVELOPED BY: Sheldon
-    /* performs an action (either moving or attacking), and sets the state of the troop */
+    /* performs an action (either moving or attacking), and sets the state of the troop to the appropriate action*/
     public void Action() {
         if (this.GetPos() == null)
             return;
@@ -409,7 +432,7 @@
             if (parent != null && isEnemy(parent)) {
 
                 this.SetAction(ACTION_ATTACK);
-                parent.subtractHealth(this.GetAttack());
+                parent.SubtractHealth(this.GetAttack());
                 return;
             }
         }
