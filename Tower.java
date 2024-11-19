@@ -100,12 +100,4 @@ public class Tower extends Obj{
     public boolean IsDestroyed() { 
         return this.health <= 0; 
     }
-
-    // DEVELOPED BY: Daiki
-    /* Determines if the tower is the main king tower.
-     * @return - true if the tower is designated as the king tower.
-     */
-    public boolean isKingTower() {
-        return isKingTower;
-    }
 }
