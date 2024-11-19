@@ -17,6 +17,9 @@ public class SpellZap extends Spell {
         this.SetPos(startingPos);
     }
 
+    
+    // -- PUBLIC METHODS --
+
     // DEVELOPED BY: Daiki
     /* Apply the zap effect at a specified position in the game world.
      * @param targetPos - the center position where the zap strikes.

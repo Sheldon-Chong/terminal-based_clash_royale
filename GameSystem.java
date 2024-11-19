@@ -275,212 +275,6 @@ class GameSystem {
     }
 
 
-    // -- PUBLIC METHODS --
-
-    // DEVELOPED BY: Daiki
-    /* Updates the game state for the current round.*/
-    public void UpdateWorld() { 
-        this.updateTroops();
-        this.updateTiles();
-        this.updateSpellQueue();
-        this.RegenerateElixir();
-        this.NextRound();
-    }
-
-    
-    // DEVELOPED BY: Daiki
-    /*Increases each player's elixir count to allow more card plays */
-    public void RegenerateElixir() {
-        this.player1.RegenerateElixir();
-        this.player2.RegenerateElixir();
-    }
-
-
-    // DEVELOPED BY: Sheldon
-    /* Set the player that is not the current player */
-    public void AlternatePlayer() {
-        if (this.currentPlayer == this.player1)
-            this.currentPlayer = this.player2;
-        else
-            this.currentPlayer = this.player1;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* check if a card is deployable based on a given raw string input
-     * @param input - the input string
-     * @return - the error code based on the validation result */
-    public int ValidateDeploymentOfCard(String input) {
-        if (input.length() != 1) 
-            return ERR_INVALID_FORMAT;
-        //System.out.println("Invalid input. Please enter a valid card number.");
-
-        else if (input.charAt(0) < '1' || input.charAt(0) > '4') 
-            return ERR_INVALID_CARD;
-        //System.out.println("Invalid card number. Please select a number between 1 and 4.");
-
-        Card card = this.GetCurrentPlayer().GetCard(Integer.valueOf(input) - 1);
-
-        if (currentPlayer.GetElixir() < card.GetElixirCost())
-            return ERR_ELIXIR_COST;
-
-        return 1;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* Check whether a position string is parsable and within the bounds of the game grid
-     * @param input - the string input by the user
-     * @return - the error code based on the validation result */
-    public int ValidatePositionString(String input) {
-
-        // check if the input is of the correct format
-        if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q'))
-            return ERR_INVALID_FORMAT;
-            
-        input = input.toUpperCase();
-
-        // check whether positions are readable
-        if (input.charAt(0) < 'A' || input.charAt(0) > 'Q')
-            return ERR_INVALID_ROW;
-        if (input.charAt(1) < '0' || input.charAt(1) > '9')
-            return ERR_INVALID_COL;
-        if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9'))
-            return ERR_INVALID_COL;
-
-        Pos pos = parsePosition(input);
-
-        // if out of bounds
-        if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow)
-            return ERR_OUT_OF_BOUNDS;
-            
-        // if outside deployable region
-        if ((currentPlayer.GetPlayerNum() == GameSystem.PLAYER1_REGION && (pos.x < 0 || pos.x > 14)) ||
-            (currentPlayer.GetPlayerNum() == GameSystem.PLAYER2_REGION && (pos.x < 15 || pos.x > 28))) {
-            return ERR_INVALID_DEPLOY_REGION;
-        }
-
-        Obj obj = this.GetCell(pos).GetObject();
-
-        if (!(obj instanceof TileFloor)) {
-            if (obj instanceof Tile)
-                System.out.println(((Tile)(obj)).GetStrType());
-            return ERR_OCCUPIED_SPACE;
-        }
-
-        return 1;
-    }
-
-    // DEVELOPED BY : DAIKI
-    /* Convert a user's input string, which represents a position on the game grid (ex: A25) */
-    public Pos parsePosition(String input) {
-
-        int  row    = input.charAt(0) - 'A';  // Convert column character to an integer
-        int  column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
-
-        return new Pos(column, row);
-    }
-
-    // DEVELOPED BY: Sheldon & DAIKI
-    /* deploy a card by spawning a troop or summoning a spell
-     * @param index - the index of the card to be deployed
-     * @param pos - the position where the card will be deployed
-     * @return - 1 if the card was deployed successfully, -1 if the player does not have enough elixir, -2 if the index is out of bounds */
-    public int DeployCard(int index, Pos pos) {
-        Card   card          = this.GetCurrentPlayer().GetCard(index);
-        Player currentPlayer = this.GetCurrentPlayer();
-    
-        // Deduct elixir cost
-        currentPlayer.DeductElixir(card.GetElixirCost());
-    
-        // Determine the type of the card and spawn the appropriate object
-        if (card.GetType() == Card.SPELL)
-            this.SpawnSpell(card.GetName(), pos);
-        else
-            this.SpawnTroop(card.GetName(), pos);
-    
-        // Remove the card from the player's hand
-        currentPlayer.RemoveCard(index);
-
-        return 1;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* create a new troop based on the type of the troop
-     * @param troopType - the type of the troop to be created
-     * @return - the new troop object */
-    public Troop NewTroop(String troopType) {
-
-        Troop newTroop = null;
-
-        troopType = troopType.toLowerCase();
-
-        if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(); }
-        else if (troopType.equals("elixirgolem")) { newTroop = new TroopElixirGolem(); }
-        else if (troopType.equals("giant"))       { newTroop = new TroopGiant(); }
-        else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(); }
-        else if (troopType.equals("golem"))       { newTroop = new TroopGolem(); }
-        else if (troopType.equals("hogrider"))    { newTroop = new TroopHogRider(); }
-        else if (troopType.equals("knight"))      { newTroop = new TroopKnight(); }
-        else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(); }
-        else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(); }
-        else if (troopType.equals("skeleton"))    { newTroop = new TroopSkeletons(); }
-
-        return newTroop;
-    }
-
-    public Spell NewSpell(String spellType) {
-
-        Spell newSpell = null;
-
-        spellType = spellType.toLowerCase();
-
-        if      (spellType.equals("lightning")) { newSpell = new SpellLightning(); }
-        else if (spellType.equals("fireball"))  { newSpell = new SpellFireball(); }
-        else if (spellType.equals("zap"))       { newSpell = new SpellZap(); }
-
-        return newSpell;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* spawn a troop on the game grid
-     * @param troopType - the type of troop to be spawned
-     * @param startingPos - the position where the troop will be spawned
-     * @return - 1 if the troop was spawned successfully, 0 otherwise */
-    public int SpawnTroop(String troopType, Pos startingPos) {
-        Player parent = this.GetCurrentPlayer();
-
-        troopType = troopType.toLowerCase();
-        
-        Troop newTroop = NewTroop(troopType);
-        newTroop.SetPlayer(parent);
-        newTroop.SetPos(startingPos);
-        newTroop.SetGameSysRef(this);
-        
-        this.troops.append(newTroop);
-    
-        return 1;
-    }
-
-    // DEVELOPED BY: Sheldon
-    /* summon a spell by adding it to the spell queue
-     * @param name - the name of the spell to be summoned
-     * @param targetPos - the position where the spell will be summoned */
-    public void SpawnSpell(String name, Pos targetPos) {
-
-        Spell spell;
-
-        if (name.toLowerCase().equals("lightning"))
-            spell = new SpellLightning(targetPos);
-        else if (name.toLowerCase().equals("fireball"))
-            spell = new SpellFireball(targetPos);
-        else if (name.toLowerCase().equals("zap"))
-            spell = new SpellZap(targetPos);
-        else
-            return;
-
-        this.spellQueue.append(spell);
-    }
-
-
     // -- HELPER METHODS --
 
     // DEVELOPED BY: Sheldon
@@ -803,13 +597,13 @@ class GameSystem {
                 // if it is a player1 navigation marker
                 if (currentTile == SYMBOL_P1_NAV_MARKER) {
                     tileContent = new TileFloor(new Pos(col, row));
-                    this.p1TravelPoints.append(tileContent);
+                    this.p1TravelPoints.Append(tileContent);
                 }
 
                 // if it is a player2 navigation marker
                 else if (currentTile == SYMBOL_P2_NAV_MARKER) {
                     tileContent = new TileFloor(new Pos(col, row));
-                    this.p2TravelPoints.append(tileContent);
+                    this.p2TravelPoints.Append(tileContent);
                 }
 
                 
@@ -914,4 +708,218 @@ class GameSystem {
 
         return false;
     }
+
+
+    // -- PUBLIC METHODS --
+
+    // DEVELOPED BY: Daiki
+    /* Updates the game state for the current round.*/
+    public void UpdateWorld() { 
+        this.updateTroops();
+        this.updateTiles();
+        this.updateSpellQueue();
+        this.RegenerateElixir();
+        this.NextRound();
+    }
+
+    
+    // DEVELOPED BY: Daiki
+    /*Increases each player's elixir count to allow more card plays */
+    public void RegenerateElixir() {
+        this.player1.RegenerateElixir();
+        this.player2.RegenerateElixir();
+    }
+
+
+    // DEVELOPED BY: Sheldon
+    /* Set the player that is not the current player */
+    public void AlternatePlayer() {
+        if (this.currentPlayer == this.player1)
+            this.currentPlayer = this.player2;
+        else
+            this.currentPlayer = this.player1;
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* check if a card is deployable based on a given raw string input
+     * @param input - the input string
+     * @return - the error code based on the validation result */
+    public int ValidateDeploymentOfCard(String input) {
+        if (input.length() != 1) 
+            return ERR_INVALID_FORMAT;
+        //System.out.println("Invalid input. Please enter a valid card number.");
+
+        else if (input.charAt(0) < '1' || input.charAt(0) > '4') 
+            return ERR_INVALID_CARD;
+        //System.out.println("Invalid card number. Please select a number between 1 and 4.");
+
+        Card card = this.GetCurrentPlayer().GetCard(Integer.valueOf(input) - 1);
+
+        if (currentPlayer.GetElixir() < card.GetElixirCost())
+            return ERR_ELIXIR_COST;
+
+        return 1;
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* Check whether a position string is parsable and within the bounds of the game grid
+     * @param input - the string input by the user
+     * @return - the error code based on the validation result */
+    public int ValidatePositionString(String input, Card card) {
+
+        // check if the input is of the correct format
+        if (input.length() < 2 || input.length() > 3 || !(input.charAt(0) >= 'A' && input.charAt(0) <= 'Q'))
+            return ERR_INVALID_FORMAT;
+            
+        input = input.toUpperCase();
+
+        // check whether positions are readable
+        if (input.charAt(0) < 'A' || input.charAt(0) > 'Q')
+            return ERR_INVALID_ROW;
+        if (input.charAt(1) < '0' || input.charAt(1) > '9')
+            return ERR_INVALID_COL;
+        if (input.length() == 3 && (input.charAt(2) < '0' || input.charAt(2) > '9'))
+            return ERR_INVALID_COL;
+
+        Pos pos = parsePosition(input);
+
+        // if out of bounds
+        if (pos.x < 0 || pos.x >= maxCol || pos.y < 0 || pos.y >= maxRow)
+            return ERR_OUT_OF_BOUNDS;
+            
+        // if outside deployable region
+        if (card.GetType() == Card.TROOP) {
+            if ((currentPlayer.GetPlayerNum() == GameSystem.PLAYER1_REGION && (pos.x < 0 || pos.x > 14)) ||
+                (currentPlayer.GetPlayerNum() == GameSystem.PLAYER2_REGION && (pos.x < 15 || pos.x > 28))) {
+                System.out.println(card.GetName());
+                return ERR_INVALID_DEPLOY_REGION;
+            }
+        }
+
+        Obj obj = this.GetCell(pos).GetObject();
+
+        if (!(obj instanceof TileFloor)) {
+            if (obj instanceof Tile)
+                System.out.println(((Tile)(obj)).GetStrType());
+            return ERR_OCCUPIED_SPACE;
+        }
+
+        return 1;
+    }
+
+    // DEVELOPED BY : DAIKI
+    /* Convert a user's input string, which represents a position on the game grid (ex: A25) */
+    public Pos parsePosition(String input) {
+
+        int  row    = input.charAt(0) - 'A';  // Convert column character to an integer
+        int  column = Integer.parseInt(input.substring(1)) - 1;  // Convert the substring to an integer
+
+        return new Pos(column, row);
+    }
+
+    // DEVELOPED BY: Sheldon & DAIKI
+    /* deploy a card by spawning a troop or summoning a spell
+     * @param index - the index of the card to be deployed
+     * @param pos - the position where the card will be deployed
+     * @return - 1 if the card was deployed successfully, -1 if the player does not have enough elixir, -2 if the index is out of bounds */
+    public int DeployCard(int index, Pos pos) {
+        Card   card          = this.GetCurrentPlayer().GetCard(index);
+        Player currentPlayer = this.GetCurrentPlayer();
+    
+        // Deduct elixir cost
+        currentPlayer.DeductElixir(card.GetElixirCost());
+    
+        // Determine the type of the card and spawn the appropriate object
+        if (card.GetType() == Card.SPELL)
+            this.SpawnSpell(card.GetName(), pos);
+        else
+            this.SpawnTroop(card.GetName(), pos);
+    
+        // Remove the card from the player's hand
+        currentPlayer.RemoveCard(index);
+
+        return 1;
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* create a new troop based on the type of the troop
+     * @param troopType - the type of the troop to be created
+     * @return - the new troop object */
+    public Troop NewTroop(String troopType) {
+
+        Troop newTroop = null;
+
+        troopType = troopType.toLowerCase();
+
+        if      (troopType.equals("barbarian"))   { newTroop = new TroopBarbarian(); }
+        else if (troopType.equals("elixirgolem")) { newTroop = new TroopElixirGolem(); }
+        else if (troopType.equals("giant"))       { newTroop = new TroopGiant(); }
+        else if (troopType.equals("goblins"))     { newTroop = new TroopGoblins(); }
+        else if (troopType.equals("golem"))       { newTroop = new TroopGolem(); }
+        else if (troopType.equals("hogrider"))    { newTroop = new TroopHogRider(); }
+        else if (troopType.equals("knight"))      { newTroop = new TroopKnight(); }
+        else if (troopType.equals("lumberjack"))  { newTroop = new TroopLumberjack(); }
+        else if (troopType.equals("pekka"))       { newTroop = new TroopPEKKA(); }
+        else if (troopType.equals("skeleton"))    { newTroop = new TroopSkeletons(); }
+
+        return newTroop;
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* create a new spell based on the type of the spell
+     * @param spellType - the type of the spell to be created
+     * @return - the new spell object */
+    public Spell NewSpell(String spellType) {
+
+        Spell newSpell = null;
+
+        spellType = spellType.toLowerCase();
+
+        if      (spellType.equals("lightning")) { newSpell = new SpellLightning(); }
+        else if (spellType.equals("fireball"))  { newSpell = new SpellFireball(); }
+        else if (spellType.equals("zap"))       { newSpell = new SpellZap(); }
+
+        return newSpell;
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* spawn a troop on the game grid
+     * @param troopType - the type of troop to be spawned
+     * @param startingPos - the position where the troop will be spawned
+     * @return - 1 if the troop was spawned successfully, 0 otherwise */
+    public int SpawnTroop(String troopType, Pos startingPos) {
+        Player parent = this.GetCurrentPlayer();
+
+        troopType = troopType.toLowerCase();
+        
+        Troop newTroop = NewTroop(troopType);
+        newTroop.SetPlayer(parent);
+        newTroop.SetPos(startingPos);
+        newTroop.SetGameSysRef(this);
+        
+        this.troops.Append(newTroop);
+    
+        return 1;
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* summon a spell by adding it to the spell queue
+     * @param name - the name of the spell to be summoned
+     * @param targetPos - the position where the spell will be summoned */
+    public void SpawnSpell(String name, Pos targetPos) {
+
+        Spell spell;
+
+        if (name.toLowerCase().equals("lightning"))
+            spell = new SpellLightning(targetPos);
+        else if (name.toLowerCase().equals("fireball"))
+            spell = new SpellFireball(targetPos);
+        else if (name.toLowerCase().equals("zap"))
+            spell = new SpellZap(targetPos);
+        else
+            return;
+
+        this.spellQueue.Append(spell);
+    }
+
 }

@@ -4,6 +4,8 @@
  * It can target and damage multiple troops within its range. */
 public class SpellLightning extends Spell {
 
+    // -- CONSTRUCTORS --
+
     // DEVELOPED BY: Daiki
     /* Default constructor for the Lightning class.
      * Initializes a lightning spell with default position and effects.
@@ -22,6 +24,9 @@ public class SpellLightning extends Spell {
         this.SetPos(startingPos);
     }
     
+
+    // -- PUBLIC METHODS --
+
     // DEVELOPED BY: Daiki
     /* Apply the effect of the lightning spell on a target position within the game world.
      * @param targetPos - the center position where the lightning strikes.

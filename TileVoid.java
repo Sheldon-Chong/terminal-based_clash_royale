@@ -21,33 +21,33 @@ public class TileVoid extends Tile {
     /* Constructor for TileEmpty */
     public TileVoid() {
         this.SetStrType("TileEmpty");
-        this.GetAppearance().setTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
+        this.GetAppearance().SetTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
             ".____.",
             "|     ",
             "|     "
         });
 
-        this.GetAppearance().setTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
+        this.GetAppearance().SetTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
             ".____.",
             "     |",
             "     |"
         });
-        this.GetAppearance().setTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
+        this.GetAppearance().SetTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             "|     ",
             "|____."
         });
-        this.GetAppearance().setTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
+        this.GetAppearance().SetTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
             "      ",
             "     | ",
             ".____|"
         });
-        this.GetAppearance().setTexture(TextureSet.SIDE_LEFT, new String [] {
+        this.GetAppearance().SetTexture(TextureSet.SIDE_LEFT, new String [] {
             "|     ",
             "|     ",
             "|     "
         });
-        this.GetAppearance().setTexture(TextureSet.SIDE_RIGHT, new String [] {
+        this.GetAppearance().SetTexture(TextureSet.SIDE_RIGHT, new String [] {
             "     |",
             "     |",
             "     |"

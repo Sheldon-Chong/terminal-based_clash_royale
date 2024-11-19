@@ -47,6 +47,9 @@ public class Screen {
         output[pos.y][pos.x] = newChar;
     }
 
+    
+    // -- PUBLIC METHODS --
+
     // DEVELOPED BY: Sheldon
     /* places the texture on the screen at the given starting position
      * @param texture - the texture to be placed on the screen
@@ -179,36 +182,6 @@ public class Screen {
         
         System.out.println();
         
-    }
-    
-    // DEVELOPED BY: Sheldon
-    /* appends a string to the last line of the screen
-     * the equivalent of print for terminals */
-    public void AppendStrToLastLine(String value) {
-
-        // If the output array is empty, initialize it with one row containing the value
-        if (this.output.length == 0) {
-            this.AppendLine(value);
-            return;
-        }
-    
-        // Get the last line of the output array
-        char[] lastLine = this.output[this.output.length - 1];
-        
-        // Create a new line with enough space to hold the last line and the new value
-        char[] newLine = new char[lastLine.length + value.length()];
-    
-        // Copy the characters from the last line to the new line
-        for (int i = 0; i < lastLine.length; i++)
-            newLine[i] = lastLine[i];
-
-        char[] valueChars = this.String2CharArr(value);
-
-        for (int i = 0; i < valueChars.length; i++)
-            newLine[lastLine.length + i] = valueChars[i];
-    
-        // Replace the last line in the output array with the new line
-        this.output[this.output.length - 1] = newLine;
     }
     
     // DEVELOPED BY: Sheldon

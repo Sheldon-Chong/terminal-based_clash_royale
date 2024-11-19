@@ -29,6 +29,12 @@ public class Displayer {
 
     // DEVELOPED BY: Sheldon
     /* Constructor for the Displayer class */
+    public Displayer() {
+        this(null);
+    }
+
+    // DEVELOPED BY: Sheldon
+    /* Constructor for the Displayer class */
     public Displayer(GameSystem gameSystem) {
         this.screen   = new Screen();
         this.gameRef  = gameSystem;
@@ -95,8 +101,11 @@ public class Displayer {
 
         for (int x = 0; x < grid[0].length; x++)
             buffer += "_____";
+        
+        buffer += "__";
 
         screen.AppendLine(buffer);
+
 
         // - PRINT BOARD -
 
@@ -106,17 +115,29 @@ public class Displayer {
             // print vertical axis ruler
             buffer = String.format("  | ", (char)(y+'A'));
             
+            // iterate for each column
             for (int x = 0; x < grid[y].length; x++)
                 buffer += ".    ";
+            buffer += ". |";
             screen.AppendLine(buffer);
             
-
+            
             buffer = String.format("%c | ", (char) (y + 'A'));
-
+            // iterate for each column
             for (int x = 0; x < grid[y].length; x++)
                 buffer += "     ";
+            buffer += "  |";
             screen.AppendLine(buffer);
         }
+
+        buffer = "  |";
+        for (int x = 0; x < grid[0].length; x++)
+            buffer += "_____";
+        
+        buffer += "___|";
+
+        screen.AppendLine(buffer);
+
     }
 
     // DEVELOPED BY: Sheldon
@@ -171,21 +192,21 @@ public class Displayer {
             Pos endPos   = spell.GetBoundaryEnd();
             
             // render corners first
-            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_LEFT),     pos2Corner(startPos));
-            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_BOTTOM_RIGHT), pos2Corner(endPos));
-            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_BOTTOM_LEFT),  pos2Corner(startPos.x, endPos.y));
-            screen.ImposeImage(spellTexture.getTexture(TextureSet.CORNER_TOP_RIGHT),    pos2Corner(endPos.x, startPos.y));
+            screen.ImposeImage(spellTexture.GetTexture(TextureSet.CORNER_TOP_LEFT),     pos2Corner(startPos));
+            screen.ImposeImage(spellTexture.GetTexture(TextureSet.CORNER_BOTTOM_RIGHT), pos2Corner(endPos));
+            screen.ImposeImage(spellTexture.GetTexture(TextureSet.CORNER_BOTTOM_LEFT),  pos2Corner(startPos.x, endPos.y));
+            screen.ImposeImage(spellTexture.GetTexture(TextureSet.CORNER_TOP_RIGHT),    pos2Corner(endPos.x, startPos.y));
 
             // render the left and right side
             for (int y = startPos.y + 1; y < endPos.y; y++) {
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_LEFT),  pos2Corner(startPos.x, y));
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_RIGHT), pos2Corner(endPos.x, y));
+                screen.ImposeImage(spellTexture.GetTexture(TextureSet.SIDE_LEFT),  pos2Corner(startPos.x, y));
+                screen.ImposeImage(spellTexture.GetTexture(TextureSet.SIDE_RIGHT), pos2Corner(endPos.x, y));
             }
 
             // render the top and bottom side
             for (int x = startPos.x + 1; x < endPos.x; x++) {
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_TOP),    pos2Corner(x, startPos.y));
-                screen.ImposeImage(spellTexture.getTexture(TextureSet.SIDE_BOTTOM), pos2Corner(x, endPos.y));
+                screen.ImposeImage(spellTexture.GetTexture(TextureSet.SIDE_TOP),    pos2Corner(x, startPos.y));
+                screen.ImposeImage(spellTexture.GetTexture(TextureSet.SIDE_BOTTOM), pos2Corner(x, endPos.y));
             }
         }
     }
@@ -221,13 +242,13 @@ public class Displayer {
                     // If the object is a TileTower (e.g., a wall or structure related to the tower), render it
                     else if (object instanceof TileTower) {
                         TileTower towerWall = (TileTower) object;  
-                        screen.ImposeImage(towerWall.GetAppearance().getTexture(towerWall.GetType()), startingCorner);
+                        screen.ImposeImage(towerWall.GetAppearance().GetTexture(towerWall.GetType()), startingCorner);
                     } 
 
                     // If the object is a TileEmpty (empty space on the board), render it
                     else if (object instanceof TileVoid) {
                         TileVoid empty = (TileVoid) object;  
-                        screen.ImposeImage(empty.GetAppearance().getTexture(empty.GetType()), startingCorner);
+                        screen.ImposeImage(empty.GetAppearance().GetTexture(empty.GetType()), startingCorner);
                     }
                 }
             }

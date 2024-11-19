@@ -62,7 +62,7 @@ public class ObjList {
     /* Appends an object to the list
      * @param obj - the object to append
      * @return - true if the object was appended, false otherwise */
-    public boolean append(Obj obj) {
+    public boolean Append(Obj obj) {
         if (list == null) {
             this.list = new Obj[1];
             this.list[0] = obj;

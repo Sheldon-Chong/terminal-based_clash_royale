@@ -35,7 +35,7 @@ public class TextureSet {
     /* SetTexture sets the texture of the tile
      * @param textureId - the id of the texture
      * @param texture - the texture of the tile */
-    public void setTexture(int textureId, String[] texture) {
+    public void SetTexture(int textureId, String[] texture) {
         this.textures[textureId] = texture;
     }
 
@@ -43,7 +43,7 @@ public class TextureSet {
     /* GetTexture returns the texture of the tile
      * @param textureId - the id of the texture
      * @return - refference to the texture stored in the object */
-    public String[] getTexture(int textureId) {
+    public String[] GetTexture(int textureId) {
         return this.textures[textureId];
     }
 
@@ -57,7 +57,7 @@ public class TextureSet {
     // DEVELOPED BY: Sheldon
     /* SetAllTextures sets all the textures of the tile
      * @param texture - the texture of the tile */
-    public void setAllTextures(String [] texture) {
+    public void SetAllTextures(String [] texture) {
         for (int i = 0; i < this.textures.length; i++)
         this.textures[i] = texture;
     }

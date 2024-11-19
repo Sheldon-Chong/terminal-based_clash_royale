@@ -18,6 +18,7 @@ public class Main {
             "MsgPlayerOverlay.txt",
             "GameMap.txt",
             "MsgTitleScreen.txt",
+            "cards.csv"
         });
 
         // if a resource file isn't present
@@ -138,7 +139,8 @@ public class Main {
                     break;
                 }
 
-                int parseStatus = gameSys.ValidatePositionString(positionRaw);
+                int index = Integer.parseInt(userInput) - 1;
+                int parseStatus = gameSys.ValidatePositionString(positionRaw, gameSys.GetCurrentPlayer().GetCard(index));
 
                 // error handling
                 if (parseStatus == gameSys.ERR_INVALID_FORMAT)

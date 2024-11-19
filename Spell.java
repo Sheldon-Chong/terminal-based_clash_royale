@@ -54,25 +54,25 @@ public abstract class Spell extends Obj {
 
         // - SET TEXTURES - 
 
-        this.textureDeploy.setTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
+        this.textureDeploy.SetTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
             "._____",
             "|     ",
             "|     "
         });
 
-        this.textureDeploy.setTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
+        this.textureDeploy.SetTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             "|     ",
             "|_____"
         });
 
-        this.textureDeploy.setTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
+        this.textureDeploy.SetTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
             "      ",
             "     |",
             "_____|"
         });
 
-        this.textureDeploy.setTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
+        this.textureDeploy.SetTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
             "_____.",
             "     |",
             "     |"
@@ -83,47 +83,47 @@ public abstract class Spell extends Obj {
         
         this.textureInEffect = new TextureSet();
 
-        this.textureInEffect.setTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
             "/\\/\\/",
             ">     ",
             ">     "
         });
 
-        this.textureInEffect.setTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
             "      ",
             ">     ",
             "/\\/\\/"
         });
 
-        this.textureInEffect.setTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
             "     <",
             "     <",
             "/\\/\\/\\"
         });
 
-        this.textureInEffect.setTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
             "/\\/\\/",
             "     <",
             "     <"
         });
 
-        this.textureInEffect.setTexture(TextureSet.SIDE_RIGHT, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.SIDE_RIGHT, new String [] {
             "     <",
             "     <",
             "     <"
         });
 
-        this.textureInEffect.setTexture(TextureSet.SIDE_LEFT, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.SIDE_LEFT, new String [] {
             ">     ",
             ">     ",
             ">     "
         });
 
-        this.textureInEffect.setTexture(TextureSet.SIDE_TOP, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.SIDE_TOP, new String [] {
             "/\\/\\/",
         });
 
-        this.textureInEffect.setTexture(TextureSet.SIDE_BOTTOM, new String [] {
+        this.textureInEffect.SetTexture(TextureSet.SIDE_BOTTOM, new String [] {
             "     ",
             "     ",
             "/\\/\\/"

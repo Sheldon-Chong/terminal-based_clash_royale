@@ -3,6 +3,8 @@
 /* */
 public class SpellFireball extends Spell {
 
+    // -- CONSTRUCTORS --
+
     // DEVELOPED BY: Daiki
     /* Default constructor for the SpellFireball class.
      * Initializes a fireball spell with default position and effects.
@@ -20,6 +22,9 @@ public class SpellFireball extends Spell {
         this.SetPos(startingPos);
     }
     
+
+    // -- PUBLIC METHODS --
+
     // DEVELOPED BY: Daiki
     /* Apply the effect of the fireball spell on a target position.
      * @param targetPos - the center position where the fireball effect is applied.

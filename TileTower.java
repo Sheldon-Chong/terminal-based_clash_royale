@@ -72,43 +72,43 @@ public class TileTower extends Tile {
     private TextureSet TextureTowerAlive() {
         TextureSet towerAlive = new TextureSet();
 
-        towerAlive.setTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
+        towerAlive.SetTexture(TextureSet.CORNER_TOP_LEFT, new String [] {
             ".____.",
             "|  __|",
             "|_|   "
         });
 
-        towerAlive.setTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
+        towerAlive.SetTexture(TextureSet.CORNER_TOP_RIGHT, new String [] {
             ".____.",
             "|__  |",
             "   |_|"
         });
-        towerAlive.setTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
+        towerAlive.SetTexture(TextureSet.CORNER_BOTTOM_LEFT, new String [] {
             ".     ",
             "| |__ ",
             "|____|"
         });
-        towerAlive.setTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
+        towerAlive.SetTexture(TextureSet.CORNER_BOTTOM_RIGHT, new String [] {
             "     .",
             " __| | ",
             "|____|"
         });
-        towerAlive.setTexture(TextureSet.SIDE_LEFT, new String [] {
+        towerAlive.SetTexture(TextureSet.SIDE_LEFT, new String [] {
             "  ",
             " :",
             " : "
         });
-        towerAlive.setTexture(TextureSet.SIDE_RIGHT, new String [] {
+        towerAlive.SetTexture(TextureSet.SIDE_RIGHT, new String [] {
             "     ",
             "    :",
             "    :"
         });
-        towerAlive.setTexture(TextureSet.SIDE_BOTTOM, new String [] {
+        towerAlive.SetTexture(TextureSet.SIDE_BOTTOM, new String [] {
             "     ",
             "     ",
             " ----"
         });
-        towerAlive.setTexture(TextureSet.SIDE_TOP, new String [] {
+        towerAlive.SetTexture(TextureSet.SIDE_TOP, new String [] {
             "     ",
             " ----",
             "     "

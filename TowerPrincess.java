@@ -13,7 +13,7 @@ public class TowerPrincess extends Tower {
      * @param parentPlayer - the player that this tower belongs to */
     public TowerPrincess (Player parentPlayer) {
         super(parentPlayer);
-        this.setHealth(20);
+        this.setHealth(15);
     }
 
     // DEVELOPED BY: Sheldon
