@@ -65,7 +65,6 @@ public class Main {
 
         // Load and display the game board
         System.out.println("\nLoading the board...");
-        display.PrintWorld(gameSys.GetGrid()); // Display the initial board
 
 
         // - GAME LOOP -

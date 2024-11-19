@@ -60,7 +60,7 @@ class GameSystem {
     private ObjList   spellQueue;
     private           Player player1;
     private           Player player2;
-    private int       currentRound = 1; // Trakcs the current round number
+    private int       currentRound; // Trakcs the current round number
     private Player    currentPlayer;
     private Card      []cards;
     private Player    winner;
@@ -419,7 +419,7 @@ class GameSystem {
     private void initWorld() {
         
         FileHandler fHandler = new FileHandler();
-        
+        this.currentRound = 0;        
 
         // - INITIALIZE CARD STATS -
         
