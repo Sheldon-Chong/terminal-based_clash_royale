@@ -22,7 +22,7 @@
     
     // -- ATTRIBUTES --
 
-    private Pos         Dest;
+    private Pos         dest;
     private int         hp;
     private GameSystem  gameSysRef;
     private int         region = -1;
@@ -139,14 +139,14 @@
     /* gets the name destination position that the troop is heading towards 
      * @return - the destination position of the troop */
     public Pos GetDest() {
-        return this.Dest;
+        return this.dest;
     }
     
     // DEVELOPED BY: Sheldon
     /* sets the destination of the troop
      * @param dest - the destination to set the troop to */
     public void SetDest(Pos dest) {
-        this.Dest = dest;
+        this.dest = dest;
     }
     
     // DEVELOPED BY: Sheldon

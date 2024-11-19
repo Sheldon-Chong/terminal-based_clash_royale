@@ -660,7 +660,7 @@ class GameSystem {
         return cellArr;
     }
     
-    // DEVELOPED BY : Sheldon
+    // DEVELOPED BY: Sheldon
     /* Append a cell to an existing array of cells.
     * This method expands an array of cells by adding a new cell to it.
     * @param cellList - the existing array of cells to which the new cell will be added.

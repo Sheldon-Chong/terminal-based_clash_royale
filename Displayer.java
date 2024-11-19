@@ -22,7 +22,7 @@ public class Displayer {
     private final Screen      screen;
     private final FileHandler fHandler;
     private final String []   msgPlayerOverlay;
-    private Screen            CardScreen;
+    private Screen            cardScreen;
 
 
     // -- CONSTRUCTORS --
@@ -289,21 +289,21 @@ public class Displayer {
 
         // -- CREATE SCREEN --
 
-        this.CardScreen = new Screen();
+        this.cardScreen = new Screen();
 
 
         // - RENDER BASE -
 
-        this.CardScreen.AppendLine(" %name                                                            ");
-        this.CardScreen.AppendLine("o=======================#1=========#2=========#3=========#4======o");
-        this.CardScreen.AppendLine("|  Next:______     | %card    | %card    | %card    | %card    | |");
-        this.CardScreen.AppendLine("|  | %up      |    | %stat1   | %stat1   | %stat1   | %stat1   | |");
-        this.CardScreen.AppendLine("|  |          |    | %stat2   | %stat2   | %stat2   | %stat2   | |");
-        this.CardScreen.AppendLine("|  |          |    |          |          |          |          | |");
-        this.CardScreen.AppendLine("|  |          |    |___[%C]___|___[%C]___|___[%C]___|___[%C]___| |");
-        this.CardScreen.AppendLine("|  |___[%d]___|       ________________________________________   |");
-        this.CardScreen.AppendLine("|              Elixir:%elixirMeter                            |$ |");
-        this.CardScreen.AppendLine("o================================================================o");
+        this.cardScreen.AppendLine(" %name                                                            ");
+        this.cardScreen.AppendLine("o=======================#1=========#2=========#3=========#4======o");
+        this.cardScreen.AppendLine("|  Next:______     | %card    | %card    | %card    | %card    | |");
+        this.cardScreen.AppendLine("|  | %up      |    | %stat1   | %stat1   | %stat1   | %stat1   | |");
+        this.cardScreen.AppendLine("|  |          |    | %stat2   | %stat2   | %stat2   | %stat2   | |");
+        this.cardScreen.AppendLine("|  |          |    |          |          |          |          | |");
+        this.cardScreen.AppendLine("|  |          |    |___[%C]___|___[%C]___|___[%C]___|___[%C]___| |");
+        this.cardScreen.AppendLine("|  |___[%d]___|       ________________________________________   |");
+        this.cardScreen.AppendLine("|              Elixir:%x                                      |$ |");
+        this.cardScreen.AppendLine("o================================================================o");
 
         Player currentPlayer = gameRef.GetCurrentPlayer();
 
@@ -311,7 +311,7 @@ public class Displayer {
         // - RENDER CARDS -
         
         Card []cards = currentPlayer.GetCardsOnHand();
-        this.CardScreen.ImposeImage(String.format("player %s : %s", this.gameRef.GetCurrentPlayer().GetPlayerNum(), currentPlayer.GetName()), "%name");
+        this.cardScreen.ImposeImage(String.format("player %s : %s", this.gameRef.GetCurrentPlayer().GetPlayerNum(), currentPlayer.GetName()), "%name");
         
         // iterate for each card
         for (int i = 0; i < 4; i ++) {
@@ -331,18 +331,18 @@ public class Displayer {
             }
 
             // render card
-            this.CardScreen.ImposeImage(String.format("%-7s", name), "%card");
-            this.CardScreen.ImposeImage(elixirCost, "%C");
+            this.cardScreen.ImposeImage(String.format("%-7s", name), "%card");
+            this.cardScreen.ImposeImage(elixirCost, "%C");
             
             if (cards[i].GetType() == Card.TROOP) {
                 Troop troop = gameRef.NewTroop(cards[i].GetName());
-                this.CardScreen.ImposeImage(String.format(" ATK: %d", troop.GetAttack()), "%stat1");
-                this.CardScreen.ImposeImage(String.format(" HP: %d", troop.GetHP()), "%stat2");
+                this.cardScreen.ImposeImage(String.format(" ATK: %d", troop.GetAttack()), "%stat1");
+                this.cardScreen.ImposeImage(String.format(" HP: %d", troop.GetHP()), "%stat2");
             }
             else if (cards[i].GetType() == Card.SPELL) {
                 Spell spell = gameRef.NewSpell(cards[i].GetName());
-                this.CardScreen.ImposeImage(String.format(" DMG: %d", spell.GetDuration()), "%stat1");
-                this.CardScreen.ImposeImage(String.format(" RADIUS:%d", spell.GetRadius()), "%stat2");
+                this.cardScreen.ImposeImage(String.format(" DMG: %d", spell.GetDuration()), "%stat1");
+                this.cardScreen.ImposeImage(String.format(" RADIUS:%d", spell.GetRadius()), "%stat2");
             }
         }
 
@@ -350,8 +350,8 @@ public class Displayer {
         // - RENDER ELIXIR -
         
         // render upcoming card
-        this.CardScreen.ImposeImage(String.format("%2d", currentPlayer.GetUpcomingCard().GetElixirCost()), "%d");
-        this.CardScreen.ImposeImage(currentPlayer.GetUpcomingCard().GetName() + "", "%up");
+        this.cardScreen.ImposeImage(String.format("%2d", currentPlayer.GetUpcomingCard().GetElixirCost()), "%d");
+        this.cardScreen.ImposeImage(currentPlayer.GetUpcomingCard().GetName() + "", "%up");
         
         // render elixir bar
         String elixirMeter = "";
@@ -360,13 +360,13 @@ public class Displayer {
         }
 
         // render elixir
-        this.CardScreen.ImposeImage(elixirMeter, "%elixirMeter");
-        this.CardScreen.ImposeImage(currentPlayer.GetElixir() + "", "$");
+        this.cardScreen.ImposeImage(elixirMeter, "%x");
+        this.cardScreen.ImposeImage(currentPlayer.GetElixir() + "", "$");
 
 
         // -- PRINT SCREEN --
 
-        this.CardScreen.PrintScreen();
+        this.cardScreen.PrintScreen();
     }
 
     // -- PUBLIC METHODS --
